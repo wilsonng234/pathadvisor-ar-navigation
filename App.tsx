@@ -5,7 +5,10 @@ import {
   ViroText,
   ViroTrackingStateConstants,
   ViroARSceneNavigator,
+  ViroARPlane,
+  Viro3DObject
 } from '@viro-community/react-viro';
+import Arrow from './src/ar/components/arrow'
 
 const HelloWorldSceneAR = () => {
   const [text, setText] = useState('Initializing AR...');
@@ -21,12 +24,23 @@ const HelloWorldSceneAR = () => {
 
   return (
     <ViroARScene onTrackingUpdated={onInitialized}>
-      <ViroText
+      {/* <ViroText
         text={text}
         scale={[0.5, 0.5, 0.5]}
         position={[0, 0, -1]}
         style={styles.helloWorldTextStyle}
-      />
+      /> */}
+      <ViroARPlane minHeight={0.1} minWidth={0.1} alignment={'Horizontal'}>
+        {/* <Viro3DObject
+          source={require('./res/arrow.obj')}
+          type="OBJ"
+          position={[0.0, 0,0]}
+          rotation={[0, 90, 0]}
+          scale={[0.0005, 0.0005, 0.0005]}
+        /> */}
+        <Arrow x_cor={0} y_cor={0} direction={0} />
+        <Arrow x_cor={0} y_cor={-0.5} direction={0} />
+      </ViroARPlane>
     </ViroARScene>
   );
 };
