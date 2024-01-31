@@ -13,7 +13,7 @@ const defaultAssetExts =
 const config = {
   resolver: {
     sourceExts: [...defaultSourceExts],
-    assetExts: [...defaultAssetExts, 'obj'],
+    assetExts: [...defaultAssetExts, 'obj','glb','mtl'],
   },
 };
 
