@@ -1,6 +1,6 @@
 
 import React, { createRef, useState } from 'react';
-import { Image, StyleSheet, Text, View, Button, Dimensions, ImageBackground } from 'react-native';
+import { Image, StyleSheet, Text, View, Button, Dimensions, ImageBackground, ImageStyle } from 'react-native';
 import { SearchBar } from '@rneui/themed';
 import * as api from '../backend/';
 import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
@@ -57,7 +57,7 @@ const MapView = () => {
   const [pinPos, setPinPos] = useState({ display: 'none', left: 0, top: 0 });
   const [mapSize, setMapSize] = useState({ width: 4800, height: 3400 });
   const [toSearchBar, setToSearchBar] = useState(false);
-  const [fromNode, setFromNode] = useState({});
+  const [fromNode, setFromNode] = useState<any>({});
   const [nodes, setNodes] = useState("");
   const zoomableViewRef = createRef<ReactNativeZoomableView>();
 
@@ -94,9 +94,9 @@ const MapView = () => {
           let s = "";
           res.map((item: any, index: number) => {
             if (item["floorId"] == floorId)
-              s += (item["coordinates"][0]-startX) + "," + (item["coordinates"][1]-startY) + " ";
+              s += (item["coordinates"][0] - startX) + "," + (item["coordinates"][1] - startY) + " ";
           })
-          
+
           setNodes(s);
         });
       }
@@ -121,7 +121,7 @@ const MapView = () => {
         <ImageBackground source={{
           uri: 'https://pathadvisor.ust.hk/api/floors/' + mapImg + '/map-image',
         }} style={[mapSize, { justifyContent: 'center', alignItems: 'center' }]}>
-            <Image style={[styles.pin, pinPos]} source={require('./assets/pin.png')} />
+          <Image style={[styles.pin, pinPos as ImageStyle]} source={require('./assets/pin.png')} />
           <View style={[{ width: mapSize.width / 10, height: mapSize.height / 10, margin: 'auto', transform: [{ scale: 10 }] }]}>
             <Svg viewBox={`0 0 ${mapSize.width} ${mapSize.height}`} height="100%" width="100%" >
               {nodes &&
