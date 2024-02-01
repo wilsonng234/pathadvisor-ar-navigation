@@ -6,4 +6,4 @@ const getAllFloors = async () => {
   return res.data;
 };
 
-export default getAllFloors;
+export {getAllFloors};

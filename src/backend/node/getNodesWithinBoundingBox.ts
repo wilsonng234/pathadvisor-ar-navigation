@@ -13,4 +13,5 @@ const getNodesWithinBoundingBox = async (
   return res.data;
 };
 
-export default getNodesWithinBoundingBox;
+
+export {getNodesWithinBoundingBox};

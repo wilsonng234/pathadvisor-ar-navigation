@@ -11,14 +11,15 @@ const getShortestPath = async (
 ) => {
   const res = await api.get(
     `/shortest-path?fromId=${fromId}&toId=${toId}` +
-      (mode ? `&mode=${mode}` : '') +
-      (noStairCase ? `&noStairCase=${noStairCase}` : '') +
-      (noEscalator ? `&noEscalator=${noEscalator}` : '') +
-      (stepFreeAccess ? `&stepFreeAccess=${stepFreeAccess}` : '') +
-      (viaIds ? viaIds.map(id => `&viaIds=${id}`).join('') : ''),
+    (mode ? `&mode=${mode}` : '') +
+    (noStairCase ? `&noStairCase=${noStairCase}` : '') +
+    (noEscalator ? `&noEscalator=${noEscalator}` : '') +
+    (stepFreeAccess ? `&stepFreeAccess=${stepFreeAccess}` : '') +
+    (viaIds ? viaIds.map(id => `&viaIds=${id}`).join('') : ''),
   );
 
   return res.data;
 };
 
-export default getShortestPath;
+
+export { getShortestPath };

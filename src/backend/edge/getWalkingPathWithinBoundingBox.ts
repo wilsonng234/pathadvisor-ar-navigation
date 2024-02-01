@@ -11,4 +11,5 @@ const getWalkingPathWithinBoundingBox = async (
   return res.data;
 };
 
-export default getWalkingPathWithinBoundingBox;
+
+export {getWalkingPathWithinBoundingBox};

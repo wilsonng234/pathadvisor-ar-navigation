@@ -6,4 +6,5 @@ const getNodesByName = async (name: string) => {
   return res.data;
 };
 
-export default getNodesByName;
+
+export {getNodesByName};

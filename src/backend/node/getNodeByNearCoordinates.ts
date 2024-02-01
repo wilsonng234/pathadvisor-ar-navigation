@@ -11,4 +11,5 @@ const getNodeByNearCoordinates = async (
   return res.data;
 };
 
-export default getNodeByNearCoordinates;
+
+export {getNodeByNearCoordinates};

@@ -28,4 +28,5 @@ const getNearestItem = async (
   return res.data;
 };
 
-export default getNearestItem;
+
+export {getNearestItem};
