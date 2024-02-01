@@ -24,6 +24,7 @@ const styles = StyleSheet.create({
   safe_area: {
     flex: 0,
     backgroundColor: '#3A3E42'
+    // backgroundColor: 'white'
   }
 });
 

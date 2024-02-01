@@ -19,6 +19,12 @@ const styles = StyleSheet.create({
     width: width,
     height: height,
   },
+  searchBar: {
+    borderTopWidth: 0,
+    borderBottomWidth: 0,
+    marginTop: '-2%',
+    backgroundColor: '#3A3E42'
+  }
 });
 
 //show search results
@@ -35,7 +41,7 @@ const SearchLocation = (props: any) => {
 
   return (
     <>
-      <SearchBar containerStyle={{ borderTopWidth: 0, borderBottomWidth: 0 }} placeholder={props.placeholder} onChange={(e) => searchNodes(e.nativeEvent.text)} value={search} /*searchIcon={true}*/ />
+      <SearchBar platform="ios" searchIcon={{ type: 'material', name: 'search' }} clearIcon={{ type: 'material', name: 'clear' }} containerStyle={styles.searchBar} placeholder={props.placeholder} onChange={(e) => searchNodes(e.nativeEvent.text)} value={search} showCancel={true} /*searchIcon={true}*/ />
       <View>
         {
           data && data?.map((item: any, index: number) => (
