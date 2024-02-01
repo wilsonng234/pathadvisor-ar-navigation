@@ -4,6 +4,7 @@ import { Image, StyleSheet, Text, View, Button, Dimensions, ImageBackground } fr
 import { SearchBar } from '@rneui/themed';
 import * as api from '../backend/';
 import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
+import Svg, { Polyline, Rect } from 'react-native-svg';
 const { width, height } = Dimensions.get('window');
 const styles = StyleSheet.create({
   pin: {
@@ -18,10 +19,6 @@ const styles = StyleSheet.create({
     width: width,
     height: height,
   },
-  border: {
-    borderColor: 'red',
-    borderWidth: 1,
-  }
 });
 
 //show search results
@@ -37,18 +34,20 @@ const SearchLocation = (props: any) => {
 
 
   return (
-
-    <View>
-
+    <>
       <SearchBar placeholder={props.placeholder} onChange={(e) => searchNodes(e.nativeEvent.text)} value={search} />
       <View>
         {
           data && data?.map((item: any, index: number) => (
-            <Button key={index} title={item.name} onPress={() => { props.selectNode(item, props.type); setData([]) }} />
+            <Button key={index} title={item.name} onPress={() => {
+              props.selectNode(item, props.type);
+              setData([]);
+              setSearch(item.name)
+            }} />
           ))}
 
       </View>
-    </View>
+    </>
   );
 }
 
@@ -59,21 +58,11 @@ const MapView = () => {
   const [mapSize, setMapSize] = useState({ width: 4800, height: 3400 });
   const [toSearchBar, setToSearchBar] = useState(false);
   const [fromNode, setFromNode] = useState({});
-  const [toNode, setToNode] = useState({});
+  const [nodes, setNodes] = useState("");
   const zoomableViewRef = createRef<ReactNativeZoomableView>();
 
   const selectNode = (node: any, type: any) => {
-    if (type == "from") {
-      setFromNode(node);
-      setToSearchBar(true);
-    }
-    else if (type == "to") {
-      setToNode(node);
-      api.getShortestPath(fromNode._id, node._id).then((res) => {
-        res = res["data"];
-        console.log(res);
-      });
-    }
+
     setToSearchBar(true);
     let floorId = node.floorId;
     let startX = 0;
@@ -94,6 +83,23 @@ const MapView = () => {
 
       setPinPos({ display: 'flex', left: res["centerCoordinates"][0] - startX, top: res["centerCoordinates"][1] - startY });
       setToSearchBar(true);
+      if (type == "from") {
+        setFromNode(node);
+        setToSearchBar(true);
+      }
+      else if (type == "to") {
+        api.getShortestPath(fromNode._id, node._id).then((res) => {
+          res = res["data"];
+
+          let s = "";
+          res.map((item: any, index: number) => {
+            if (item["floorId"] == floorId)
+              s += (item["coordinates"][0]-startX) + "," + (item["coordinates"][1]-startY) + " ";
+          })
+          
+          setNodes(s);
+        });
+      }
     });
   }
 
@@ -112,14 +118,20 @@ const MapView = () => {
         contentHeight={mapSize.height}
         contentWidth={mapSize.width}
       >
-
         <ImageBackground source={{
           uri: 'https://pathadvisor.ust.hk/api/floors/' + mapImg + '/map-image',
-        }} style={[mapSize, styles.border]}>
-          <Image style={[styles.pin, pinPos]} source={require('./assets/pin.png')} />
-
+        }} style={[mapSize, { justifyContent: 'center', alignItems: 'center' }]}>
+            <Image style={[styles.pin, pinPos]} source={require('./assets/pin.png')} />
+          <View style={[{ width: mapSize.width / 10, height: mapSize.height / 10, margin: 'auto', transform: [{ scale: 10 }] }]}>
+            <Svg viewBox={`0 0 ${mapSize.width} ${mapSize.height}`} height="100%" width="100%" >
+              {nodes &&
+                <Polyline points={nodes} stroke="red" strokeWidth="10" fill="none" />
+              }
+            </Svg>
+          </View>
         </ImageBackground>
       </ReactNativeZoomableView>
+
     </>
   );
 };
