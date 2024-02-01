@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, View, Button, Dimensions, ScrollView, Platform } from 'react-native';
-import { SearchBar } from 'react-native-elements';
+import { SearchBar } from '@rneui/themed';
 import * as api from '../backend/';
 const { width, height } = Dimensions.get('window');
 const styles = StyleSheet.create({
@@ -71,7 +71,7 @@ const MapView = () => {
 
   return (
     <View>
-      <SearchBar platform={(Platform.OS==="ios"||Platform.OS==="android")?Platform.OS:"defalut"} placeholder='Search for a location' onChange={(e) => searchNodes(e.nativeEvent.text)} value={search} />
+      <SearchBar placeholder='Search for a location' onChange={(e) => searchNodes(e.nativeEvent.text)} value={search} />
       <SearchResults data={data} selectNode={selectNode} />
       <ScrollView>
         <ScrollView horizontal={true}>
