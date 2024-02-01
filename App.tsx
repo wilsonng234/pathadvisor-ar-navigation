@@ -54,6 +54,10 @@ export default () => {
         style={styles.f1}
       />
       <View style={styles.circle}>
+        <Image
+          style={styles.dummy}
+          source={require('./res/dummy.png')}
+        />
       </View>
     </View>
   );
@@ -74,12 +78,19 @@ var styles = StyleSheet.create({
     borderTopLeftRadius: (circleDiameter / 2) * 1.2,
     borderTopRightRadius: (circleDiameter / 2) * 1.2,
     zIndex: 999,
+    elevation: (Platform.OS === 'android') ? 50 : 0,
     position: 'absolute',
     bottom: 0,
     backgroundColor: 'white',
     alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
     overflow: 'hidden',
     flexDirection: 'column-reverse',
-    display: 'flex'
   },
+  dummy: {
+    width: '99%',
+    height: '99%',
+    overflow: 'hidden',
+  }
 });
