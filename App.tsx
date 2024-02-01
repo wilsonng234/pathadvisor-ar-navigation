@@ -1,19 +1,16 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
-import { Dimensions, Image, Platform, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, Image, Platform, StyleSheet, View } from 'react-native';
 import {
   ViroARScene,
-  ViroText,
   ViroTrackingStateConstants,
   ViroARSceneNavigator,
   ViroARPlane,
-  Viro3DObject,
-  ViroAmbientLight,
-  ViroScene,
-  ViroFlexView
 } from '@viro-community/react-viro';
-import Arrow from './src/ar/components/arrow'
 import Geolocation from '@react-native-community/geolocation';
+
+import Arrow from './src/ar/components/arrow'
+import TopNavigationBar from './src/ar/components/top-navigation-bar';
 
 const circleDiameter = Dimensions.get('window').width;
 
@@ -24,7 +21,7 @@ const HelloWorldSceneAR = () => {
     console.log('guncelleme', state, reason, typeof reason);
     if (state === ViroTrackingStateConstants.TRACKING_NORMAL) {
       setText('Hello World!');
-      Geolocation.getCurrentPosition(info => console.log(info));
+      // Geolocation.getCurrentPosition(info => console.log(info));
     } else if (state === ViroTrackingStateConstants.TRACKING_UNAVAILABLE) {
       // Handle loss of tracking
     }
@@ -43,9 +40,7 @@ const HelloWorldSceneAR = () => {
 export default () => {
   return (
     <View style={{ flex: 1 }}>
-      <View style={{ width: '100%', height: '10%', zIndex: 999, position: 'absolute', elevation: (Platform.OS === 'android') ? 50 : 0 }}>
-        <Text>Hello</Text>
-      </View>
+      <TopNavigationBar />
       <ViroARSceneNavigator
         autofocus={true}
         initialScene={{
