@@ -22,8 +22,8 @@ const styles = StyleSheet.create({
   searchBar: {
     borderTopWidth: 0,
     borderBottomWidth: 0,
-    marginTop: '-2%',
-    backgroundColor: '#3A3E42'
+    // marginTop: '-2%',
+    // backgroundColor: '#3A3E42'
   }
 });
 
