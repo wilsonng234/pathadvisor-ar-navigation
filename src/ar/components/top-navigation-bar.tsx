@@ -1,12 +1,12 @@
 import React from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 
-const TopNavigationBar = ({ longitude, latitude }: { longitude?: number, latitude?: number, }) => {
+const TopNavigationBar = ({ latitude, longitude }: { latitude?: number, longitude?: number }) => {
     return (
         <View style={{ ...styles.overlayContainer, ...styles.topContainer, ...styles.navigationBar }}>
             <View style={styles.informationContainer}>
                 <Text style={styles.directionIndicator}>Turn Right</Text>
-                <Text style={styles.coordinateIndicator}>{`${longitude}, ${latitude}`}</Text>
+                <Text style={styles.coordinateIndicator}>{`${latitude}, ${longitude}`}</Text>
             </View>
         </View>
     )

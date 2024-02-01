@@ -40,7 +40,7 @@ const HelloWorldSceneAR = () => {
 export default () => {
   return (
     <View style={{ flex: 1 }}>
-      <TopNavigationBar />
+      <TopNavigationBar latitude={22.396427} longitude={114.109497} />
       <ViroARSceneNavigator
         autofocus={true}
         initialScene={{
