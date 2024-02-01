@@ -35,7 +35,8 @@ const SearchLocation = (props: any) => {
 
   return (
     <>
-      <SearchBar placeholder={props.placeholder} onChange={(e) => searchNodes(e.nativeEvent.text)} value={search} />
+      <SearchBar placeholder={props.placeholder} onChange={(e) => searchNodes(e.nativeEvent.text)} value={search} /*searchIcon={true}*/ />
+      
       <View>
         {
           data && data?.map((item: any, index: number) => (
