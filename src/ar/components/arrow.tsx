@@ -12,36 +12,20 @@ export default function arrow({
 }) {
   return (
     <>
-      <ViroOmniLight
-        intensity={300}
-        position={[-10, 10, 10]}
-        color={"#FFFFFF"}
-        attenuationStartDistance={0}
-        attenuationEndDistance={20} />
-      <ViroOmniLight
-        intensity={300}
-        position={[10, -10, 10]}
-        color={"#FFFFFF"}
-        attenuationStartDistance={0}
-        attenuationEndDistance={20} />
-      <ViroOmniLight
-        intensity={300}
-        position={[10, -10, 10]}
-        color={"#FFFFFF"}
-        attenuationStartDistance={0}
-        attenuationEndDistance={20} />
-      <ViroOmniLight
-        intensity={300}
-        position={[-10, -10, 10]}
-        color={"#FFFFFF"}
-        attenuationStartDistance={0}
-        attenuationEndDistance={20} />
-      <Viro3DObject
+      <ViroAmbientLight color="#ffffff" intensity={200} />
+      {/* <Viro3DObject
         source={require('../../../res/direction_arrow.glb')}
         type="GLB"
         position={[x_cor, 0, y_cor]}
         rotation={[0, direction == 0 ? 90 : direction == 1 ? 180 : 0, 0]}
         scale={[0.1, 0.1, 0.1]}
+      /> */}
+      <Viro3DObject
+        source={require('../../../res/direction_arrow.glb')}
+        type="GLB"
+        position={[x_cor, 0, y_cor]}
+        rotation={[direction == 0 ? 0 : direction == 1 ? -90 : 90, direction == 0 ? 90 : 0, 0]}
+        scale={[0.05, 0.05, 0.05]}
       />
     </>
   )

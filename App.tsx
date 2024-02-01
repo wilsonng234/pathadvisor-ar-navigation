@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { Dimensions, Image, Platform, StyleSheet, Text, View } from 'react-native';
 import {
   ViroARScene,
   ViroText,
@@ -8,9 +8,14 @@ import {
   ViroARSceneNavigator,
   ViroARPlane,
   Viro3DObject,
-  ViroAmbientLight
+  ViroAmbientLight,
+  ViroScene,
+  ViroFlexView
 } from '@viro-community/react-viro';
 import Arrow from './src/ar/components/arrow'
+import Geolocation from '@react-native-community/geolocation';
+
+const circleDiameter = Dimensions.get('window').width;
 
 const HelloWorldSceneAR = () => {
   const [text, setText] = useState('Initializing AR...');
@@ -19,6 +24,7 @@ const HelloWorldSceneAR = () => {
     console.log('guncelleme', state, reason, typeof reason);
     if (state === ViroTrackingStateConstants.TRACKING_NORMAL) {
       setText('Hello World!');
+      Geolocation.getCurrentPosition(info => console.log(info));
     } else if (state === ViroTrackingStateConstants.TRACKING_UNAVAILABLE) {
       // Handle loss of tracking
     }
@@ -26,23 +32,9 @@ const HelloWorldSceneAR = () => {
 
   return (
     <ViroARScene onTrackingUpdated={onInitialized}>
-      <ViroAmbientLight color="#ffffff" intensity={200} />
-      {/* <ViroText
-        text={text}
-        scale={[0.5, 0.5, 0.5]}
-        position={[0, 0, -1]}
-        style={styles.helloWorldTextStyle}
-      /> */}
       <ViroARPlane minHeight={0.1} minWidth={0.1} alignment={'Horizontal'}>
-        {/* <Viro3DObject
-          source={require('./res/arrow.obj')}
-          type="OBJ"
-          position={[0.0, 0,0]}
-          rotation={[0, 90, 0]}
-          scale={[0.0005, 0.0005, 0.0005]}
-        /> */}
-        <Arrow x_cor={0.5} y_cor={0} direction={0} />
-        <Arrow x_cor={0} y_cor={-0.5} direction={0} />
+        <Arrow x_cor={0} y_cor={-0.1} direction={0} />
+        <Arrow x_cor={0} y_cor={-1.5} direction={2} />
       </ViroARPlane>
     </ViroARScene>
   );
@@ -50,13 +42,20 @@ const HelloWorldSceneAR = () => {
 
 export default () => {
   return (
-    <ViroARSceneNavigator
-      autofocus={true}
-      initialScene={{
-        scene: HelloWorldSceneAR,
-      }}
-      style={styles.f1}
-    />
+    <View style={{ flex: 1 }}>
+      <View style={{ width: '100%', height: '10%', zIndex: 999, position: 'absolute', elevation: (Platform.OS === 'android') ? 50 : 0 }}>
+        <Text>Hello</Text>
+      </View>
+      <ViroARSceneNavigator
+        autofocus={true}
+        initialScene={{
+          scene: HelloWorldSceneAR,
+        }}
+        style={styles.f1}
+      />
+      <View style={styles.circle}>
+      </View>
+    </View>
   );
 };
 
@@ -68,5 +67,19 @@ var styles = StyleSheet.create({
     color: '#ffffff',
     textAlignVertical: 'center',
     textAlign: 'center',
+  },
+  circle: {
+    height: circleDiameter / 2 * 1.4,
+    width: circleDiameter * 1.2,
+    borderTopLeftRadius: (circleDiameter / 2) * 1.2,
+    borderTopRightRadius: (circleDiameter / 2) * 1.2,
+    zIndex: 999,
+    position: 'absolute',
+    bottom: 0,
+    backgroundColor: 'white',
+    alignSelf: 'center',
+    overflow: 'hidden',
+    flexDirection: 'column-reverse',
+    display: 'flex'
   },
 });
