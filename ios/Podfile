@@ -40,6 +40,7 @@ target 'PathadvisorArNavigation' do
   )
   pod 'ViroReact', :path => '../node_modules/@viro-community/react-viro/ios/'
   pod 'ViroKit', :path => '../node_modules/@viro-community/react-viro/ios/dist/ViroRenderer/'
+  pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
   target 'PathadvisorArNavigationTests' do
     inherit! :complete
     # Pods for testing
