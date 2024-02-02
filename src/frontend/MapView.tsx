@@ -1,10 +1,12 @@
 
-import React, { createRef, useState } from 'react';
-import { Image, StyleSheet, Text, View, Button, Dimensions, ImageBackground, ImageStyle } from 'react-native';
+import React, { createRef, useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { Image, StyleSheet, View, Button, Dimensions, ImageBackground, ImageStyle, Text } from 'react-native';
 import { SearchBar } from '@rneui/themed';
 import * as api from '../backend/';
 import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
-import Svg, { Polyline, Rect } from 'react-native-svg';
+import Svg, { Polyline } from 'react-native-svg';
+import { color } from '@rneui/base';
 const { width, height } = Dimensions.get('window');
 const styles = StyleSheet.create({
   pin: {
@@ -26,9 +28,14 @@ const styles = StyleSheet.create({
     // backgroundColor: '#3A3E42'
   }
 });
+/**
+ * Component contains search bar and list of search results
+ * @param {string} placeholder - placeholder for search bar
+ * @param {function} selectNode - function to run when a node is selected
+ * @returns 
+ */
 
-//show search results
-const SearchLocation = (props: any) => {
+const SearchLocation = ({ placeholder, selectNode }) => {
   const [search, setSearch] = React.useState('');
   const [data, setData] = useState([]);
   const searchNodes = (s: string) => {
@@ -41,105 +48,140 @@ const SearchLocation = (props: any) => {
 
   return (
     <>
-      <SearchBar platform="ios" searchIcon={{ type: 'material', name: 'search' }} clearIcon={{ type: 'material', name: 'clear' }} containerStyle={styles.searchBar} placeholder={props.placeholder} onChange={(e) => searchNodes(e.nativeEvent.text)} value={search} showCancel={true} /*searchIcon={true}*/ />
+      <SearchBar platform="ios" searchIcon={{ type: 'material', name: 'search' }} clearIcon={{ type: 'material', name: 'clear' }} containerStyle={styles.searchBar} placeholder={placeholder} onChange={(e) => searchNodes(e.nativeEvent.text)} value={search} showCancel={true} />
       <View>
         {
+          //show search results
           data && data?.map((item: any, index: number) => (
             <Button key={index} title={item.name} onPress={() => {
-              props.selectNode(item, props.type);
+              selectNode(item);
               setData([]);
               setSearch(item.name)
             }} />
           ))}
-
       </View>
     </>
   );
 }
+SearchLocation.propTypes = {
+  placeholder: PropTypes.string.isRequired,
+  selectNode: PropTypes.func.isRequired
+};
 
+
+/**
+ * MapView component
+ * 
+ * @returns MapView component
+*/
 const MapView = () => {
 
-  const [mapImg, setMapImg] = useState("G");
-  const [pinPos, setPinPos] = useState({ display: 'none', left: 0, top: 0 });
-  const [mapSize, setMapSize] = useState({ width: 4800, height: 3400 });
-  const [toSearchBar, setToSearchBar] = useState(false);
-  const [fromNode, setFromNode] = useState<any>({});
-  const [nodes, setNodes] = useState("");
-  const zoomableViewRef = createRef<ReactNativeZoomableView>();
-
-  const selectNode = (node: any, type: any) => {
-
-    setToSearchBar(true);
-    let floorId = node.floorId;
-    let startX = 0;
-    let startY = 0;
-    api.getFloor(floorId).then((res) => {
+  const [enableToSearchBar, setEnableToSearchBar] = useState(false);
+  const [fromNode, setFromNode] = useState<any>(null);
+  const [path, setPath] = useState({});
+  const [floor, setFloor] = useState("G");
+  // function to select "from" node
+  const selectFromNode = (node: any) => {
+    setFloor(node.floorId);
+    setEnableToSearchBar(true);
+    setFromNode(node);
+  }
+  // function to select "to" node
+  const selectToNode = (node: any) => {
+    api.getShortestPath(fromNode?._id, node?._id).then((res) => {
       res = res["data"];
-      setMapSize({ width: res["mapWidth"], height: res["mapHeight"] });
-      startX = res["startX"];
-      startY = res["startY"];
-    });
-    api.getNodeById(node._id).then((res) => {
-      res = res["data"];
-      setMapImg(floorId);
-
-      //todo: fix zoomableViewRef.current is null
-      // zoomableViewRef.current?.zoomTo(10);
-      // zoomableViewRef.current?.moveTo( res["centerCoordinates"][0] - startX, res["centerCoordinates"][1] - startY);
-
-      setPinPos({ display: 'flex', left: res["centerCoordinates"][0] - startX, top: res["centerCoordinates"][1] - startY });
-      setToSearchBar(true);
-      if (type == "from") {
-        setFromNode(node);
-        setToSearchBar(true);
-      }
-      else if (type == "to") {
-        api.getShortestPath(fromNode._id, node._id).then((res) => {
-          res = res["data"];
-
-          let s = "";
-          res.map((item: any, index: number) => {
-            if (item["floorId"] == floorId)
-              s += (item["coordinates"][0] - startX) + "," + (item["coordinates"][1] - startY) + " ";
-          })
-
-          setNodes(s);
-        });
-      }
+      let path = {};
+      res.map((res: any) => {
+        if (path[res.floorId] === undefined) {
+          path[res.floorId] = [];
+        }
+        path[res.floorId].push(res.coordinates);
+      });
+      setPath(path);
     });
   }
 
   return (
     <>
-      <SearchLocation selectNode={selectNode} type="from" placeholder="Search for a location" />
-      {toSearchBar && <SearchLocation selectNode={selectNode} type="to" placeholder="Search to location" />}
-
-      <ReactNativeZoomableView
-        ref={zoomableViewRef}
-        maxZoom={1.5}
-        minZoom={0.1}
-        zoomStep={0.5}
-        initialZoom={0.5}
-        bindToBorders={true}
-        contentHeight={mapSize.height}
-        contentWidth={mapSize.width}
-      >
-        <ImageBackground source={{
-          uri: 'https://pathadvisor.ust.hk/api/floors/' + mapImg + '/map-image',
-        }} style={[mapSize, { justifyContent: 'center', alignItems: 'center' }]}>
-          <Image style={[styles.pin, pinPos as ImageStyle]} source={require('./assets/pin.png')} />
-          <View style={[{ width: mapSize.width / 10, height: mapSize.height / 10, margin: 'auto', transform: [{ scale: 10 }] }]}>
-            <Svg viewBox={`0 0 ${mapSize.width} ${mapSize.height}`} height="100%" width="100%" >
-              {nodes &&
-                <Polyline points={nodes} stroke="red" strokeWidth="10" fill="none" />
-              }
-            </Svg>
-          </View>
-        </ImageBackground>
-      </ReactNativeZoomableView>
-
+      <SearchLocation selectNode={selectFromNode} placeholder="Search for a location" />
+      {enableToSearchBar && <SearchLocation selectNode={selectToNode} placeholder="Search to location" />}
+      <FloorView floor={floor} node={fromNode} path={path} />
     </>
   );
 };
+
+/**
+ * 
+ * @param {string} floor floor id
+ * @param node node of (from|to) for show the pin or zoom
+ * @param zoomToPin zoom to the pin or not
+ * @param {Map} path path to draw
+ */
+const FloorView = ({ floor, node, zoomToPin, path }) => {
+  const zoomableViewRef = createRef<ReactNativeZoomableView>();
+
+
+  const [mapSize, setMapSize] = useState({ height: 0, width: 0 });
+  const [nodePosition, setNodePosition] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    let startX = 0, startY = 0;
+    api.getFloorById(floor).then((res) => {
+      res = res["data"];
+      startX = res.startX;
+      startY = res.startY;
+      setMapSize({ height: res.mapHeight, width: res.mapWidth });
+    });
+    api.getNodeById(node?._id).then((res) => {
+      res = res["data"];
+      setNodePosition({ x: res["centerCoordinates"][0] - startX, y: res["centerCoordinates"][1] - startY });
+
+    });
+  }, [floor, node, path]);
+  return (
+
+    <ReactNativeZoomableView
+      ref={zoomableViewRef}
+      maxZoom={1.5}
+      minZoom={0.1}
+      zoomStep={0.5}
+      initialZoom={0.5}
+      bindToBorders={true}
+      contentHeight={mapSize.height}
+      contentWidth={mapSize.width}
+    >
+      <ImageBackground 
+      source={{
+        uri: 'https://pathadvisor.ust.hk/api/floors/' + floor + '/map-image'
+      }} 
+      style={{ height: mapSize.height, width: mapSize.width, justifyContent: 'center', alignItems: 'center' }}>
+        <Image 
+        style={[styles.pin, { display: node ? 'flex' : 'none', left: nodePosition.x, top: nodePosition.y }]} 
+        source={require('./assets/pin.png')} />
+
+        {/* if width&height match map size the app will crash. So scale it*/}
+        <View style={[{ 
+          width: mapSize.width / 10, 
+          height: mapSize.height / 10, 
+          margin: 'auto', 
+          transform: [{ scale: 10 }] }]}>
+          <Svg viewBox={`0 0 ${mapSize.width} ${mapSize.height}`} height="100%" width="100%" >
+            {path &&
+              <Polyline points={path[floor]} stroke="red" strokeWidth="10" fill="none" />
+            }
+          </Svg>
+        </View>
+      </ImageBackground>
+    </ReactNativeZoomableView>
+
+  )
+}
+FloorView.propTypes = {
+  floor: PropTypes.string.isRequired,
+  node: PropTypes.object,
+  zoomToPin: PropTypes.bool,
+  path: PropTypes.object
+};
+
 
 export default MapView;
