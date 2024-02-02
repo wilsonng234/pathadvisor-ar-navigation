@@ -9,7 +9,7 @@ import ARNavigationCamera from './src/ar/components/arNavigationCamera';
 export default () => {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <TopNavigationBar latitude={22.396427} longitude={114.109497} />
+      <TopNavigationBar latitude={22.396427} longitude={114.109497} handleExitArPage={() => console.log("Exit")} />
       <ARNavigationCamera />
       <BottomNavigationBar />
     </GestureHandlerRootView>

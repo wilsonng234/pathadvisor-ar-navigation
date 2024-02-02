@@ -4,7 +4,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler'
 import MaterialIcon from "react-native-vector-icons/MaterialIcons"
 import EntypoIcon from "react-native-vector-icons/Entypo"
 
-const TopNavigationBar = ({ latitude, longitude }: { latitude?: number, longitude?: number }) => {
+const TopNavigationBar = ({ latitude, longitude, handleExitArPage }: { latitude?: number, longitude?: number, handleExitArPage: () => void }) => {
     return (
         <>
             <View style={{ ...styles.overlayContainer, ...styles.topContainer, ...styles.navigationBar }}>
@@ -16,7 +16,7 @@ const TopNavigationBar = ({ latitude, longitude }: { latitude?: number, longitud
                     <Text style={styles.directionIndicator}>Turn Right</Text>
                     <Text style={styles.coordinateIndicator}>{`${latitude}, ${longitude}`}</Text>
                 </View>
-                <TouchableOpacity onPress={() => { console.log("exit") }} style={{ zIndex: 2, elevation: (Platform.OS === 'android') ? 2 : 0, }}>
+                <TouchableOpacity onPress={handleExitArPage} >
                     <EntypoIcon
                         name="circle-with-cross"
                         color='white'
