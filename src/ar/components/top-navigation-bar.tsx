@@ -1,14 +1,32 @@
 import React from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler'
+import MaterialIcon from "react-native-vector-icons/MaterialIcons"
+import EntypoIcon from "react-native-vector-icons/Entypo"
 
 const TopNavigationBar = ({ latitude, longitude }: { latitude?: number, longitude?: number }) => {
     return (
-        <View style={{ ...styles.overlayContainer, ...styles.topContainer, ...styles.navigationBar }}>
-            <View style={styles.informationContainer}>
-                <Text style={styles.directionIndicator}>Turn Right</Text>
-                <Text style={styles.coordinateIndicator}>{`${latitude}, ${longitude}`}</Text>
+        <>
+            <View style={{ ...styles.overlayContainer, ...styles.topContainer, ...styles.navigationBar }}>
+                <MaterialIcon
+                    name='turn-right'
+                    color='white'
+                    size={50} />
+                <View style={styles.informationContainer}>
+                    <Text style={styles.directionIndicator}>Turn Right</Text>
+                    <Text style={styles.coordinateIndicator}>{`${latitude}, ${longitude}`}</Text>
+                </View>
+                <TouchableOpacity onPress={() => { console.log("exit") }} style={{ zIndex: 2, elevation: (Platform.OS === 'android') ? 2 : 0, }}>
+                    <EntypoIcon
+                        name="circle-with-cross"
+                        color='white'
+                        size={40}
+                    />
+                </TouchableOpacity>
+
+
             </View>
-        </View>
+        </>
     )
 }
 
@@ -27,10 +45,10 @@ var styles = StyleSheet.create({
     navigationBar: {
         width: '100%',
         height: '15%',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        backgroundColor: 'rgba(0, 0, 0, 0.1)',
         display: 'flex',
         flexDirection: 'row',
-        justifyContent: "center",
+        justifyContent: "space-around",
         alignItems: "center"
     },
     informationContainer: {
