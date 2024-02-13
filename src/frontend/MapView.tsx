@@ -1,12 +1,12 @@
 
 import React, { createRef, useState, useEffect, forwardRef, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { Image, StyleSheet, View, Button, Dimensions, ImageBackground, ImageStyle, Text, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet, View, Button, Dimensions, ImageBackground, ImageStyle, Text, TouchableOpacity, Keyboard, ScrollView } from 'react-native';
 import { SearchBar } from '@rneui/themed';
 import * as api from '../backend/';
 import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
-import Svg, { Polyline } from 'react-native-svg';
-import { color } from '@rneui/base';
+import Svg, { Polyline, Rect } from 'react-native-svg';
+
 const { width, height } = Dimensions.get('window');
 const styles = StyleSheet.create({
   pin: {
@@ -38,26 +38,37 @@ const styles = StyleSheet.create({
 const SearchLocation = ({ placeholder, selectNode }) => {
   const [search, setSearch] = React.useState('');
   const [data, setData] = useState([]);
+
   const searchNodes = (s: string) => {
     setSearch(s);
     api.getNodesByName(s).then((res) => {
       setData(res["data"]);
     });
   }
+  const onCancel = () => {
+    setSearch('');
+    setData([]);
+  }
 
 
   return (
     <>
-      <SearchBar platform="ios" searchIcon={{ type: 'material', name: 'search' }} clearIcon={{ type: 'material', name: 'clear' }} containerStyle={styles.searchBar} placeholder={placeholder} onChange={(e) => searchNodes(e.nativeEvent.text)} value={search} showCancel={true} />
+      <SearchBar platform="ios" searchIcon={{ type: 'material', name: 'search' }} clearIcon={{ type: 'material', name: 'clear' }} containerStyle={styles.searchBar} placeholder={placeholder} onChange={(e) => searchNodes(e.nativeEvent.text)} value={search} showCancel={true} onCancel={onCancel} />
       <View>
         {
           //show search results
           data && data?.map((item: any, index: number) => (
-            <Button key={index} title={item.name} onPress={() => {
-              selectNode(item);
-              setData([]);
-              setSearch(item.name)
-            }} />
+            <TouchableOpacity
+              style={{ padding: 7, borderBottomWidth: 1, borderColor: "grey" }}
+              key={index}
+              onPress={() => {
+                Keyboard.dismiss();
+                selectNode(item);
+                setData([]);
+                setSearch(item.name);
+              }}>
+              <Text style={{ color: "black", textAlign: "center" }}>{`${item.name} (${item.floorId})`}</Text>
+            </TouchableOpacity>
           ))}
       </View>
     </>
@@ -78,9 +89,9 @@ const MapView = () => {
 
   const [enableToSearchBar, setEnableToSearchBar] = useState(false);
   const [fromNode, setFromNode] = useState<any>(null);
-  const [path, setPath] = useState(null);
-  const [floor, setFloor] = useState("G");
+  const [path, setPath] = useState<any>(null);
   const floorViewRef = useRef<any>();
+  const [floors, setFloors] = useState<any>([]);
   // function to select "from" node
   const selectFromNode = (node: any) => {
     floorViewRef.current?.setFloor(node.floorId);
@@ -98,17 +109,32 @@ const MapView = () => {
         if (path[res.floorId] === undefined) {
           path[res.floorId] = [];
         }
-        path[res.floorId].push(res.coordinates);
+        path[res.floorId].push([res.coordinates[0] - floors[res.floorId].startX, res.coordinates[1] - floors[res.floorId].startY]);
       });
       setPath(path);
     });
   }
-
+  useEffect(() => {
+    api.getAllFloors().then((res) => {
+      res = res["data"];
+      let result = {};
+      res.map((floor: any) => {
+        result[floor._id] = floor;
+      });
+      setFloors(result);
+    });
+  }, []);
   return (
     <>
       <SearchLocation selectNode={selectFromNode} placeholder="Search for a location" />
       {enableToSearchBar && <SearchLocation selectNode={selectToNode} placeholder="Search to location" />}
-      <FloorView ref={floorViewRef} floor={floor} node={fromNode} path={path} />
+      {//temp view for debug
+      /* <ScrollView horizontal={true} style={{ maxHeight: 40 }}>
+        {floors && Object.keys(floors).map((floor) => (
+          <Button title={floor} key={floor} onPress={() => floorViewRef.current.setFloor(floor)} />
+        ))}
+      </ScrollView > */}
+      <FloorView ref={floorViewRef} node={fromNode} path={path} />
     </>
   );
 };
@@ -120,7 +146,7 @@ const MapView = () => {
  * @param zoomToPin zoom to the pin or not
  * @param {Map} path path to draw ({"floorId":[[x,x],[x,x]...,[x,x]],..})
  */
-const FloorView = forwardRef(({ node, zoomToPin, path }: { node: any, zoomToPin: boolean, path: object }, ref) => {
+const FloorView = forwardRef(({ node, zoomToPin = false, path }: { node?: any, zoomToPin?: boolean, path: object }, ref) => {
   const zoomableViewRef = createRef<ReactNativeZoomableView>();
 
   const [mapSize, setMapSize] = useState({ height: 0, width: 0 });
@@ -170,13 +196,11 @@ const FloorView = forwardRef(({ node, zoomToPin, path }: { node: any, zoomToPin:
       setNodePosition({ x: res["centerCoordinates"][0] - startX, y: res["centerCoordinates"][1] - startY });
     });
 
-
   }, [floor, node, path]);
 
 
 
   const changeFloor = () => {
-    setFloor(floor === "G" ? "1" : "G");
   }
 
   return (
@@ -195,7 +219,7 @@ const FloorView = forwardRef(({ node, zoomToPin, path }: { node: any, zoomToPin:
         source={{
           uri: 'https://pathadvisor.ust.hk/api/floors/' + floor + '/map-image'
         }}
-        style={{ height: mapSize.height, width: mapSize.width, justifyContent: 'center', alignItems: 'center' }}>
+        style={{ height: mapSize.height, width: mapSize.width, justifyContent: 'center',alignItems:'center' }}>
         <Image
           style={[styles.pin, { display: showPin ? 'flex' : 'none', left: nodePosition.x, top: nodePosition.y }]}
           source={require('./assets/pin.png')} />
@@ -204,16 +228,16 @@ const FloorView = forwardRef(({ node, zoomToPin, path }: { node: any, zoomToPin:
         <View style={[{
           width: mapSize.width / 10,
           height: mapSize.height / 10,
-          margin: 'auto',
-          transform: [{ scale: 10 }]
+          transform: [{ scale: 10 }],
+          borderColor:'black',borderWidth:1
         }]}>
+
           <Svg viewBox={`0 0 ${mapSize.width} ${mapSize.height}`} height="100%" width="100%" >
-            {path &&
+            {path && path[floor] &&
               <Polyline points={path[floor]} stroke="red" strokeWidth="10" fill="none" />
             }
           </Svg>
         </View>
-
         {
           (tags.length > 0) && nodes && nodes.map((node: any, index: number) => {
 
@@ -238,7 +262,7 @@ const FloorView = forwardRef(({ node, zoomToPin, path }: { node: any, zoomToPin:
                 ) : (
                   <Text
                     style={{
-                      fontSize: mapSize.width / (1 / (iconSize * 0.5)),
+                      fontSize: mapSize.width / (1 / (iconSize * 0.25)),
                       color: 'black',
                       left: -mapSize.width / (1 / (iconSize * 0.5)),
                       top: -mapSize.width / (1 / (iconSize * 0.5)),
