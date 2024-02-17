@@ -1,11 +1,11 @@
 
 import React, { createRef, useState, useEffect, forwardRef, useRef } from 'react';
-import PropTypes from 'prop-types';
-import { Image, StyleSheet, View, Button, Dimensions, ImageBackground, ImageStyle, Text, TouchableOpacity, Keyboard, ScrollView } from 'react-native';
-import { SearchBar } from '@rneui/themed';
+import { Image, StyleSheet, View, Dimensions, ImageBackground, ImageStyle, Text, TouchableOpacity, Keyboard, ScrollView } from 'react-native';
+import SearchLocationBar from './components/SearchLocationBar';
 import * as api from '../backend/';
+
 import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
-import Svg, { Polyline, Rect } from 'react-native-svg';
+import Svg, { Polyline } from 'react-native-svg';
 
 const { width, height } = Dimensions.get('window');
 const styles = StyleSheet.create({
@@ -21,64 +21,7 @@ const styles = StyleSheet.create({
     width: width,
     height: height,
   },
-  searchBar: {
-    borderTopWidth: 0,
-    borderBottomWidth: 0,
-    // marginTop: '-2%',
-    // backgroundColor: '#3A3E42'
-  }
 });
-/**
- * Component contains search bar and list of search results
- * @param {string} placeholder - placeholder for search bar
- * @param {function} selectNode - function to run when a node is selected
- * @returns 
- */
-
-const SearchLocation = ({ placeholder, selectNode }) => {
-  const [search, setSearch] = React.useState('');
-  const [data, setData] = useState([]);
-
-  const searchNodes = (s: string) => {
-    setSearch(s);
-    api.getNodesByName(s).then((res) => {
-      setData(res["data"]);
-    });
-  }
-  const onCancel = () => {
-    setSearch('');
-    setData([]);
-  }
-
-
-  return (
-    <>
-      <SearchBar platform="ios" searchIcon={{ type: 'material', name: 'search' }} clearIcon={{ type: 'material', name: 'clear' }} containerStyle={styles.searchBar} placeholder={placeholder} onChange={(e) => searchNodes(e.nativeEvent.text)} value={search} showCancel={true} onCancel={onCancel} />
-      <View>
-        {
-          //show search results
-          data && data?.map((item: any, index: number) => (
-            <TouchableOpacity
-              style={{ padding: 7, borderBottomWidth: 1, borderColor: "grey" }}
-              key={index}
-              onPress={() => {
-                Keyboard.dismiss();
-                selectNode(item);
-                setData([]);
-                setSearch(item.name);
-              }}>
-              <Text style={{ color: "black", textAlign: "center" }}>{`${item.name} (${item.floorId})`}</Text>
-            </TouchableOpacity>
-          ))}
-      </View>
-    </>
-  );
-}
-SearchLocation.propTypes = {
-  placeholder: PropTypes.string.isRequired,
-  selectNode: PropTypes.func.isRequired
-};
-
 
 /**
  * MapView component
@@ -86,7 +29,6 @@ SearchLocation.propTypes = {
  * @returns MapView component
 */
 const MapView = () => {
-
   const [enableToSearchBar, setEnableToSearchBar] = useState(false);
   const [fromNode, setFromNode] = useState<any>(null);
   const [path, setPath] = useState<any>(null);
@@ -126,8 +68,8 @@ const MapView = () => {
   }, []);
   return (
     <>
-      <SearchLocation selectNode={selectFromNode} placeholder="Search for a location" />
-      {enableToSearchBar && <SearchLocation selectNode={selectToNode} placeholder="Search to location" />}
+      <SearchLocationBar selectNode={selectFromNode} placeholder="Search for a location" />
+      {enableToSearchBar && <SearchLocationBar selectNode={selectToNode} placeholder="Search to a location" />}
       {//temp view for debug
       /* <ScrollView horizontal={true} style={{ maxHeight: 40 }}>
         {floors && Object.keys(floors).map((floor) => (
@@ -219,7 +161,7 @@ const FloorView = forwardRef(({ node, zoomToPin = false, path }: { node?: any, z
         source={{
           uri: 'https://pathadvisor.ust.hk/api/floors/' + floor + '/map-image'
         }}
-        style={{ height: mapSize.height, width: mapSize.width, justifyContent: 'center',alignItems:'center' }}>
+        style={{ height: mapSize.height, width: mapSize.width, justifyContent: 'center', alignItems: 'center' }}>
         <Image
           style={[styles.pin, { display: showPin ? 'flex' : 'none', left: nodePosition.x, top: nodePosition.y }]}
           source={require('./assets/pin.png')} />
@@ -229,7 +171,7 @@ const FloorView = forwardRef(({ node, zoomToPin = false, path }: { node?: any, z
           width: mapSize.width / 10,
           height: mapSize.height / 10,
           transform: [{ scale: 10 }],
-          borderColor:'black',borderWidth:1
+          borderColor: 'black', borderWidth: 1
         }]}>
 
           <Svg viewBox={`0 0 ${mapSize.width} ${mapSize.height}`} height="100%" width="100%" >
