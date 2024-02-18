@@ -17,7 +17,7 @@ const MapView = ({ floorId, fromNode, toNode }: MapViewProps) => {
     useEffect(() => {
         api.getFloorById(floorId).then((res) => {
             setMapSize({
-                height: res.data.mapHeigh,
+                height: res.data.mapHeight,
                 width: res.data.mapWidth
             })
         })
@@ -27,6 +27,9 @@ const MapView = ({ floorId, fromNode, toNode }: MapViewProps) => {
 
     return (
         <ReactNativeZoomableView
+            initialZoom={0.3}
+            minZoom={0.1}
+            maxZoom={undefined}
             contentHeight={mapSize.height}
             contentWidth={mapSize.width}
         >
@@ -34,8 +37,7 @@ const MapView = ({ floorId, fromNode, toNode }: MapViewProps) => {
                 source={{
                     uri: `https://pathadvisor.ust.hk/api/floors/${floorId}/map-image`
                 }}
-                style={{ ...styles.map, ...{ height: 1000, width: 1000 } }}>
-
+                style={{ ...styles.map, ...{ height: mapSize.height, width: mapSize.width } }}>
             </ImageBackground>
         </ReactNativeZoomableView>
     )
