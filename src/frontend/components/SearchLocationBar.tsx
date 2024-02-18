@@ -4,15 +4,12 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { SearchBar } from '@rneui/themed';
 
 import * as api from '../../backend/';
+import { LocationNode } from '../pages/PathAdvisorPage';
 
 interface SearchLocationBarProps {
     placeholder: string;
-    selectNode: (node: any) => void;
-}
-
-interface SearchResult {
-    name: string;
-    floorId: string;
+    selectNode: (node: LocationNode) => void;
+    disableToSearchBar?: () => void;
 }
 
 /**
@@ -21,9 +18,9 @@ interface SearchResult {
  * @param {function} selectNode - function to run when a node is selected
  * @returns 
  */
-const SearchLocationBar = ({ placeholder, selectNode }: SearchLocationBarProps) => {
+const SearchLocationBar = ({ placeholder, selectNode, disableToSearchBar }: SearchLocationBarProps) => {
     const [searchText, setSearchText] = React.useState<string>('');
-    const [searchResults, setSearchResults] = useState<Array<SearchResult>>([]);
+    const [searchResults, setSearchResults] = useState<Array<LocationNode>>([]);
 
     const handleSearchTextChange = (s: string) => {
         setSearchText(s);
@@ -31,6 +28,7 @@ const SearchLocationBar = ({ placeholder, selectNode }: SearchLocationBarProps) 
             setSearchResults(
                 res.data.map((item: any) => {
                     return {
+                        _id: item._id,
                         name: item.name,
                         floorId: item.floorId,
                     }
@@ -42,6 +40,8 @@ const SearchLocationBar = ({ placeholder, selectNode }: SearchLocationBarProps) 
     const handleSearchTextCancel = () => {
         setSearchText('');
         setSearchResults([]);
+
+        disableToSearchBar && disableToSearchBar();
     }
 
     return (
@@ -57,9 +57,10 @@ const SearchLocationBar = ({ placeholder, selectNode }: SearchLocationBarProps) 
             <>
                 {
                     // display search results dropdown
-                    searchResults.map((item: any) => (
+                    searchResults.map((item: LocationNode, index: number) => (
                         <TouchableOpacity
                             style={styles.searchResult}
+                            key={index}
                             onPress={() => {
                                 selectNode(item);
                                 setSearchResults([]);
