@@ -3,11 +3,11 @@ import api from '../api';
 const getShortestPath = async (
   fromId: string,
   toId: string,
-  mode: string | null = null,
-  noStairCase: boolean | null = null,
-  noEscalator: boolean | null = null,
-  stepFreeAccess: boolean | null = null,
-  viaIds: string[] | null = null,
+  mode?: string,
+  noStairCase?: boolean,
+  noEscalator?: boolean,
+  stepFreeAccess?: boolean,
+  viaIds?: string[],
 ) => {
   const res = await api.get(
     `/shortest-path?fromId=${fromId}&toId=${toId}` +
