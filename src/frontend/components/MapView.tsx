@@ -49,7 +49,7 @@ const MapView = ({ floorId, fromNode, toNode, path }: MapViewProps) => {
                 source={{
                     uri: `https://pathadvisor.ust.hk/api/floors/${floorId}/map-image`
                 }}
-                style={{ width: mapData.mapWidth, height: mapData.mapHeight }}>
+                style={{ ...styles.map, ...{ width: mapData.mapWidth, height: mapData.mapHeight } }}>
 
                 {
                     showPin &&
@@ -87,6 +87,14 @@ const MapView = ({ floorId, fromNode, toNode, path }: MapViewProps) => {
 export default MapView;
 
 const styles = StyleSheet.create({
+    // render svg on top of the map
+    map: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    
     pin: {
         position: 'absolute',
         resizeMode: 'contain',
