@@ -74,7 +74,7 @@ const PathAdvisorPage = () => {
                 const floorId = intermediateNode.floorId;
                 // assume floors are fetched
                 path[floorId].push(
-                    [intermediateNode.coordinates[0] - floors[floorId].startX, intermediateNode.coordinates[1] - floors[floorId].startY]
+                    [intermediateNode.coordinates[0], intermediateNode.coordinates[1]]
                 );
             })
 
@@ -98,7 +98,7 @@ const PathAdvisorPage = () => {
         <>
             <SearchLocationBar selectNode={handleSelectFromNode} placeholder="Search for a location" disableToSearchBar={() => setEnableToSearchBar(false)} />
             {enableToSearchBar && <SearchLocationBar selectNode={handleSelectToNode} placeholder="Search to a location" />}
-            <MapView floorId={fromNode ? fromNode.floorId : 'G'} fromNode={fromNode} toNode={toNode} />
+            <MapView floorId={fromNode ? fromNode.floorId : 'G'} fromNode={fromNode} toNode={toNode} path={path} />
             {/* <MapView /> */}
             <View style={styles.mapDrawerOverlay} />
         </>
