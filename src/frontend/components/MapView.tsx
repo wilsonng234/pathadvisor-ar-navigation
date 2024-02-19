@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react"
-import { ImageBackground, StyleSheet, View } from "react-native"
+import { ImageBackground, StyleSheet, View, Image } from "react-native"
+import { Polyline, Svg } from "react-native-svg";
 import { ReactNativeZoomableView } from "@openspacelabs/react-native-zoomable-view"
 
 import * as api from "../../backend"
 import { LocationNode, Path } from "../pages/PathAdvisorPage";
-import { Polyline, Rect, Svg } from "react-native-svg";
 
 interface MapViewProps {
     floorId: string;
@@ -22,8 +22,11 @@ interface MapData {
 
 const MapView = ({ floorId, fromNode, toNode, path }: MapViewProps) => {
     const [mapData, setMapData] = useState<MapData>({ startX: 0, startY: 0, mapWidth: 1000, mapHeight: 1000 });
+    const [showPin, setShowPin] = useState<boolean>(false);
 
     useEffect(() => {
+        setShowPin(!!fromNode && fromNode.floorId === floorId);
+
         api.getFloorById(floorId).then((res) => {
             setMapData({
                 startX: res.data.startX,
@@ -32,8 +35,6 @@ const MapView = ({ floorId, fromNode, toNode, path }: MapViewProps) => {
                 mapHeight: res.data.mapHeight,
             })
         })
-
-
     }, [floorId])
 
     return (
@@ -48,11 +49,20 @@ const MapView = ({ floorId, fromNode, toNode, path }: MapViewProps) => {
                 source={{
                     uri: `https://pathadvisor.ust.hk/api/floors/${floorId}/map-image`
                 }}
-                style={{ ...styles.map, ...{ width: mapData.mapWidth, height: mapData.mapHeight } }}>
+                style={{ width: mapData.mapWidth, height: mapData.mapHeight }}>
 
+                {
+                    showPin &&
+                    <Image
+                        style={[styles.pin, { left: fromNode!.centerCoordinates[0] - mapData.startX, top: fromNode!.centerCoordinates[1] - mapData.startY }]}
+                        source={require('../assets/pin.png')}
+                    />
+                }
 
-                {/* if width&height match map size the app will crash. So scale it*/
+                {
                     path && path[floorId] &&
+
+                    /* Scale down the width and height of the container to reduce the size of the rendered Svg component */
                     <View style={{
                         height: mapData.mapHeight / 10,
                         width: mapData.mapWidth / 10,
@@ -77,8 +87,8 @@ const MapView = ({ floorId, fromNode, toNode, path }: MapViewProps) => {
 export default MapView;
 
 const styles = StyleSheet.create({
-    map: {
-        justifyContent: 'center',
-        alignItems: 'center'
+    pin: {
+        position: 'absolute',
+        resizeMode: 'contain',
     }
 });

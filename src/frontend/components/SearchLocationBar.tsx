@@ -31,6 +31,7 @@ const SearchLocationBar = ({ placeholder, selectNode, disableToSearchBar }: Sear
                         _id: item._id,
                         name: item.name,
                         floorId: item.floorId,
+                        centerCoordinates: item.centerCoordinates
                     }
                 })
             )

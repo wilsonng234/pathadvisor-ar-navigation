@@ -9,6 +9,7 @@ export interface LocationNode {
     _id: string;
     name: string;
     floorId: string;
+    centerCoordinates: [number, number];
 }
 
 export interface Floor {
@@ -99,7 +100,6 @@ const PathAdvisorPage = () => {
             <SearchLocationBar selectNode={handleSelectFromNode} placeholder="Search for a location" disableToSearchBar={() => setEnableToSearchBar(false)} />
             {enableToSearchBar && <SearchLocationBar selectNode={handleSelectToNode} placeholder="Search to a location" />}
             <MapView floorId={fromNode ? fromNode.floorId : 'G'} fromNode={fromNode} toNode={toNode} path={path} />
-            {/* <MapView /> */}
             <View style={styles.mapDrawerOverlay} />
         </>
     );
