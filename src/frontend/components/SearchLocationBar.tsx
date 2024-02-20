@@ -4,11 +4,11 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { SearchBar } from '@rneui/themed';
 
 import * as api from '../../backend/api';
-import { LocationNode } from '../pages/PathAdvisorPage';
+import Node from '../../backend/schema/Node';
 
 interface SearchLocationBarProps {
     placeholder: string;
-    selectNode: (node: LocationNode) => void;
+    selectNode: (node: Node) => void;
     disableToSearchBar?: () => void;
 }
 
@@ -20,7 +20,7 @@ interface SearchLocationBarProps {
  */
 const SearchLocationBar = ({ placeholder, selectNode, disableToSearchBar }: SearchLocationBarProps) => {
     const [searchText, setSearchText] = React.useState<string>('');
-    const [searchResults, setSearchResults] = useState<Array<LocationNode>>([]);
+    const [searchResults, setSearchResults] = useState<Array<Node>>([]);
 
     const handleSearchTextChange = (s: string) => {
         setSearchText(s);
@@ -58,14 +58,14 @@ const SearchLocationBar = ({ placeholder, selectNode, disableToSearchBar }: Sear
             <>
                 {
                     // display search results dropdown
-                    searchResults.map((item: LocationNode, index: number) => (
+                    searchResults.map((item: Node, index: number) => (
                         <TouchableOpacity
                             style={styles.searchResult}
                             key={index}
                             onPress={() => {
                                 selectNode(item);
                                 setSearchResults([]);
-                                setSearchText(item.name);
+                                setSearchText(item.name!);
 
                                 Keyboard.dismiss();
                             }}>
