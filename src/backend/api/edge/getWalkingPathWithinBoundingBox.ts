@@ -12,4 +12,4 @@ const getWalkingPathWithinBoundingBox = async (
 };
 
 
-export {getWalkingPathWithinBoundingBox};
+export { getWalkingPathWithinBoundingBox };

@@ -3,7 +3,7 @@ import { ImageBackground, StyleSheet, View, Image } from "react-native"
 import { Polyline, Svg } from "react-native-svg";
 import { ReactNativeZoomableView } from "@openspacelabs/react-native-zoomable-view"
 
-import * as api from "../../backend"
+import * as api from "../../backend/api"
 import { LocationNode, Path } from "../pages/PathAdvisorPage";
 
 interface MapViewProps {
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    
+
     pin: {
         position: 'absolute',
         resizeMode: 'contain',

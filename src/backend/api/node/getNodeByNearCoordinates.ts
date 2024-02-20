@@ -12,4 +12,4 @@ const getNodeByNearCoordinates = async (
 };
 
 
-export {getNodeByNearCoordinates};
+export { getNodeByNearCoordinates };

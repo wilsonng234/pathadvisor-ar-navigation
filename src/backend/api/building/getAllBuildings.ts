@@ -6,4 +6,4 @@ const getAllBuildings = async () => {
   return res.data;
 };
 
-export {getAllBuildings};
+export { getAllBuildings };

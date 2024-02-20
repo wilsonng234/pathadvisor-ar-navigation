@@ -3,7 +3,7 @@ import { Text, Keyboard, StyleSheet } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { SearchBar } from '@rneui/themed';
 
-import * as api from '../../backend/';
+import * as api from '../../backend/api';
 import { LocationNode } from '../pages/PathAdvisorPage';
 
 interface SearchLocationBarProps {

@@ -6,4 +6,4 @@ const getAllTags = async () => {
   return res.data;
 };
 
-export {getAllTags};
+export { getAllTags };

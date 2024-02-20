@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Dimensions } from "react-native";
 
 import SearchLocationBar from "../components/SearchLocationBar";
-import * as api from '../../backend/';
+import * as api from '../../backend/api';
 import MapView from "../components/MapView";
 
 export interface LocationNode {
