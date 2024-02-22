@@ -1,43 +1,88 @@
 import React, { useEffect, useState } from "react"
-import { ImageBackground, StyleSheet, Text } from "react-native"
+import { ImageBackground, StyleSheet, View, Image } from "react-native"
+import { Polyline, Svg } from "react-native-svg";
 import { ReactNativeZoomableView } from "@openspacelabs/react-native-zoomable-view"
 
-import * as api from "../../backend"
-import { LocationNode } from "../pages/PathAdvisorPage";
+import * as api from "../../backend/api"
+import Node from "../../backend/schema/Node"
+import Floor from "../../backend/schema/Floor";
+import PathNode from "../../backend/schema/PathNode";
+import Tag from "../../backend/schema/Tag";
+import { Path } from "../pages/PathAdvisorPage";
+import NodeView from "./NodeView";
+import { Text } from "react-native";
 
 interface MapViewProps {
-    floorId: string;
-    fromNode: LocationNode | null;
-    toNode: LocationNode | null;
+    floor: Floor;
+    fromNode: Node | null;
+    toNode: Node | null;
+    path: Path,
+    tags: { [tagId: string]: Tag }
 }
 
-const MapView = ({ floorId, fromNode, toNode }: MapViewProps) => {
-    const [mapSize, setMapSize] = useState({ height: 1000, width: 1000 });
+const MapView = ({ floor, fromNode, toNode, path, tags }: MapViewProps) => {
+    const [showPin, setShowPin] = useState<boolean>(false);
+    const [nodes, setNodes] = useState<Node[]>([]);
 
     useEffect(() => {
-        api.getFloorById(floorId).then((res) => {
-            setMapSize({
-                height: res.data.mapHeight,
-                width: res.data.mapWidth
-            })
+        setShowPin(!!fromNode && fromNode.floorId === floor._id);
+    })
+
+    useEffect(() => {
+        const boxCoordinates = `${floor.startX},${floor.startY},${floor.startX + floor.mapWidth},${floor.startY + floor.mapHeight}`
+        api.getNodesWithinBoundingBox(floor._id, boxCoordinates, true).then((res) => {
+            setNodes(res.data);
         })
-
-
-    }, [floorId])
+    }, [floor])
 
     return (
         <ReactNativeZoomableView
             initialZoom={0.3}
             minZoom={0.1}
             maxZoom={undefined}
-            contentHeight={mapSize.height}
-            contentWidth={mapSize.width}
+            contentWidth={floor.mapWidth}
+            contentHeight={floor.mapHeight}
         >
             <ImageBackground
                 source={{
-                    uri: `https://pathadvisor.ust.hk/api/floors/${floorId}/map-image`
+                    uri: `https://pathadvisor.ust.hk/api/floors/${floor._id}/map-image`
                 }}
-                style={{ ...styles.map, ...{ height: mapSize.height, width: mapSize.width } }}>
+                style={{ ...styles.map, ...{ width: floor.mapWidth, height: floor.mapHeight } }}>
+
+                {
+                    showPin &&
+                    <Image
+                        style={[styles.pin, { left: fromNode!.centerCoordinates![0] - floor.startX, top: fromNode!.centerCoordinates![1] - floor.startY }]}
+                        source={require('../assets/pin.png')}
+                    />
+                }
+
+                {
+                    path && path[floor._id] &&
+
+                    /* Scale down the width and height of the container to reduce the size of the rendered Svg component */
+                    <View style={{
+                        height: floor.mapHeight / 10,
+                        width: floor.mapWidth / 10,
+                        transform: [{ scale: 10 }],
+                    }}>
+                        <Svg viewBox={`${floor.startX} ${floor.startY} ${floor.mapWidth} ${floor.mapHeight}`}>
+                            <Polyline
+                                points={path[floor._id].map((pathNode: PathNode) => `${pathNode.coordinates[0]},${pathNode.coordinates[1]}`).join(' ')}
+                                stroke="red"
+                                strokeWidth="10"
+                                fill="none"
+                            />
+                        </Svg>
+                    </View>
+                }
+
+                {
+                    nodes.map((node: Node) =>
+                        <NodeView key={node._id} floor={floor} node={node} tags={tags} />
+                    )
+                }
+
             </ImageBackground>
         </ReactNativeZoomableView>
     )
@@ -46,8 +91,16 @@ const MapView = ({ floorId, fromNode, toNode }: MapViewProps) => {
 export default MapView;
 
 const styles = StyleSheet.create({
+    // render svg on top of the map
     map: {
+        display: 'flex',
+        flexDirection: 'row',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+    },
+
+    pin: {
+        position: 'absolute',
+        resizeMode: 'contain',
     }
 });

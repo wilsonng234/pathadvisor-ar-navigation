@@ -6,4 +6,4 @@ const getConnectorById = async (connectorId: string) => {
   return res.data;
 };
 
-export {getConnectorById};
+export { getConnectorById };

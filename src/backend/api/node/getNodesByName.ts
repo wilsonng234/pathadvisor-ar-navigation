@@ -7,4 +7,4 @@ const getNodesByName = async (name: string) => {
 };
 
 
-export {getNodesByName};
+export { getNodesByName };

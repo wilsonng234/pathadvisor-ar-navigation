@@ -7,4 +7,4 @@ const getNodeById = async (id: string) => {
 };
 
 
-export {getNodeById};
+export { getNodeById };
