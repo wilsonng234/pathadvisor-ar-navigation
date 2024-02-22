@@ -55,7 +55,7 @@ const PathAdvisorPage = () => {
             const path = {};
             res.data.forEach((pathNode: PathNode) => {
                 const floorId = pathNode.floorId;
-                if (!path[floorId]) 
+                if (!path[floorId])
                     path[floorId] = [];
                 path[floorId].push(pathNode);
             })
@@ -76,8 +76,10 @@ const PathAdvisorPage = () => {
     return (
         <>
             <SearchLocationBar selectNode={handleSelectFromNode} placeholder="Search for a location" disableToSearchBar={() => setEnableToSearchBar(false)} />
-            {enableToSearchBar && <SearchLocationBar selectNode={handleSelectToNode} placeholder="Search to a location" />}
-            {Object.keys(floors).length > 0 && <MapView floor={fromNode ? floors[fromNode.floorId] : floors['G']} fromNode={fromNode} toNode={toNode} path={path} />}
+            {enableToSearchBar &&
+                <SearchLocationBar selectNode={handleSelectToNode} placeholder="Search to a location" />}
+            {Object.keys(floors).length > 0 && Object.keys(tags).length > 0 &&
+                <MapView floor={fromNode ? floors[fromNode.floorId] : floors['G']} fromNode={fromNode} toNode={toNode} path={path} tags={tags} />}
             <View style={styles.mapDrawerOverlay} />
         </>
     );

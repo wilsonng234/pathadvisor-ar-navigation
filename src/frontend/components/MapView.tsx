@@ -3,24 +3,37 @@ import { ImageBackground, StyleSheet, View, Image } from "react-native"
 import { Polyline, Svg } from "react-native-svg";
 import { ReactNativeZoomableView } from "@openspacelabs/react-native-zoomable-view"
 
+import * as api from "../../backend/api"
 import Node from "../../backend/schema/Node"
 import Floor from "../../backend/schema/Floor";
 import PathNode from "../../backend/schema/PathNode";
+import Tag from "../../backend/schema/Tag";
 import { Path } from "../pages/PathAdvisorPage";
+import NodeView from "./NodeView";
+import { Text } from "react-native";
 
 interface MapViewProps {
     floor: Floor;
     fromNode: Node | null;
     toNode: Node | null;
-    path: Path
+    path: Path,
+    tags: { [tagId: string]: Tag }
 }
 
-const MapView = ({ floor, fromNode, toNode, path }: MapViewProps) => {
+const MapView = ({ floor, fromNode, toNode, path, tags }: MapViewProps) => {
     const [showPin, setShowPin] = useState<boolean>(false);
+    const [nodes, setNodes] = useState<Node[]>([]);
 
     useEffect(() => {
         setShowPin(!!fromNode && fromNode.floorId === floor._id);
     })
+
+    useEffect(() => {
+        const boxCoordinates = `${floor.startX},${floor.startY},${floor.startX + floor.mapWidth},${floor.startY + floor.mapHeight}`
+        api.getNodesWithinBoundingBox(floor._id, boxCoordinates, true).then((res) => {
+            setNodes(res.data);
+        })
+    }, [floor])
 
     return (
         <ReactNativeZoomableView
@@ -62,6 +75,12 @@ const MapView = ({ floor, fromNode, toNode, path }: MapViewProps) => {
                             />
                         </Svg>
                     </View>
+                }
+
+                {
+                    nodes.map((node: Node) =>
+                        <NodeView key={node._id} floor={floor} node={node} tags={tags} />
+                    )
                 }
 
             </ImageBackground>
