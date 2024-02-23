@@ -51,9 +51,11 @@ const SearchLocationBar = ({ placeholder, selectNode, disableToSearchBar }: Sear
                 platform="ios"
                 searchIcon={{ type: 'material', name: 'search' }}
                 clearIcon={{ type: 'material', name: 'clear' }}
+                onClear={handleSearchTextCancel}
+                cancelButtonTitle=""
                 placeholder={placeholder}
                 value={searchText} onChange={(e) => handleSearchTextChange(e.nativeEvent.text)}
-                showCancel={true} onCancel={handleSearchTextCancel} />
+            />
 
             <View style={styles.dropDownContainer}>
                 <FlatList
