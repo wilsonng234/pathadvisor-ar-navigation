@@ -23,9 +23,12 @@ const getNearestItem = async (
     (noStairCase ? `&noStairCase=${noStairCase}` : '') +
     (noEscalator ? `&noEscalator=${noEscalator}` : '') +
     (stepFreeAccess ? `&stepFreeAccess=${stepFreeAccess}` : ''),
-  );
+  ).catch((err) => {
+    console.error(err);
+    return null;
+  });
 
-  return res.data;
+  return res?.data;
 };
 
 

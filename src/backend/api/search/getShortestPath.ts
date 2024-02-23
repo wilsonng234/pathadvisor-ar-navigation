@@ -16,9 +16,12 @@ const getShortestPath = async (
     (noEscalator ? `&noEscalator=${noEscalator}` : '') +
     (stepFreeAccess ? `&stepFreeAccess=${stepFreeAccess}` : '') +
     (viaIds ? viaIds.map(id => `&viaIds=${id}`).join('') : ''),
-  );
+  ).catch((err) => {
+    console.error(err);
+    return null;
+  });
 
-  return res.data;
+  return res?.data;
 };
 
 

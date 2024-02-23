@@ -6,9 +6,12 @@ const getWalkingPathWithinBoundingBox = async (
 ) => {
   const res = await api.get(
     `/floors/${floorId}/nodes?boxCoordinates=${boxCoordinates}`,
-  );
+  ).catch((err) => {
+    console.error(err);
+    return null;
+  });
 
-  return res.data;
+  return res?.data;
 };
 
 

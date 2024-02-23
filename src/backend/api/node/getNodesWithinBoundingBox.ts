@@ -8,9 +8,12 @@ const getNodesWithinBoundingBox = async (
   const res = await api.get(
     `/floors/${floorId}/nodes?boxCoordinates=${boxCoordinates}` +
     (includePoints ? `&includePoints=${includePoints}` : ``),
-  );
+  ).catch((err) => {
+    console.error(err);
+    return null;
+  });
 
-  return res.data;
+  return res?.data;
 };
 
 
