@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { View, StyleSheet } from "react-native";
-import { TouchableHighlight } from "react-native-gesture-handler";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 import SearchLocationBar from "../components/SearchLocationBar";
 import MapView from "../components/MapView";
@@ -13,7 +13,7 @@ import PathNode from "../../backend/schema/PathNode";
 import Tag from "../../backend/schema/Tag";
 
 export interface Path {
-    floorIds: Set<string>;     // floorIds in the order of the path
+    floorIds: string[];     // floorIds in the order of the path
     floors: { [floorId: string]: PathNode[] };  // pathNodes in each floor
 }
 
@@ -24,6 +24,7 @@ const PathAdvisorPage = () => {
     const [floors, setFloors] = useState<{ [floorId: string]: Floor } | null>(null);
     const [tags, setTags] = useState<{ [tagId: string]: Tag } | null>(null);
     const [path, setPath] = useState<Path | null>(null);
+    const [currentFloorId, setCurrentFloorId] = useState<string>("G");  // default floor is G
 
     // fetch floors on mount
     useEffect(() => {
@@ -49,17 +50,23 @@ const PathAdvisorPage = () => {
         });
     }, []);
 
+    useEffect(() => {
+        setCurrentFloorId(fromNode ? fromNode.floorId : "G");
+    }, [fromNode])
+
     // update path when fromNode or toNode changes
     useEffect(() => {
         if (!fromNode || !toNode)
             return;
 
         api.getShortestPath(fromNode._id, toNode._id).then((res) => {
-            const path = { "floorIds": new Set<string>(), "floors": {} };
+            const path: Path = { "floorIds": [], "floors": {} };
 
             res.data.forEach((pathNode: PathNode) => {
                 const floorId = pathNode.floorId;
-                path["floorIds"].add(floorId);
+                if (!path["floorIds"].includes(floorId))
+                    path["floorIds"].push(floorId);
+
                 if (!path["floors"].hasOwnProperty(floorId))
                     path["floors"][floorId] = [];
 
@@ -79,30 +86,61 @@ const PathAdvisorPage = () => {
         setToNode(node);
     }
 
+    const handleChangeFloor = (offset: number) => {
+        if (!path) {
+            console.error("No path found");
+            return
+        }
+
+        const index = path.floorIds.indexOf(currentFloorId);
+        if (index + offset < 0 || index + offset >= path.floorIds.length) {
+            console.error("Invalid floor index");
+            return;
+        }
+
+        setCurrentFloorId(path.floorIds[index + offset]);
+    }
+
     return (
         <>
             <SearchLocationBar selectNode={handleSelectFromNode} placeholder="Search for a location" disableToSearchBar={() => setEnableToSearchBar(false)} />
-            {enableToSearchBar &&
-                <SearchLocationBar selectNode={handleSelectToNode} placeholder="Search to a location" />}
-            {floors && tags &&
-                <MapView floor={fromNode ? floors[fromNode.floorId] : floors['G']} fromNode={fromNode} toNode={toNode} path={path} tags={tags} />}
-            {/* <View style={styles.mapDrawerOverlay} /> */}
-            <View style={styles.pathFloorControlContainer}>
-                <TouchableHighlight onPress={() => { }} style={styles.pathFloorControlButtonContainer}>
-                    <Icon
-                        name="arrow-back-ios"
-                        color="black"
-                        style={{ marginLeft: 8 }}   // move icon to the center
-                        size={20} />
-                </TouchableHighlight>
+            {
+                enableToSearchBar &&
+                <SearchLocationBar selectNode={handleSelectToNode} placeholder="Search to a location" />
+            }
 
-                <TouchableHighlight onPress={() => { }} style={styles.pathFloorControlButtonContainer}>
-                    <Icon
-                        name="arrow-forward-ios"
-                        color="black"
-                        size={20} />
-                </TouchableHighlight>
-            </View>
+            {
+                floors && tags &&
+                <MapView floor={floors[currentFloorId]} fromNode={fromNode} toNode={toNode} path={path} tags={tags} />
+            }
+
+            {/* <View style={styles.mapDrawerOverlay} /> */}
+
+            {
+                path &&
+                <View style={styles.pathFloorControlContainer}>
+                    {
+                        path.floorIds.indexOf(currentFloorId) > 0 &&
+                        <TouchableOpacity onPress={() => { handleChangeFloor(-1) }} style={styles.pathFloorControlButtonContainer}>
+                            <Icon
+                                name="arrow-back-ios"
+                                color="black"
+                                style={{ marginLeft: 8 }}   // move icon to the center
+                                size={20} />
+                        </TouchableOpacity>
+                    }
+
+                    {
+                        path.floorIds.indexOf(currentFloorId) + 1 < path.floorIds.length &&
+                        <TouchableOpacity onPress={() => { handleChangeFloor(+1) }} style={styles.pathFloorControlButtonContainer}>
+                            <Icon
+                                name="arrow-forward-ios"
+                                color="black"
+                                size={20} />
+                        </TouchableOpacity>
+                    }
+                </View>
+            }
         </>
     );
 }
@@ -123,10 +161,9 @@ const styles = StyleSheet.create({
         position: "absolute",
         right: 10,
         bottom: 100,
-        flexDirection: "row-reverse",
+        flexDirection: "row",
         width: 100,
-        justifyContent: "space-between",
-        marginRight: 10,
+        justifyContent: "space-around",
     },
 
     pathFloorControlButtonContainer: {
