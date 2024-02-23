@@ -13,16 +13,17 @@ import PathNode from "../../backend/schema/PathNode";
 import Tag from "../../backend/schema/Tag";
 
 export interface Path {
-    [floorId: string]: Array<PathNode>;
+    floorIds: Set<string>;     // floorIds in the order of the path
+    floors: { [floorId: string]: PathNode[] };  // pathNodes in each floor
 }
 
 const PathAdvisorPage = () => {
     const [enableToSearchBar, setEnableToSearchBar] = useState<boolean>(false);
     const [fromNode, setFromNode] = useState<Node | null>(null);
     const [toNode, setToNode] = useState<Node | null>(null);
-    const [floors, setFloors] = useState<{ [floorId: string]: Floor }>({});
-    const [tags, setTags] = useState<{ [tagId: string]: Tag }>({});
-    const [path, setPath] = useState<Path>({});
+    const [floors, setFloors] = useState<{ [floorId: string]: Floor } | null>(null);
+    const [tags, setTags] = useState<{ [tagId: string]: Tag } | null>(null);
+    const [path, setPath] = useState<Path | null>(null);
 
     // fetch floors on mount
     useEffect(() => {
@@ -54,12 +55,15 @@ const PathAdvisorPage = () => {
             return;
 
         api.getShortestPath(fromNode._id, toNode._id).then((res) => {
-            const path = {};
+            const path = { "floorIds": new Set<string>(), "floors": {} };
+
             res.data.forEach((pathNode: PathNode) => {
                 const floorId = pathNode.floorId;
-                if (!path[floorId])
-                    path[floorId] = [];
-                path[floorId].push(pathNode);
+                path["floorIds"].add(floorId);
+                if (!path["floors"].hasOwnProperty(floorId))
+                    path["floors"][floorId] = [];
+
+                path["floors"][floorId].push(pathNode);
             })
 
             setPath(path);
@@ -80,7 +84,7 @@ const PathAdvisorPage = () => {
             <SearchLocationBar selectNode={handleSelectFromNode} placeholder="Search for a location" disableToSearchBar={() => setEnableToSearchBar(false)} />
             {enableToSearchBar &&
                 <SearchLocationBar selectNode={handleSelectToNode} placeholder="Search to a location" />}
-            {Object.keys(floors).length > 0 && Object.keys(tags).length > 0 &&
+            {floors && tags &&
                 <MapView floor={fromNode ? floors[fromNode.floorId] : floors['G']} fromNode={fromNode} toNode={toNode} path={path} tags={tags} />}
             {/* <View style={styles.mapDrawerOverlay} /> */}
             <View style={styles.pathFloorControlContainer}>
@@ -114,7 +118,7 @@ const styles = StyleSheet.create({
     //     height: Dimensions.get('window').height,
     //     width: '5%',
     // },
-    
+
     pathFloorControlContainer: {
         position: "absolute",
         right: 10,

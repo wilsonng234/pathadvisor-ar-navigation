@@ -10,13 +10,12 @@ import PathNode from "../../backend/schema/PathNode";
 import Tag from "../../backend/schema/Tag";
 import { Path } from "../pages/PathAdvisorPage";
 import NodeView from "./NodeView";
-import { Text } from "react-native";
 
 interface MapViewProps {
     floor: Floor;
     fromNode: Node | null;
     toNode: Node | null;
-    path: Path,
+    path: Path | null,
     tags: { [tagId: string]: Tag }
 }
 
@@ -58,7 +57,7 @@ const MapView = ({ floor, fromNode, toNode, path, tags }: MapViewProps) => {
                 }
 
                 {
-                    path && path[floor._id] &&
+                    path && path["floors"][floor._id] &&
 
                     /* Scale down the width and height of the container to reduce the size of the rendered Svg component */
                     <View style={{
@@ -68,7 +67,7 @@ const MapView = ({ floor, fromNode, toNode, path, tags }: MapViewProps) => {
                     }}>
                         <Svg viewBox={`${floor.startX} ${floor.startY} ${floor.mapWidth} ${floor.mapHeight}`}>
                             <Polyline
-                                points={path[floor._id].map((pathNode: PathNode) => `${pathNode.coordinates[0]},${pathNode.coordinates[1]}`).join(' ')}
+                                points={path["floors"][floor._id].map((pathNode: PathNode) => `${pathNode.coordinates[0]},${pathNode.coordinates[1]}`).join(' ')}
                                 stroke="red"
                                 strokeWidth="10"
                                 fill="none"
