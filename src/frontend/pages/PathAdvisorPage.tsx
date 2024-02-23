@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Dimensions } from "react-native";
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { View, StyleSheet } from "react-native";
+import { TouchableHighlight } from "react-native-gesture-handler";
 
 import SearchLocationBar from "../components/SearchLocationBar";
 import MapView from "../components/MapView";
@@ -80,7 +82,23 @@ const PathAdvisorPage = () => {
                 <SearchLocationBar selectNode={handleSelectToNode} placeholder="Search to a location" />}
             {Object.keys(floors).length > 0 && Object.keys(tags).length > 0 &&
                 <MapView floor={fromNode ? floors[fromNode.floorId] : floors['G']} fromNode={fromNode} toNode={toNode} path={path} tags={tags} />}
-            <View style={styles.mapDrawerOverlay} />
+            {/* <View style={styles.mapDrawerOverlay} /> */}
+            <View style={styles.pathFloorControlContainer}>
+                <TouchableHighlight onPress={() => { }} style={styles.pathFloorControlButtonContainer}>
+                    <Icon
+                        name="arrow-back-ios"
+                        color="black"
+                        style={{ marginLeft: 8 }}   // move icon to the center
+                        size={20} />
+                </TouchableHighlight>
+
+                <TouchableHighlight onPress={() => { }} style={styles.pathFloorControlButtonContainer}>
+                    <Icon
+                        name="arrow-forward-ios"
+                        color="black"
+                        size={20} />
+                </TouchableHighlight>
+            </View>
         </>
     );
 }
@@ -88,13 +106,32 @@ const PathAdvisorPage = () => {
 export default PathAdvisorPage;
 
 const styles = StyleSheet.create({
-    mapDrawerOverlay: {
-        position: 'absolute',
-        left: 0,
-        top: 0,
-        opacity: 0.0,
-        height: Dimensions.get('window').height,
-        width: '5%',
+    // mapDrawerOverlay: {
+    //     position: 'absolute',
+    //     left: 0,
+    //     top: 0,
+    //     opacity: 0.0,
+    //     height: Dimensions.get('window').height,
+    //     width: '5%',
+    // },
+    
+    pathFloorControlContainer: {
+        position: "absolute",
+        right: 10,
+        bottom: 100,
+        flexDirection: "row-reverse",
+        width: 100,
+        justifyContent: "space-between",
+        marginRight: 10,
+    },
+
+    pathFloorControlButtonContainer: {
+        width: 45,
+        height: 45,
+        borderRadius: 30,
+        backgroundColor: "#1773c2",
+        justifyContent: "center",
+        alignItems: "center",
     }
 });
 
