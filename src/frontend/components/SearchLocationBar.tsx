@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Text, Keyboard, StyleSheet } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Keyboard, StyleSheet, View } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 import { SearchBar } from '@rneui/themed';
 
 import * as api from '../../backend/api';
 import Node from '../../backend/schema/Node';
+import SearchNode from './SearchNode';
 
 interface SearchLocationBarProps {
     placeholder: string;
@@ -36,8 +37,16 @@ const SearchLocationBar = ({ placeholder, selectNode, disableToSearchBar }: Sear
         disableToSearchBar && disableToSearchBar();
     }
 
+    const selectResult = (node: Node) => {
+        selectNode(node);
+        setSearchResults([]);
+        setSearchText(node.name!);
+
+        Keyboard.dismiss();
+    }
+
     return (
-        <>
+        <View style={{ position: "relative" }}>
             <SearchBar
                 platform="ios"
                 searchIcon={{ type: 'material', name: 'search' }}
@@ -46,26 +55,14 @@ const SearchLocationBar = ({ placeholder, selectNode, disableToSearchBar }: Sear
                 value={searchText} onChange={(e) => handleSearchTextChange(e.nativeEvent.text)}
                 showCancel={true} onCancel={handleSearchTextCancel} />
 
-            <>
-                {
-                    // display search results dropdown
-                    searchResults.map((item: Node, index: number) => (
-                        <TouchableOpacity
-                            style={styles.searchResult}
-                            key={index}
-                            onPress={() => {
-                                selectNode(item);
-                                setSearchResults([]);
-                                setSearchText(item.name!);
-
-                                Keyboard.dismiss();
-                            }}>
-                            <Text style={styles.searchResultText}>{`${item.name} (${item.floorId})`}</Text>
-                        </TouchableOpacity>
-                    ))
-                }
-            </>
-        </>
+            <View style={styles.dropDownContainer}>
+                <FlatList
+                    data={searchResults}
+                    keyExtractor={item => item._id}
+                    renderItem={({ item }) => <SearchNode node={item} selectResult={selectResult} />}
+                />
+            </View>
+        </View>
     );
 }
 
@@ -80,5 +77,17 @@ const styles = StyleSheet.create({
     searchResultText: {
         color: "black",
         textAlign: "center"
+    },
+    dropDownContainer: {
+        position: "absolute",
+        top: 60,
+        left: 8,
+        zIndex: 1,
+
+        width: "80%",
+        maxHeight: 200,
+        backgroundColor: "white",
+        borderBottomLeftRadius: 15,
+        borderBottomEndRadius: 15,
     }
 })
