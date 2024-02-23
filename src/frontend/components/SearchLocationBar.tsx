@@ -25,6 +25,11 @@ const SearchLocationBar = ({ placeholder, selectNode, disableToSearchBar }: Sear
 
     const handleSearchTextChange = (s: string) => {
         setSearchText(s);
+
+        if (s === '') {
+            setSearchResults([]);
+            return;
+        }
         api.getNodesByName(s).then((res) => {
             setSearchResults(res.data)
         });
