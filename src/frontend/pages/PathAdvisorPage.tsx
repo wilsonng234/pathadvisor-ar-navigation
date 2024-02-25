@@ -8,10 +8,11 @@ import SearchLocationBar from "../components/SearchLocationBar";
 import MapView from "../components/MapView";
 
 import * as api from '../../backend/api';
+import Building from "../../backend/schema/Building";
 import Floor from "../../backend/schema/Floor";
+import Tag from "../../backend/schema/Tag";
 import Node from "../../backend/schema/Node";
 import PathNode from "../../backend/schema/PathNode";
-import Tag from "../../backend/schema/Tag";
 
 export interface Path {
     floorIds: string[];     // floorIds in the order of the path
@@ -19,7 +20,7 @@ export interface Path {
 }
 
 const PathAdvisorPage = () => {
-    const [pathAdvisorPageContext, setPathAdvisorPageContext] = useState<PathAdvisorPageContextType>({ floors: null, tags: null });
+    const [pathAdvisorPageContext, setPathAdvisorPageContext] = useState<PathAdvisorPageContextType>({ buildings: null, floors: null, tags: null });
     const [enableFromSearchBar, setEnableFromSearchBar] = useState<boolean>(false);
     const [fromNode, setFromNode] = useState<Node | null>(null);
     const [toNode, setToNode] = useState<Node | null>(null);
@@ -27,9 +28,14 @@ const PathAdvisorPage = () => {
     const [currentFloorId, setCurrentFloorId] = useState<string>("G");  // default floor is G
 
     useEffect(() => {
-        Promise.all([api.getAllFloors(), api.getAllTags()]).then(([floorsRes, tagsRes]) => {
+        Promise.all([api.getAllBuildings(), api.getAllFloors(), api.getAllTags()]).then(([buildingsRes, floorsRes, tagsRes]) => {
+            const buildings = {};
             const floors = {};
             const tags = {};
+
+            buildingsRes.data.forEach((building: Building) => {
+                buildings[building._id] = building;
+            });
 
             floorsRes.data.forEach((floor: Floor) => {
                 floors[floor._id] = floor;
@@ -39,7 +45,7 @@ const PathAdvisorPage = () => {
                 tags[tag._id] = tag;
             });
 
-            setPathAdvisorPageContext({ ...pathAdvisorPageContext, floors, tags });
+            setPathAdvisorPageContext({ ...pathAdvisorPageContext, buildings, floors, tags });
         });
     }, []);
 
@@ -94,48 +100,51 @@ const PathAdvisorPage = () => {
         setCurrentFloorId(path.floorIds[index + offset]);
     }
 
-    return (
-        <PathAdvisorPageContext.Provider value={pathAdvisorPageContext}>
-            {
-                enableFromSearchBar &&
-                <SearchLocationBar selectNode={handleSelectFromNode} placeholder="FROM" />
-            }
-            <SearchLocationBar selectNode={handleSelectToNode} placeholder="Where are you going?" onClickCancel={() => setEnableFromSearchBar(false)} />
+    // i dont want to render any thing before buildings, floors and tags are fetched
+    if (!pathAdvisorPageContext.buildings || !pathAdvisorPageContext.floors || !pathAdvisorPageContext.tags) {
+        return null;
+    }
+    else {
+        return (
+            <PathAdvisorPageContext.Provider value={pathAdvisorPageContext}>
+                {
+                    enableFromSearchBar &&
+                    <SearchLocationBar selectNode={handleSelectFromNode} placeholder="FROM" />
+                }
+                <SearchLocationBar selectNode={handleSelectToNode} placeholder="Where are you going?" onClickCancel={() => setEnableFromSearchBar(false)} />
 
-            {
-                pathAdvisorPageContext.floors && pathAdvisorPageContext.tags &&
                 <MapView currentFloorId={currentFloorId} fromNode={fromNode} toNode={toNode} path={path} />
-            }
 
-            {/* <View style={styles.mapDrawerOverlay} /> */}
+                {/* <View style={styles.mapDrawerOverlay} /> */}
 
-            {
-                path &&
-                <View style={styles.pathFloorControlContainer}>
-                    {
-                        path.floorIds.indexOf(currentFloorId) > 0 &&
-                        <TouchableOpacity onPress={() => { handleChangeFloor(-1) }} style={styles.pathFloorControlButtonContainer}>
-                            <Icon
-                                name="arrow-back-ios"
-                                color="black"
-                                style={{ marginLeft: 8 }}   // move icon to the center
-                                size={20} />
-                        </TouchableOpacity>
-                    }
+                {
+                    path &&
+                    <View style={styles.pathFloorControlContainer}>
+                        {
+                            path.floorIds.indexOf(currentFloorId) > 0 &&
+                            <TouchableOpacity onPress={() => { handleChangeFloor(-1) }} style={styles.pathFloorControlButtonContainer}>
+                                <Icon
+                                    name="arrow-back-ios"
+                                    color="black"
+                                    style={{ marginLeft: 8 }}   // move icon to the center
+                                    size={20} />
+                            </TouchableOpacity>
+                        }
 
-                    {
-                        path.floorIds.indexOf(currentFloorId) + 1 < path.floorIds.length &&
-                        <TouchableOpacity onPress={() => { handleChangeFloor(+1) }} style={styles.pathFloorControlButtonContainer}>
-                            <Icon
-                                name="arrow-forward-ios"
-                                color="black"
-                                size={20} />
-                        </TouchableOpacity>
-                    }
-                </View>
-            }
-        </PathAdvisorPageContext.Provider>
-    );
+                        {
+                            path.floorIds.indexOf(currentFloorId) + 1 < path.floorIds.length &&
+                            <TouchableOpacity onPress={() => { handleChangeFloor(+1) }} style={styles.pathFloorControlButtonContainer}>
+                                <Icon
+                                    name="arrow-forward-ios"
+                                    color="black"
+                                    size={20} />
+                            </TouchableOpacity>
+                        }
+                    </View>
+                }
+            </PathAdvisorPageContext.Provider>
+        );
+    }
 }
 
 export default PathAdvisorPage;
