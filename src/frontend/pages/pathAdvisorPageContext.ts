@@ -1,5 +1,6 @@
-import React, { createContext, useContext } from 'react';
+import { createContext, useContext } from 'react';
 
+import Building from 'backend/schema/building';
 import Floor from 'backend/schema/floor';
 import Tag from 'backend/schema/tag';
 
@@ -15,6 +16,9 @@ export const useFloorsContext = () => {
     if (!context) {
         throw new Error('useFloorsContext must be used within a PathAdvisorPageContext');
     }
+    if (!context.floors) {
+        throw new Error('useFloorsContext must be used with fetched floors');
+    }
 
     return context.floors;
 }
@@ -23,6 +27,9 @@ export const useTagsContext = () => {
     const context = useContext(PathAdvisorPageContext);
     if (!context) {
         throw new Error('useTagsContext must be used within a PathAdvisorPageContext');
+    }
+    if (!context.tags) {
+        throw new Error('useTagsContext must be used with fetched tags');
     }
 
     return context.tags;

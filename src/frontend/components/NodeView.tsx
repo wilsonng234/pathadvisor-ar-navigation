@@ -13,11 +13,7 @@ interface NodeViewProps {
 const NodeView = ({ currentFloorId, node }: NodeViewProps) => {
     const floors = useFloorsContext();
     const tags = useTagsContext();
-
-    if (!floors || !tags) {
-        throw new Error('NodeView must be used with fetched floors and tags');
-    }
-
+    
     if (!node.centerCoordinates)
         return null;
 

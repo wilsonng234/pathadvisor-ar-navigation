@@ -23,10 +23,6 @@ const MapView = ({ currentFloorId, fromNode, toNode, path }: MapViewProps) => {
     const [showPin, setShowPin] = useState<boolean>(false);
     const [nodes, setNodes] = useState<Node[]>([]);
 
-    if (!floors || !tags) {
-        throw new Error('MapView must be used with fetched floors and tags');
-    }
-
     useEffect(() => {
         setShowPin(!!fromNode && fromNode.floorId === currentFloorId);
     })
