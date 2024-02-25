@@ -10,16 +10,17 @@ import SearchNode from './SearchNode';
 interface SearchLocationBarProps {
     placeholder: string;
     selectNode: (node: Node) => void;
-    disableToSearchBar?: () => void;
+    onClickCancel?: () => void;
 }
 
 /**
  * Component contains search bar and list of search results
  * @param {string} placeholder - placeholder for search bar
  * @param {function} selectNode - function to run when a node is selected
+ * @param {function} onClickCancel - function to run when cancel button is clicked
  * @returns 
  */
-const SearchLocationBar = ({ placeholder, selectNode, disableToSearchBar }: SearchLocationBarProps) => {
+const SearchLocationBar = ({ placeholder, selectNode, onClickCancel }: SearchLocationBarProps) => {
     const [searchText, setSearchText] = React.useState<string>('');
     const [searchResults, setSearchResults] = useState<Array<Node>>([]);
 
@@ -39,7 +40,7 @@ const SearchLocationBar = ({ placeholder, selectNode, disableToSearchBar }: Sear
         setSearchText('');
         setSearchResults([]);
 
-        disableToSearchBar && disableToSearchBar();
+        onClickCancel && onClickCancel();
     }
 
     const selectResult = (node: Node) => {
@@ -61,7 +62,6 @@ const SearchLocationBar = ({ placeholder, selectNode, disableToSearchBar }: Sear
                 placeholder={placeholder}
                 value={searchText} onChange={(e) => handleSearchTextChange(e.nativeEvent.text)}
             />
-
             <View style={styles.dropDownContainer}>
                 <FlatList
                     data={searchResults}

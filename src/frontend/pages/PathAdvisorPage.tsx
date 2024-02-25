@@ -18,7 +18,7 @@ export interface Path {
 }
 
 const PathAdvisorPage = () => {
-    const [enableToSearchBar, setEnableToSearchBar] = useState<boolean>(false);
+    const [enableFromSearchBar, setEnableFromSearchBar] = useState<boolean>(false);
     const [fromNode, setFromNode] = useState<Node | null>(null);
     const [toNode, setToNode] = useState<Node | null>(null);
     const [floors, setFloors] = useState<{ [floorId: string]: Floor } | null>(null);
@@ -78,11 +78,11 @@ const PathAdvisorPage = () => {
     }, [fromNode, toNode])
 
     const handleSelectFromNode = (node: Node) => {
-        setEnableToSearchBar(true);
         setFromNode(node);
     }
 
     const handleSelectToNode = (node: Node) => {
+        setEnableFromSearchBar(true);
         setToNode(node);
     }
 
@@ -103,11 +103,11 @@ const PathAdvisorPage = () => {
 
     return (
         <>
-            <SearchLocationBar selectNode={handleSelectFromNode} placeholder="Search for a location" disableToSearchBar={() => setEnableToSearchBar(false)} />
             {
-                enableToSearchBar &&
-                <SearchLocationBar selectNode={handleSelectToNode} placeholder="Search to a location" />
+                enableFromSearchBar &&
+                <SearchLocationBar selectNode={handleSelectFromNode} placeholder="FROM" />
             }
+            <SearchLocationBar selectNode={handleSelectToNode} placeholder="Where are you going?" onClickCancel={() => setEnableFromSearchBar(false)} />
 
             {
                 floors && tags &&
