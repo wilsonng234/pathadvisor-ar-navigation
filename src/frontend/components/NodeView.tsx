@@ -2,21 +2,26 @@ import React from "react";
 import { Image, Text, View, ViewStyle } from "react-native";
 
 import Node from "../../backend/schema/Node";
-import Floor from "../../backend/schema/Floor";
-import Tag from "../../backend/schema/Tag";
 import { getNodeImageByConnectorId } from "../plugins";
+import { useFloorsContext, useTagsContext } from "../pages/pathAdvisorPageContext";
 
 interface NodeViewProps {
-    floor: Floor
+    currentFloorId: string
     node: Node
-    tags: { [tagId: string]: Tag }
 }
 
-const NodeView = ({ floor, node, tags }: NodeViewProps) => {
+const NodeView = ({ currentFloorId, node }: NodeViewProps) => {
+    const floors = useFloorsContext();
+    const tags = useTagsContext();
+
+    if (!floors || !tags) {
+        throw new Error('NodeView must be used with fetched floors and tags');
+    }
+
     if (!node.centerCoordinates)
         return null;
 
-    return <View style={styles.container(node.centerCoordinates[0] - floor.startX, node.centerCoordinates[1] - floor.startY)}>
+    return <View style={styles.container(node.centerCoordinates[0] - floors[currentFloorId].startX, node.centerCoordinates[1] - floors[currentFloorId].startY)}>
         {
             // if node is a room, display the room name
             node.name?.toUpperCase().includes("ROOM") ?

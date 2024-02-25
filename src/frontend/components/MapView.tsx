@@ -5,69 +5,73 @@ import { ReactNativeZoomableView } from "@openspacelabs/react-native-zoomable-vi
 
 import * as api from "../../backend/api"
 import Node from "../../backend/schema/Node"
-import Floor from "../../backend/schema/Floor";
 import PathNode from "../../backend/schema/PathNode";
-import Tag from "../../backend/schema/Tag";
 import { Path } from "../pages/PathAdvisorPage";
 import NodeView from "./NodeView";
+import { useFloorsContext, useTagsContext } from "../pages/pathAdvisorPageContext";
 
 interface MapViewProps {
-    floor: Floor;
+    currentFloorId: string;
     fromNode: Node | null;
     toNode: Node | null;
     path: Path | null,
-    tags: { [tagId: string]: Tag }
 }
 
-const MapView = ({ floor, fromNode, toNode, path, tags }: MapViewProps) => {
+const MapView = ({ currentFloorId, fromNode, toNode, path }: MapViewProps) => {
+    const floors = useFloorsContext();
+    const tags = useTagsContext();
     const [showPin, setShowPin] = useState<boolean>(false);
     const [nodes, setNodes] = useState<Node[]>([]);
 
+    if (!floors || !tags) {
+        throw new Error('MapView must be used with fetched floors and tags');
+    }
+
     useEffect(() => {
-        setShowPin(!!fromNode && fromNode.floorId === floor._id);
+        setShowPin(!!fromNode && fromNode.floorId === currentFloorId);
     })
 
     useEffect(() => {
-        const boxCoordinates = `${floor.startX},${floor.startY},${floor.startX + floor.mapWidth},${floor.startY + floor.mapHeight}`
-        api.getNodesWithinBoundingBox(floor._id, boxCoordinates, true).then((res) => {
+        const boxCoordinates = `${floors[currentFloorId].startX},${floors[currentFloorId].startY},${floors[currentFloorId].startX + floors[currentFloorId].mapWidth},${floors[currentFloorId].startY + floors[currentFloorId].mapHeight}`
+        api.getNodesWithinBoundingBox(floors[currentFloorId]._id, boxCoordinates, true).then((res) => {
             setNodes(res.data);
         })
-    }, [floor])
+    }, [currentFloorId])
 
     return (
         <ReactNativeZoomableView
             initialZoom={0.3}
             minZoom={0.1}
             maxZoom={undefined}
-            contentWidth={floor.mapWidth}
-            contentHeight={floor.mapHeight}
+            contentWidth={floors[currentFloorId].mapWidth}
+            contentHeight={floors[currentFloorId].mapHeight}
         >
             <ImageBackground
                 source={{
-                    uri: `https://pathadvisor.ust.hk/api/floors/${floor._id}/map-image`
+                    uri: `https://pathadvisor.ust.hk/api/floors/${currentFloorId}/map-image`
                 }}
-                style={{ ...styles.map, ...{ width: floor.mapWidth, height: floor.mapHeight } }}>
+                style={{ ...styles.map, ...{ width: floors[currentFloorId].mapWidth, height: floors[currentFloorId].mapHeight } }}>
 
                 {
                     showPin &&
                     <Image
-                        style={[styles.pin, { left: fromNode!.centerCoordinates![0] - floor.startX, top: fromNode!.centerCoordinates![1] - floor.startY }]}
+                        style={[styles.pin, { left: fromNode!.centerCoordinates![0] - floors[currentFloorId].startX, top: fromNode!.centerCoordinates![1] - floors[currentFloorId].startY }]}
                         source={require('../assets/pin.png')}
                     />
                 }
 
                 {
-                    path && path["floors"][floor._id] &&
+                    path && path["floors"][currentFloorId] &&
 
                     /* Scale down the width and height of the container to reduce the size of the rendered Svg component */
                     <View style={{
-                        height: floor.mapHeight / 10,
-                        width: floor.mapWidth / 10,
+                        height: floors[currentFloorId].mapHeight / 10,
+                        width: floors[currentFloorId].mapWidth / 10,
                         transform: [{ scale: 10 }],
                     }}>
-                        <Svg viewBox={`${floor.startX} ${floor.startY} ${floor.mapWidth} ${floor.mapHeight}`}>
+                        <Svg viewBox={`${floors[currentFloorId].startX} ${floors[currentFloorId].startY} ${floors[currentFloorId].mapWidth} ${floors[currentFloorId].mapHeight}`}>
                             <Polyline
-                                points={path["floors"][floor._id].map((pathNode: PathNode) => `${pathNode.coordinates[0]},${pathNode.coordinates[1]}`).join(' ')}
+                                points={path["floors"][currentFloorId].map((pathNode: PathNode) => `${pathNode.coordinates[0]},${pathNode.coordinates[1]}`).join(' ')}
                                 stroke="red"
                                 strokeWidth="10"
                                 fill="none"
@@ -78,7 +82,7 @@ const MapView = ({ floor, fromNode, toNode, path, tags }: MapViewProps) => {
 
                 {
                     nodes.map((node: Node) =>
-                        <NodeView key={node._id} floor={floor} node={node} tags={tags} />
+                        <NodeView key={node._id} currentFloorId={currentFloorId} node={node} />
                     )
                 }
 

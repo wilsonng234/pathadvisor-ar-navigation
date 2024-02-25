@@ -3,6 +3,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { View, StyleSheet } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
+import { PathAdvisorPageContext, PathAdvisorPageContextType } from "./pathAdvisorPageContext";
 import SearchLocationBar from "../components/SearchLocationBar";
 import MapView from "../components/MapView";
 
@@ -18,35 +19,27 @@ export interface Path {
 }
 
 const PathAdvisorPage = () => {
+    const [pathAdvisorPageContext, setPathAdvisorPageContext] = useState<PathAdvisorPageContextType>({ floors: null, tags: null });
     const [enableFromSearchBar, setEnableFromSearchBar] = useState<boolean>(false);
     const [fromNode, setFromNode] = useState<Node | null>(null);
     const [toNode, setToNode] = useState<Node | null>(null);
-    const [floors, setFloors] = useState<{ [floorId: string]: Floor } | null>(null);
-    const [tags, setTags] = useState<{ [tagId: string]: Tag } | null>(null);
     const [path, setPath] = useState<Path | null>(null);
     const [currentFloorId, setCurrentFloorId] = useState<string>("G");  // default floor is G
 
-    // fetch floors on mount
     useEffect(() => {
-        api.getAllFloors().then((res) => {
-            const floors = {}
-            res.data.forEach((floor: Floor) => {
-                floors[floor._id] = floor;
-            })
-
-            setFloors(floors);
-        })
-    }, [])
-
-    // fetch tags on mount
-    useEffect(() => {
-        api.getAllTags().then((res) => {
+        Promise.all([api.getAllFloors(), api.getAllTags()]).then(([floorsRes, tagsRes]) => {
+            const floors = {};
             const tags = {};
-            res.data.forEach((tag: Tag) => {
-                tags[tag._id] = tag;
-            })
 
-            setTags(tags);
+            floorsRes.data.forEach((floor: Floor) => {
+                floors[floor._id] = floor;
+            });
+
+            tagsRes.data.forEach((tag: Tag) => {
+                tags[tag._id] = tag;
+            });
+
+            setPathAdvisorPageContext({ ...pathAdvisorPageContext, floors, tags });
         });
     }, []);
 
@@ -102,7 +95,7 @@ const PathAdvisorPage = () => {
     }
 
     return (
-        <>
+        <PathAdvisorPageContext.Provider value={pathAdvisorPageContext}>
             {
                 enableFromSearchBar &&
                 <SearchLocationBar selectNode={handleSelectFromNode} placeholder="FROM" />
@@ -110,8 +103,8 @@ const PathAdvisorPage = () => {
             <SearchLocationBar selectNode={handleSelectToNode} placeholder="Where are you going?" onClickCancel={() => setEnableFromSearchBar(false)} />
 
             {
-                floors && tags &&
-                <MapView floor={floors[currentFloorId]} fromNode={fromNode} toNode={toNode} path={path} tags={tags} />
+                pathAdvisorPageContext.floors && pathAdvisorPageContext.tags &&
+                <MapView currentFloorId={currentFloorId} fromNode={fromNode} toNode={toNode} path={path} />
             }
 
             {/* <View style={styles.mapDrawerOverlay} /> */}
@@ -141,7 +134,7 @@ const PathAdvisorPage = () => {
                     }
                 </View>
             }
-        </>
+        </PathAdvisorPageContext.Provider>
     );
 }
 
