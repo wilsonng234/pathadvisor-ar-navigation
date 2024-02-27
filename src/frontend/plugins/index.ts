@@ -13,3 +13,13 @@ export function getNodeImageByConnectorId(connectorId: string) {
         return false;
     }
 }
+
+export const convertFloorIdToFloorName = (floorId: string) => {
+    const listToAddF = ['1', '2', '3', '4', '5', '6', '7', 'G'];
+
+    if (listToAddF.includes(floorId)) {
+        return floorId + '/F';
+    } else {
+        return floorId;
+    }
+}

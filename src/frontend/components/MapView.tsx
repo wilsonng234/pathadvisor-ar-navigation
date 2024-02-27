@@ -23,7 +23,10 @@ const MapView = ({ currentFloorId, fromNode, toNode, path }: MapViewProps) => {
     const [nodes, setNodes] = useState<Node[]>([]);
 
     useEffect(() => {
-        setShowPin(!!toNode && toNode.floorId === currentFloorId);
+        if (toNode)
+            setShowPin(toNode.floorId === currentFloorId);
+        else
+            setShowPin(false);
     })
 
     useEffect(() => {
@@ -48,9 +51,9 @@ const MapView = ({ currentFloorId, fromNode, toNode, path }: MapViewProps) => {
                 style={{ ...styles.map, ...{ width: floors[currentFloorId].mapWidth, height: floors[currentFloorId].mapHeight } }}>
 
                 {
-                    showPin &&
+                    toNode && showPin &&
                     <Image
-                        style={[styles.pin, { left: toNode!.centerCoordinates![0] - floors[currentFloorId].startX, top: toNode!.centerCoordinates![1] - floors[currentFloorId].startY }]}
+                        style={[styles.pin, { left: toNode.centerCoordinates![0] - floors[currentFloorId].startX, top: toNode.centerCoordinates![1] - floors[currentFloorId].startY }]}
                         source={require('../assets/pin.png')}
                     />
                 }
