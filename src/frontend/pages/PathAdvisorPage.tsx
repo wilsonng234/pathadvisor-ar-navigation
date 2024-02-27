@@ -56,25 +56,27 @@ const PathAdvisorPage = () => {
 
     // update path when fromNode or toNode changes
     useEffect(() => {
-        if (!fromNode || !toNode)
-            return;
+        if (!fromNode || !toNode) {
+            setPath(null);
+        }
+        else {
+            api.getShortestPath(fromNode._id, toNode._id).then((res) => {
+                const path: Path = { "floorIds": [], "floors": {} };
 
-        api.getShortestPath(fromNode._id, toNode._id).then((res) => {
-            const path: Path = { "floorIds": [], "floors": {} };
+                res.data.forEach((pathNode: PathNode) => {
+                    const floorId = pathNode.floorId;
+                    if (!path["floorIds"].includes(floorId))
+                        path["floorIds"].push(floorId);
 
-            res.data.forEach((pathNode: PathNode) => {
-                const floorId = pathNode.floorId;
-                if (!path["floorIds"].includes(floorId))
-                    path["floorIds"].push(floorId);
+                    if (!path["floors"].hasOwnProperty(floorId))
+                        path["floors"][floorId] = [];
 
-                if (!path["floors"].hasOwnProperty(floorId))
-                    path["floors"][floorId] = [];
+                    path["floors"][floorId].push(pathNode);
+                })
 
-                path["floors"][floorId].push(pathNode);
+                setPath(path);
             })
-
-            setPath(path);
-        })
+        }
     }, [fromNode, toNode])
 
     const handleSelectFromNode = (node: Node) => {
@@ -84,6 +86,15 @@ const PathAdvisorPage = () => {
     const handleSelectToNode = (node: Node) => {
         setEnableFromSearchBar(true);
         setToNode(node);
+    }
+
+    const handleCancelFromNode = () => {
+        setFromNode(null);
+    }
+
+    const handleCancelToNode = () => {
+        setEnableFromSearchBar(false);
+        setToNode(null);
     }
 
     const handleChangeFloor = (offset: number) => {
@@ -127,7 +138,6 @@ const PathAdvisorPage = () => {
         </View>
     }
 
-    // i dont want to render any thing before buildings, floors and tags are fetched
     if (!pathAdvisorPageContext.buildings || !pathAdvisorPageContext.floors || !pathAdvisorPageContext.tags) {
         return null;
     }
@@ -136,9 +146,9 @@ const PathAdvisorPage = () => {
             <PathAdvisorPageContext.Provider value={pathAdvisorPageContext}>
                 {
                     enableFromSearchBar &&
-                    <SearchLocationBar selectNode={handleSelectFromNode} placeholder="FROM" />
+                    <SearchLocationBar selectNode={handleSelectFromNode} placeholder="FROM" onClickCancel={handleCancelFromNode} />
                 }
-                <SearchLocationBar selectNode={handleSelectToNode} placeholder="Where are you going?" onClickCancel={() => setEnableFromSearchBar(false)} />
+                <SearchLocationBar selectNode={handleSelectToNode} placeholder="Where are you going?" onClickCancel={handleCancelToNode} />
 
                 <MapView currentFloorId={currentFloorId} fromNode={fromNode} toNode={toNode} path={path} />
 
