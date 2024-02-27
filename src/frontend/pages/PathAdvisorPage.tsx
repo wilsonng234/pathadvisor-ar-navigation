@@ -100,6 +100,7 @@ const PathAdvisorPage = () => {
     const handleCancelToNode = () => {
         setToNode(null);
         setNavigationType(null);
+        setFromNode(null);
         setEnableFromSearchBar(false);
     }
 
