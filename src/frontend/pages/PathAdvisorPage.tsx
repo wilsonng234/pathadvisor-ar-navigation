@@ -20,6 +20,11 @@ export interface Path {
     floors: { [floorId: string]: PathNode[] };  // pathNodes in each floor
 }
 
+enum NavigationType {
+    Direction = "Direction",
+    ARView = "ARView",
+}
+
 const PathAdvisorPage = () => {
     const [pathAdvisorPageContext, setPathAdvisorPageContext] = useState<PathAdvisorPageContextType>({ buildings: null, floors: null, tags: null });
     const [enableFromSearchBar, setEnableFromSearchBar] = useState<boolean>(false);
@@ -27,6 +32,7 @@ const PathAdvisorPage = () => {
     const [toNode, setToNode] = useState<Node | null>(null);
     const [path, setPath] = useState<Path | null>(null);
     const [currentFloorId, setCurrentFloorId] = useState<string>("G");  // default floor is G
+    const [navigationType, setNavigationType] = useState<NavigationType | null>(null);
 
     useEffect(() => {
         Promise.all([api.getAllBuildings(), api.getAllFloors(), api.getAllTags()]).then(([buildingsRes, floorsRes, tagsRes]) => {
@@ -84,7 +90,6 @@ const PathAdvisorPage = () => {
     }
 
     const handleSelectToNode = (node: Node) => {
-        setEnableFromSearchBar(true);
         setToNode(node);
     }
 
@@ -93,8 +98,9 @@ const PathAdvisorPage = () => {
     }
 
     const handleCancelToNode = () => {
-        setEnableFromSearchBar(false);
         setToNode(null);
+        setNavigationType(null);
+        setEnableFromSearchBar(false);
     }
 
     const handleChangeFloor = (offset: number) => {
@@ -114,11 +120,13 @@ const PathAdvisorPage = () => {
 
     const renderRoomDetailsBoxButtons = () => {
         const handleDirectionButton = () => {
-            // TODO
+            setEnableFromSearchBar(true);
+            setNavigationType(NavigationType.Direction);
         }
 
         const handleARViewButton = () => {
-            // TODO
+            setEnableFromSearchBar(true);
+            setNavigationType(NavigationType.ARView);
         }
 
         return <View style={styles.roomDetailsBoxButtonsContainer}>
@@ -181,7 +189,7 @@ const PathAdvisorPage = () => {
                 }
 
                 {
-                    toNode &&
+                    !navigationType && toNode &&
                     <View style={styles.roomDetailsBoxContainer}>
                         <RoomDetailsBox node={toNode} renderButtons={renderRoomDetailsBoxButtons} />
                     </View>
@@ -247,4 +255,3 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
 });
-
