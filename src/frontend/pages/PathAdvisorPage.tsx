@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { View, StyleSheet } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { View, StyleSheet, Text } from "react-native";
+import { TouchableHighlight, TouchableOpacity } from "react-native-gesture-handler";
 
-import { PathAdvisorPageContext, PathAdvisorPageContextType } from "./pathAdvisorPageContext";
 import SearchLocationBar from "../components/SearchLocationBar";
 import MapView from "../components/MapView";
+import RoomDetailsBox from "../components/RoomDetailsBox";
+import { PathAdvisorPageContext, PathAdvisorPageContextType } from "./pathAdvisorPageContext";
 
 import * as api from '../../backend/api';
 import Building from "../../backend/schema/Building";
@@ -100,6 +101,32 @@ const PathAdvisorPage = () => {
         setCurrentFloorId(path.floorIds[index + offset]);
     }
 
+    const renderRoomDetailsBoxButtons = () => {
+        const handleDirectionButton = () => {
+            // TODO
+        }
+
+        const handleARViewButton = () => {
+            // TODO
+        }
+
+        return <View style={styles.roomDetailsBoxButtonsContainer}>
+            <TouchableHighlight
+                style={styles.roomDetailsBoxButton}
+                onPress={handleDirectionButton}
+            >
+                <Text style={styles.roomDetailsBoxButtonText}>Direction</Text>
+            </TouchableHighlight>
+
+            <TouchableHighlight
+                style={styles.roomDetailsBoxButton}
+                onPress={handleARViewButton}
+            >
+                <Text style={styles.roomDetailsBoxButtonText}>AR View</Text>
+            </TouchableHighlight>
+        </View>
+    }
+
     // i dont want to render any thing before buildings, floors and tags are fetched
     if (!pathAdvisorPageContext.buildings || !pathAdvisorPageContext.floors || !pathAdvisorPageContext.tags) {
         return null;
@@ -142,6 +169,13 @@ const PathAdvisorPage = () => {
                         }
                     </View>
                 }
+
+                {
+                    toNode &&
+                    <View style={styles.roomDetailsBoxContainer}>
+                        <RoomDetailsBox node={toNode} renderButtons={renderRoomDetailsBoxButtons} />
+                    </View>
+                }
             </PathAdvisorPageContext.Provider>
         );
     }
@@ -175,6 +209,32 @@ const styles = StyleSheet.create({
         backgroundColor: "#1773c2",
         justifyContent: "center",
         alignItems: "center",
-    }
+    },
+
+    roomDetailsBoxContainer: {
+        position: "absolute",
+        bottom: 20,
+        alignSelf: "center",
+        width: "95%",
+        height: 170
+    },
+
+    roomDetailsBoxButtonsContainer: {
+        flexDirection: "row",
+        columnGap: 8,
+    },
+
+    roomDetailsBoxButton: {
+        backgroundColor: "#428bca",
+        padding: 5,
+        borderRadius: 12,
+        width: 100
+    },
+
+    roomDetailsBoxButtonText: {
+        color: "white",
+        textAlign: "center",
+        fontSize: 16,
+    },
 });
 

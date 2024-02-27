@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { useBuildingsContext, useFloorsContext } from './pathAdvisorPageContext';
+import { useBuildingsContext, useFloorsContext } from '../pages/pathAdvisorPageContext';
 
 import Node from '../../backend/schema/Node';
 import { convertFloorIdToFloorName } from '../plugins';
