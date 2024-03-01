@@ -1,9 +1,9 @@
 import React from "react";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import TopNavigationBar from '../../ar/components/top-navigation-bar';
-import BottomNavigationBar from '../../ar/components/bottom-navigation-bar';
-import ARNavigationCamera from '../../ar/components/arNavigationCamera';
+import TopNavigationBar from '../components/ar/top-navigation-bar';
+import BottomNavigationBar from '../components/ar/bottom-navigation-bar';
+import ARNavigationCamera from '../components/ar/arNavigationCamera';
 
 const ARNavigationPage = ({ navigation }) => {
     return (

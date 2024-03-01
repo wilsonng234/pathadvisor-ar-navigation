@@ -1,32 +1,29 @@
 import React from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler'
 import MaterialIcon from "react-native-vector-icons/MaterialIcons"
 import EntypoIcon from "react-native-vector-icons/Entypo"
 
+import { Platform, StyleSheet, Text, View } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler'
+
 const TopNavigationBar = ({ latitude, longitude, handleExitArNavigationPage }: { latitude?: number, longitude?: number, handleExitArNavigationPage: () => void }) => {
     return (
-        <>
-            <View style={{ ...styles.overlayContainer, ...styles.topContainer, ...styles.navigationBar }}>
-                <MaterialIcon
-                    name='turn-right'
-                    color='white'
-                    size={50} />
-                <View style={styles.informationContainer}>
-                    <Text style={styles.directionIndicator}>Turn Right</Text>
-                    <Text style={styles.coordinateIndicator}>{`${latitude}, ${longitude}`}</Text>
-                </View>
-                <TouchableOpacity onPress={handleExitArNavigationPage} >
-                    <EntypoIcon
-                        name="circle-with-cross"
-                        color='white'
-                        size={40}
-                    />
-                </TouchableOpacity>
-
-
+        <View style={{ ...styles.overlayContainer, ...styles.topContainer, ...styles.navigationBar }}>
+            <MaterialIcon
+                name='turn-right'
+                color='white'
+                size={50} />
+            <View style={styles.informationContainer}>
+                <Text style={styles.directionIndicator}>Turn Right</Text>
+                <Text style={styles.coordinateIndicator}>{`${latitude}, ${longitude}`}</Text>
             </View>
-        </>
+            <TouchableOpacity onPress={handleExitArNavigationPage} >
+                <EntypoIcon
+                    name="circle-with-cross"
+                    color='white'
+                    size={40}
+                />
+            </TouchableOpacity>
+        </View>
     )
 }
 
@@ -69,4 +66,3 @@ var styles = StyleSheet.create({
     }
 }
 );
-

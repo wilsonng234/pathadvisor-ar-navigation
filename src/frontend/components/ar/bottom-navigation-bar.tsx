@@ -8,7 +8,7 @@ const BottomNavigationBar = () => {
         <View style={styles.circle}>
             <Image
                 style={styles.dummy}
-                source={require('../../../res/dummy.png')}
+                source={require('../../assets/ar/dummy.png')}
             />
         </View>
     )

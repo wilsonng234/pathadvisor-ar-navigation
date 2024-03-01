@@ -1,5 +1,5 @@
 import React from 'react';
-import { Viro3DObject, ViroAmbientLight, ViroOmniLight } from '@viro-community/react-viro';
+import { Viro3DObject, ViroAmbientLight } from '@viro-community/react-viro';
 
 export default function arrow({
   x_cor,
@@ -21,7 +21,7 @@ export default function arrow({
         scale={[0.1, 0.1, 0.1]}
       /> */}
       <Viro3DObject
-        source={require('../../../res/direction_arrow.glb')}
+        source={require('../../assets/ar/direction_arrow.glb')}
         type="GLB"
         position={[x_cor, 0, y_cor]}
         rotation={[direction == 0 ? 0 : direction == 1 ? -90 : 90, direction == 0 ? 90 : 0, 0]}

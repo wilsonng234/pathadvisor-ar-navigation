@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
+import { StyleSheet } from 'react-native';
 import {
     ViroARScene,
     ViroTrackingStateConstants,
     ViroARSceneNavigator,
     ViroARPlane,
 } from '@viro-community/react-viro';
-import Geolocation from '@react-native-community/geolocation';
 
-import Arrow from '../../../src/ar/components/arrow'
-import { StyleSheet } from 'react-native';
+import Arrow from './arrow'
 
 const HelloWorldSceneAR = () => {
     const [text, setText] = useState('Initializing AR...');
