@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import {
     ViroARScene,
@@ -6,17 +6,26 @@ import {
     ViroTrackingStateConstants,
     ViroTrackingReason,
     ViroARSceneNavigator,
-    ViroARPlane,
+    ViroARPlane
 } from '@viro-community/react-viro';
 
 import ARArrow from './ARArrow'
 
 const HelloWorldSceneAR = () => {
+    const sceneRef = useRef<ViroARScene | null>(null);
     // const [text, setText] = useState('Initializing AR...');
 
-    function onInitialized(state: ViroTrackingState, reason: ViroTrackingReason) {
+    const onInitialized = (state: ViroTrackingState, reason: ViroTrackingReason) => {
         // console.log('guncelleme', state, reason, typeof reason);
         console.log("state:", state, " reason:", reason);
+
+        if (sceneRef.current) {
+            sceneRef.current.getCameraOrientationAsync().then((orientation) => {
+                console.log('orientation:', orientation);
+            }).catch((error) => {
+                console.log('error:', error);
+            });
+        }
 
         if (state === ViroTrackingStateConstants.TRACKING_NORMAL) {
             // setText('Hello World!');
@@ -27,7 +36,7 @@ const HelloWorldSceneAR = () => {
     }
 
     return (
-        <ViroARScene onTrackingUpdated={onInitialized}>
+        <ViroARScene ref={sceneRef} onTrackingUpdated={onInitialized}>
             <ViroARPlane minHeight={0.1} minWidth={0.1} alignment={'Horizontal'}>
                 <ARArrow x_cor={0} y_cor={-0.1} direction={0} />
                 <ARArrow x_cor={0} y_cor={-1.5} direction={2} />
