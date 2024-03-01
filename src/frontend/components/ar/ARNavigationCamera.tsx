@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { StyleSheet } from 'react-native';
 import {
     ViroARScene,
+    ViroTrackingState,
     ViroTrackingStateConstants,
+    ViroTrackingReason,
     ViroARSceneNavigator,
     ViroARPlane,
 } from '@viro-community/react-viro';
@@ -10,17 +12,20 @@ import {
 import ARArrow from './ARArrow'
 
 const HelloWorldSceneAR = () => {
-    const [text, setText] = useState('Initializing AR...');
+    // const [text, setText] = useState('Initializing AR...');
 
-    function onInitialized(state: ViroTrackingStateConstants, reason: any) {
-        console.log('guncelleme', state, reason, typeof reason);
+    function onInitialized(state: ViroTrackingState, reason: ViroTrackingReason) {
+        // console.log('guncelleme', state, reason, typeof reason);
+        console.log("state:", state, " reason:", reason);
+
         if (state === ViroTrackingStateConstants.TRACKING_NORMAL) {
-            setText('Hello World!');
+            // setText('Hello World!');
             // Geolocation.getCurrentPosition(info => console.log(info));
         } else if (state === ViroTrackingStateConstants.TRACKING_UNAVAILABLE) {
             // Handle loss of tracking
         }
     }
+
     return (
         <ViroARScene onTrackingUpdated={onInitialized}>
             <ViroARPlane minHeight={0.1} minWidth={0.1} alignment={'Horizontal'}>
@@ -38,15 +43,15 @@ const ARNavigationCamera = () => {
             initialScene={{
                 scene: HelloWorldSceneAR,
             }}
-            style={styles.f1}
+            style={styles.arSceneNavigator}
         />
     )
 }
 
 export default ARNavigationCamera;
 
-var styles = StyleSheet.create({
-    f1: { flex: 1 },
+const styles = StyleSheet.create({
+    arSceneNavigator: { flex: 1 },
     helloWorldTextStyle: {
         fontFamily: 'Arial',
         fontSize: 30,

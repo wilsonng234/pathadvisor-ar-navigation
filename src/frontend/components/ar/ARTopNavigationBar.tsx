@@ -5,7 +5,13 @@ import EntypoIcon from "react-native-vector-icons/Entypo"
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler'
 
-const ARTopNavigationBar = ({ latitude, longitude, handleExitArNavigationPage }: { latitude?: number, longitude?: number, handleExitArNavigationPage: () => void }) => {
+interface ARTopNavigationBarProps {
+    latitude?: number,
+    longitude?: number,
+    handleExitArNavigationPage: () => void
+}
+
+const ARTopNavigationBar = ({ latitude, longitude, handleExitArNavigationPage }: ARTopNavigationBarProps) => {
     return (
         <View style={{ ...styles.overlayContainer, ...styles.topContainer, ...styles.navigationBar }}>
             <MaterialIcon
@@ -29,7 +35,7 @@ const ARTopNavigationBar = ({ latitude, longitude, handleExitArNavigationPage }:
 
 export default ARTopNavigationBar;
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
     overlayContainer: {
         zIndex: 1,
         elevation: (Platform.OS === 'android') ? 1 : 0,
