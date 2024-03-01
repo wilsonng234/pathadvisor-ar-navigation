@@ -2,7 +2,7 @@ import React from "react";
 import { Image, Text, View, ViewStyle } from "react-native";
 
 import Node from "../../backend/schema/Node";
-import { getNodeImageByConnectorId } from "../plugins";
+import { getNodeImageByConnectorId } from "../utils";
 import { useFloorsContext, useTagsContext } from "../pages/pathAdvisorPageContext";
 
 interface NodeViewProps {
@@ -13,7 +13,7 @@ interface NodeViewProps {
 const NodeView = ({ currentFloorId, node }: NodeViewProps) => {
     const floors = useFloorsContext();
     const tags = useTagsContext();
-    
+
     if (!node.centerCoordinates)
         return null;
 

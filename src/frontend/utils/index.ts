@@ -1,4 +1,4 @@
-export function getNodeImageByConnectorId(connectorId: string) {
+export const getNodeImageByConnectorId = (connectorId: string) => {
     if (connectorId.toUpperCase().includes('LIFT')) {
         return require('../assets/lift.png');
     } else if (connectorId.toUpperCase().includes('STAIR')) {

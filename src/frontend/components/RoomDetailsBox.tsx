@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useBuildingsContext, useFloorsContext } from '../pages/pathAdvisorPageContext';
 
 import Node from '../../backend/schema/Node';
-import { convertFloorIdToFloorName } from '../plugins';
+import { convertFloorIdToFloorName } from '../utils';
 
 interface RoomDetailsBoxProps {
     node: Node;
