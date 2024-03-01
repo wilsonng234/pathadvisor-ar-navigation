@@ -1,9 +1,10 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+/* eslint-disable prettier/prettier */
+import React, { useState } from 'react';
+import { View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import TopNavigationBar from './src/ar/components/top-navigation-bar';
+import BottomNavigationBar from './src/ar/components/bottom-navigation-bar';
+import ARNavigationCamera from './src/ar/components/arNavigationCamera';
 
 import React from 'react';
 import MapView from './src/frontend/MapView';
