@@ -1,21 +1,11 @@
-/* eslint-disable prettier/prettier */
-import React, { useState } from 'react';
-import { View } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import TopNavigationBar from './src/ar/components/top-navigation-bar';
-import BottomNavigationBar from './src/ar/components/bottom-navigation-bar';
-import ARNavigationCamera from './src/ar/components/arNavigationCamera';
-
 import React from 'react';
-import MapView from './src/frontend/MapView';
-import { StyleSheet, View, Text, Button, Dimensions } from 'react-native';
+import { StyleSheet, View, Button, Dimensions } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { DrawerContentScrollView, DrawerItem, DrawerItemList, createDrawerNavigator } from '@react-navigation/drawer';
-import { SafeAreaProvider, useSafeAreaInsets, } from 'react-native-safe-area-context';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import PathAdvisorPage from './src/frontend/pages/PathAdvisorPage';
 import EventPage from './src/frontend/pages/EventPage';
 import BusQueueStatPage from './src/frontend/pages/BusQueueStatPage';
-import 'react-native-gesture-handler';
 
 const Drawer = createDrawerNavigator();
 // const insets = useSafeAreaInsets();
