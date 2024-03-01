@@ -3,7 +3,7 @@ import { Dimensions, Image, Platform, StyleSheet, View } from 'react-native';
 
 const circleDiameter = Dimensions.get('window').width;
 
-const BottomNavigationBar = () => {
+const ARBottomNavigationBar = () => {
     return (
         <View style={styles.circle}>
             <Image
@@ -14,7 +14,7 @@ const BottomNavigationBar = () => {
     )
 }
 
-export default BottomNavigationBar;
+export default ARBottomNavigationBar;
 
 var styles = StyleSheet.create({
     circle: {

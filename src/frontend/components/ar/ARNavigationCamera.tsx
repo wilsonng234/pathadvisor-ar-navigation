@@ -7,7 +7,7 @@ import {
     ViroARPlane,
 } from '@viro-community/react-viro';
 
-import Arrow from './arrow'
+import ARArrow from './ARArrow'
 
 const HelloWorldSceneAR = () => {
     const [text, setText] = useState('Initializing AR...');
@@ -24,8 +24,8 @@ const HelloWorldSceneAR = () => {
     return (
         <ViroARScene onTrackingUpdated={onInitialized}>
             <ViroARPlane minHeight={0.1} minWidth={0.1} alignment={'Horizontal'}>
-                <Arrow x_cor={0} y_cor={-0.1} direction={0} />
-                <Arrow x_cor={0} y_cor={-1.5} direction={2} />
+                <ARArrow x_cor={0} y_cor={-0.1} direction={0} />
+                <ARArrow x_cor={0} y_cor={-1.5} direction={2} />
             </ViroARPlane>
         </ViroARScene>
     );

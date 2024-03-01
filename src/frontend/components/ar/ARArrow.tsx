@@ -1,15 +1,7 @@
 import React from 'react';
 import { Viro3DObject, ViroAmbientLight } from '@viro-community/react-viro';
 
-export default function arrow({
-  x_cor,
-  y_cor,
-  direction,
-}: {
-  x_cor: number;
-  y_cor: number;
-  direction: number;
-}) {
+const ARArrow = ({ x_cor, y_cor, direction }: { x_cor: number; y_cor: number; direction: number; }) => {
   return (
     <>
       <ViroAmbientLight color="#ffffff" intensity={200} />
@@ -30,3 +22,5 @@ export default function arrow({
     </>
   )
 }
+
+export default ARArrow;
