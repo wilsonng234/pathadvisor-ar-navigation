@@ -25,7 +25,7 @@ const HelloWorldSceneAR = () => {
 
         if (sceneRef.current) {
             sceneRef.current.getCameraOrientationAsync().then((orientation) => {
-                console.log('orientation:', orientation);
+                // console.log('orientation:', orientation);
             }).catch((error) => {
                 console.log('error:', error);
             });
@@ -43,10 +43,10 @@ const HelloWorldSceneAR = () => {
     return (
         <ViroARScene ref={sceneRef} onTrackingUpdated={onInitialized} onCameraTransformUpdate={(cameraTransform) => {
             if (prevPos !== null) {
-                let upDiff = (cameraTransform.position[0] - prevPos.position[0])
-                if (upDiff < 0.001) {
-                    upDiff = 0
-                }
+                let upDiff = (cameraTransform.position[0])
+                // if (Math.abs(upDiff) < 0.001) {
+                //     upDiff = 0
+                // }
                 console.log(upDiff)
             }
             setPrevPos(cameraTransform)
@@ -64,11 +64,11 @@ const HelloWorldSceneAR = () => {
             </ViroNode> */}
             <ViroNode position={[0, 0, -3]}
   /**sun-earth system**/>
-                <ViroSphere materials={["sunClipart"]} />
+                <ARArrow x_cor_start={0} y_cor_start={-0.5} x_cor_dest={-0.04} y_cor_dest={2} />
                 <ViroNode position={[0, 0, -5]}
     /**moon-earth system**/>
-                    <ViroSphere position={[0, 0, 0]} materials={["earth"]} />
-                    <ViroSphere position={[0, 1, -2]} scale={[.2, .2, .2]} materials={["moon"]} />
+                    <ARArrow x_cor_start={0} y_cor_start={-0.5} x_cor_dest={-0.04} y_cor_dest={2} />
+                    <ARArrow x_cor_start={0} y_cor_start={-0.5} x_cor_dest={-0.04} y_cor_dest={2} />
                 </ViroNode>
             </ViroNode>
         </ViroARScene>
