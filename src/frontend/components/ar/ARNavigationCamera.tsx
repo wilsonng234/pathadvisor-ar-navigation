@@ -9,7 +9,8 @@ import {
     ViroARPlane,
     ViroCamera,
     ViroCameraTransform,
-    ViroNode
+    ViroNode,
+    ViroSphere
 } from '@viro-community/react-viro';
 
 import ARArrow from './ARArrow'
@@ -42,7 +43,7 @@ const HelloWorldSceneAR = () => {
     return (
         <ViroARScene ref={sceneRef} onTrackingUpdated={onInitialized} onCameraTransformUpdate={(cameraTransform) => {
             if (prevPos !== null) {
-                let upDiff = (cameraTransform.forward[0] - prevPos.forward[0])
+                let upDiff = (cameraTransform.position[0] - prevPos.position[0])
                 if (upDiff < 0.001) {
                     upDiff = 0
                 }
@@ -56,10 +57,19 @@ const HelloWorldSceneAR = () => {
                 <ARArrow x_cor={0} y_cor={-1.5} z_cor={0} direction={2} />
             </ViroARPlane> */}
 
-            <ViroNode position={[0, 0, 0]}>
+            {/* <ViroNode position={[0, 0, 0]}>
                 <ViroCamera position={[0, 0, 0]} active={true} >
                     <ARArrow x_cor_start={0} y_cor_start={-0.5} x_cor_dest={-0.04} y_cor_dest={2} />
                 </ViroCamera>
+            </ViroNode> */}
+            <ViroNode position={[0, 0, -3]}
+  /**sun-earth system**/>
+                <ViroSphere materials={["sunClipart"]} />
+                <ViroNode position={[0, 0, -5]}
+    /**moon-earth system**/>
+                    <ViroSphere position={[0, 0, 0]} materials={["earth"]} />
+                    <ViroSphere position={[0, 1, -2]} scale={[.2, .2, .2]} materials={["moon"]} />
+                </ViroNode>
             </ViroNode>
         </ViroARScene>
     );
