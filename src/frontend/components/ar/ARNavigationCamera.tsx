@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import {
     ViroARScene,
@@ -6,7 +6,10 @@ import {
     ViroTrackingStateConstants,
     ViroTrackingReason,
     ViroARSceneNavigator,
-    ViroARPlane
+    ViroARPlane,
+    ViroCamera,
+    ViroCameraTransform,
+    ViroNode
 } from '@viro-community/react-viro';
 
 import ARArrow from './ARArrow'
@@ -34,13 +37,30 @@ const HelloWorldSceneAR = () => {
             // Handle loss of tracking
         }
     }
+    const [prevPos, setPrevPos] = useState<ViroCameraTransform | null>(null)
 
     return (
-        <ViroARScene ref={sceneRef} onTrackingUpdated={onInitialized}>
-            <ViroARPlane minHeight={0.1} minWidth={0.1} alignment={'Horizontal'}>
-                <ARArrow x_cor={0} y_cor={-0.1} direction={0} />
-                <ARArrow x_cor={0} y_cor={-1.5} direction={2} />
-            </ViroARPlane>
+        <ViroARScene ref={sceneRef} onTrackingUpdated={onInitialized} onCameraTransformUpdate={(cameraTransform) => {
+            if (prevPos !== null) {
+                let upDiff = (cameraTransform.forward[0] - prevPos.forward[0])
+                if (upDiff < 0.001) {
+                    upDiff = 0
+                }
+                console.log(upDiff)
+            }
+            setPrevPos(cameraTransform)
+        }
+        }>
+            {/* <ViroARPlane minHeight={0.1} minWidth={0.1} alignment={'Horizontal'}>
+                <ARArrow x_cor={0} y_cor={-0.1} z_cor={0} direction={0} />
+                <ARArrow x_cor={0} y_cor={-1.5} z_cor={0} direction={2} />
+            </ViroARPlane> */}
+
+            <ViroNode position={[0, 0, 0]}>
+                <ViroCamera position={[0, 0, 0]} active={true} >
+                    <ARArrow x_cor_start={0} y_cor_start={-0.5} x_cor_dest={-0.04} y_cor_dest={2} />
+                </ViroCamera>
+            </ViroNode>
         </ViroARScene>
     );
 };
