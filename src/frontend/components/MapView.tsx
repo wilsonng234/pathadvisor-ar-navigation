@@ -6,10 +6,9 @@ import { ReactNativeZoomableView } from "@openspacelabs/react-native-zoomable-vi
 import * as api from "../../backend/api"
 import Node from "../../backend/schema/Node"
 import PathNode from "../../backend/schema/PathNode";
-import { Path } from "../pages/PathAdvisorPage";
+import { Path } from "../pages/PathAdvisor";
 import NodeView from "./NodeView";
-import { useFloorsContext, useTagsContext } from "../pages/pathAdvisorPageContext";
-
+import { useFloorsContext, useTagsContext } from "../pages/PathAdvisorContext";
 interface MapViewProps {
     currentFloorId: string;
     fromNode: Node | null;
