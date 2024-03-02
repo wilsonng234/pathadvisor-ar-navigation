@@ -153,11 +153,13 @@ const PathAdvisorPage = () => {
     else {
         return (
             <PathAdvisorPageContext.Provider value={pathAdvisorPageContext}>
-                {
-                    enableFromSearchBar &&
-                    <SearchLocationBar selectNode={handleSelectFromNode} placeholder="FROM" onClickCancel={handleCancelFromNode} />
-                }
-                <SearchLocationBar selectNode={handleSelectToNode} placeholder="Where are you going?" onClickCancel={handleCancelToNode} />
+                <View style={{ zIndex: 2 }}>
+                    {
+                        enableFromSearchBar &&
+                        <SearchLocationBar selectNode={handleSelectFromNode} placeholder="FROM" onClickCancel={handleCancelFromNode} />
+                    }
+                    <SearchLocationBar selectNode={handleSelectToNode} placeholder="Where are you going?" onClickCancel={handleCancelToNode} />
+                </View>
 
                 <MapView currentFloorId={currentFloorId} fromNode={fromNode} toNode={toNode} path={path} />
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Keyboard, StyleSheet, View } from 'react-native';
+import { Keyboard, Platform, StyleSheet, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { SearchBar } from '@rneui/themed';
 
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
         top: 60,
         left: 8,
         zIndex: 1,
-
+        elevation: (Platform.OS === 'android') ? 1 : 0,
         width: "80%",
         maxHeight: 200,
         backgroundColor: "white",
