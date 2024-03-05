@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, View, Button, Dimensions } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
-import PathAdvisorPage from './src/frontend/pages/PathAdvisorPage';
-import EventPage from './src/frontend/pages/EventPage';
-import BusQueueStatPage from './src/frontend/pages/BusQueueStatPage';
-import ARNavigationPage from './src/frontend/pages/ARNavigationPage';
+import PathAdvisorPage from './src/frontend/pages/PathAdvisor';
+import EventPage from './src/frontend/pages/Event';
+import BusQueueStatPage from './src/frontend/pages/BusQueueStat';
+import ARNavigationPage from './src/frontend/pages/ARNavigation';
+import QRCodeScanning from './src/frontend/pages/QRCodeScanning';
 
 const Drawer = createDrawerNavigator();
 // const insets = useSafeAreaInsets();
@@ -38,7 +39,23 @@ function NotificationsScreen({ navigation }) {
 //   );
 // }
 
+interface QRCodeDataInterface {
+  x: number,
+  y: number,
+  floor: string,
+  building: string,
+  orientation: number,
+  id: string,
+  name: string
+}
+
 function App(): React.JSX.Element {
+  const [qrCodeData, setQRCodeData] = React.useState<QRCodeDataInterface | null>(null)
+
+  useEffect(() => {
+    console.log(qrCodeData)
+  },[qrCodeData])
+
   return (
     <SafeAreaProvider>
       <NavigationContainer>
@@ -48,6 +65,7 @@ function App(): React.JSX.Element {
           <Drawer.Screen name="Events" component={EventPage} />
           <Drawer.Screen name="Bus Queue Statistics" component={BusQueueStatPage} />
           <Drawer.Screen name="AR Navigation" component={ARNavigationPage} options={{ headerShown: false }} />
+          <Drawer.Screen name="QRCode Scan" component={() => <QRCodeScanning setQRCodeData={setQRCodeData} />} />
         </Drawer.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

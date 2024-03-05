@@ -3,7 +3,7 @@ import { Image, Text, View, ViewStyle } from "react-native";
 
 import Node from "../../backend/schema/Node";
 import { getNodeImageByConnectorId } from "../utils";
-import { useFloorsContext, useTagsContext } from "../pages/pathAdvisorPageContext";
+import { useFloorsContext, useTagsContext } from "../pages/PathAdvisorContext";
 
 interface NodeViewProps {
     currentFloorId: string

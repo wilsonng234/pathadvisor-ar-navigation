@@ -8,7 +8,7 @@ import { Button } from '@rneui/themed';
 import SearchLocationBar from "../components/SearchLocationBar";
 import MapView from "../components/MapView";
 import RoomDetailsBox from "../components/RoomDetailsBox";
-import { PathAdvisorPageContext, PathAdvisorPageContextType } from "./pathAdvisorPageContext";
+import { PathAdvisorPageContext, PathAdvisorPageContextType } from "./PathAdvisorContext";
 
 import * as api from '../../backend/api';
 import Building from "../../backend/schema/Building";
