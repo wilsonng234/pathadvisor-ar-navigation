@@ -47,7 +47,7 @@ const HelloWorldSceneAR = () => {
                 // if (Math.abs(upDiff) < 0.001) {
                 //     upDiff = 0
                 // }
-                console.log(upDiff)
+                // console.log(upDiff)
             }
             setPrevPos(cameraTransform)
         }
