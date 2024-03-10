@@ -6,7 +6,6 @@
       <uses-permission android:name="android.permission.CAMERA" />
       <!-- You may need these if doing any screen recording from within the app -->
       <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-      <uses-permission android:name="android.permission.VIBRATE"/>
       <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
       <!-- Other camera related features -->
       <uses-feature android:name="android.hardware.camera" />
