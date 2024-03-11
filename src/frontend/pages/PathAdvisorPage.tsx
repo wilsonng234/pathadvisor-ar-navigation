@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { View, StyleSheet, Text } from "react-native";
 import { TouchableHighlight, TouchableOpacity } from "react-native-gesture-handler";
-import { Button } from '@rneui/themed';
-// import { Icon } from "@rneui/base";
 
 import SearchLocationBar from "../components/SearchLocationBar";
 import MapView from "../components/MapView";
@@ -158,17 +156,7 @@ const PathAdvisorPage = () => {
                 <View style={{ zIndex: 2 }}>
                     {
                         enableFromSearchBar &&
-                        <View style={{ flexDirection: 'row' }}>
-                            <View style={{ flex: 1 }}>
-                                <SearchLocationBar selectNode={handleSelectFromNode} placeholder="FROM" onClickCancel={handleCancelFromNode} />
-                            </View>
-                            {
-                                navigationType == NavigationType.ARView &&
-                                <Button style={{ flex: 1, justifyContent: "center", backgroundColor: "white" }} color="white" type="solid" onPress={() => alert("click")}>
-                                    <Icon name="qr-code-scanner" size={25} color="black" />
-                                </Button>
-                            }
-                        </View>
+                        <SearchLocationBar selectNode={handleSelectFromNode} placeholder="FROM" onClickCancel={handleCancelFromNode} />
                     }
                     <SearchLocationBar selectNode={handleSelectToNode} placeholder="Where are you going?" onClickCancel={handleCancelToNode} />
                 </View>

@@ -10,7 +10,7 @@ const ARNavigationPage = ({ navigation }) => {
         <GestureHandlerRootView style={{ flex: 1 }}>
             <ARTopNavigationBar latitude={22.396427} longitude={114.109497} handleExitArNavigationPage={() => navigation.goBack()} />
             <ARNavigationCamera />
-            {/* <ARBottomNavigationBar /> */}
+            <ARBottomNavigationBar />
         </GestureHandlerRootView>
     );
 }
