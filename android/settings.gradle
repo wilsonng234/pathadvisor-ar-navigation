@@ -9,3 +9,8 @@ project(':react_viro').projectDir = new File('../node_modules/@viro-community/re
 project(':arcore_client').projectDir = new File('../node_modules/@viro-community/react-viro/android/arcore_client')
 project(':gvr_common').projectDir = new File('../node_modules/@viro-community/react-viro/android/gvr_common')
 project(':viro_renderer').projectDir = new File('../node_modules/@viro-community/react-viro/android/viro_renderer')
+
+// react-native-unity
+include ':unityLibrary'
+project(':unityLibrary').projectDir=new File('..\\unity\\builds\\android\\unityLibrary')
+include ':unityLibrary:xrmanifest.androidlib'
