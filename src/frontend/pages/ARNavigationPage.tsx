@@ -1,45 +1,45 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import UnityView from '@azesmway/react-native-unity';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import ARTopNavigationBar from '../components/ar/ARTopNavigationBar';
-import ARBottomNavigationBar from '../components/ar/ARBottomNavigationBar';
-import ARNavigationCamera from '../components/ar/ARNavigationCamera';
-import { View } from "react-native";
+import { Button, View } from "react-native";
 
-interface IMessage {
+interface UnityMessage {
     gameObject: string;
     methodName: string;
-    message: string;
+    message: object;
 }
 
 const Unity = () => {
     const unityRef = useRef<UnityView>(null);
 
-    useEffect(() => {
+    const sendMessageToUnity = (message: UnityMessage) => {
         if (unityRef?.current) {
-            const message: IMessage = {
-                gameObject: 'gameObject',
-                methodName: 'methodName',
-                message: 'message',
-            };
-            unityRef.current.postMessage(message.gameObject, message.methodName, message.message);
+            unityRef.current.postMessage(message.gameObject, message.methodName, JSON.stringify(message.message));
         }
-    }, []);
+    }
 
     return (
         <View style={{ flex: 1 }}>
             <UnityView
                 ref={unityRef}
-                style={{
-                    position: 'absolute',
-                    height: '100%',
-                    width: '100%',
-                    top: 1,
-                    bottom: 1
-                }}
+                style={{ flex: 1 }}
                 onUnityMessage={(result) => {
                     console.log('Message Here : ', result.nativeEvent.message)
+                }}
+            />
+
+            <Button
+                title="Send Message to Unity"
+                onPress={() => {
+                    sendMessageToUnity({
+                        gameObject: 'Canvas/ReactToUnity',
+                        methodName: 'GetDatas',
+                        message: {
+                            name: "Tom",
+                            age: 25,
+                        },
+                    });
                 }}
             />
         </View>
