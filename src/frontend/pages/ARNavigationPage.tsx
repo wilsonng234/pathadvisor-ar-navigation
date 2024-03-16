@@ -1,8 +1,8 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import UnityView from '@azesmway/react-native-unity';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import { Button, View } from "react-native";
+import { Button, Text, View } from "react-native";
 
 interface UnityMessage {
     gameObject: string;
@@ -12,7 +12,6 @@ interface UnityMessage {
 
 const Unity = () => {
     const unityRef = useRef<UnityView>(null);
-
     const sendMessageToUnity = (message: UnityMessage) => {
         if (unityRef?.current) {
             unityRef.current.postMessage(message.gameObject, message.methodName, JSON.stringify(message.message));
@@ -47,9 +46,26 @@ const Unity = () => {
 };
 
 const ARNavigationPage = ({ navigation }) => {
+    // const [loading, setLoading] = React.useState(true);
+
+    const handleExitArNavigationPage = () => {
+        // setLoading(true);
+        navigation.goBack();
+    };
+    // console.log('rerender')
+    // useEffect(() => {
+    //     setTimeout(() => {
+    //         setLoading(false);
+    //     }, 1000);
+    // })
+
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
-            <Unity></Unity>
+            {/* {loading ? <Text style={{ fontSize: 100 }}>loading</Text> : <Unity />} */}
+            <Unity />
+            <Button
+                onPress={handleExitArNavigationPage}
+                title="Exit AR Navigation" />
             {/* <ARTopNavigationBar latitude={22.396427} longitude={114.109497} handleExitArNavigationPage={() => navigation.goBack()} />
             <ARNavigationCamera />
             <ARBottomNavigationBar /> */}
