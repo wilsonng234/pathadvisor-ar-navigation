@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Image, Text, View, ViewStyle } from "react-native";
 
 import Node from "../../backend/schema/Node";
-import { getNodeImageByConnectorId } from "../utils";
+import { getMapTileStartCoordinates, getNodeImageByConnectorId } from "../utils";
 import { useFloorsContext, useTagsContext } from "../pages/pathAdvisorPageContext";
 
 interface NodeViewProps {
@@ -14,10 +14,14 @@ const NodeView = ({ currentFloorId, node }: NodeViewProps) => {
     const floors = useFloorsContext();
     const tags = useTagsContext();
 
+    const { tileStartX, tileStartY } = useMemo(() => {
+        return getMapTileStartCoordinates(floors[currentFloorId])
+    }, [currentFloorId])
+
     if (!node.centerCoordinates)
         return null;
 
-    return <View style={styles.container(node.centerCoordinates[0] - floors[currentFloorId].startX, node.centerCoordinates[1] - floors[currentFloorId].startY)}>
+    return <View style={styles.container(node.centerCoordinates[0] - tileStartX, node.centerCoordinates[1] - tileStartY)}>
         {
             // if node is a room, display the room name
             node.name?.toUpperCase().includes("ROOM") ?
