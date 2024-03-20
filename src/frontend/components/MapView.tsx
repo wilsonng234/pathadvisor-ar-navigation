@@ -23,15 +23,7 @@ interface MapViewProps {
 
 const MapView = ({ currentFloorId, fromNode, toNode, path }: MapViewProps) => {
     const floors = useFloorsContext();
-    const [showPin, setShowPin] = useState<boolean>(false);
     const [nodes, setNodes] = useState<Node[]>([]);
-
-    useEffect(() => {
-        if (toNode)
-            setShowPin(toNode.floorId === currentFloorId);
-        else
-            setShowPin(false);
-    })
 
     const { tileStartX, tileStartY } = useMemo(() => {
         return getMapTileStartCoordinates(floors[currentFloorId])
@@ -58,7 +50,20 @@ const MapView = ({ currentFloorId, fromNode, toNode, path }: MapViewProps) => {
         >
             <MapTilesBackground floorId={currentFloorId}>
                 {
-                    toNode && showPin &&
+                    fromNode && fromNode.floorId === currentFloorId &&
+                    <Image
+                        style={
+                            [styles.pin,
+                            {
+                                left: (fromNode.centerCoordinates![0] - tileStartX) * (RENDER_MAP_TILE_WIDTH / LOGIC_MAP_TILE_WIDTH),
+                                top: (fromNode.centerCoordinates![1] - tileStartY) * (RENDER_MAP_TILE_HEIGHT / LOGIC_MAP_TILE_HEIGHT)
+                            }]
+                        }
+                        source={require('../assets/pin.png')}
+                    />
+                }
+                {
+                    toNode && toNode.floorId === currentFloorId &&
                     <Image
                         style={
                             [styles.pin,
