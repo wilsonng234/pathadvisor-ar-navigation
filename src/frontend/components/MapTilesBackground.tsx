@@ -4,8 +4,10 @@ import { Image, StyleSheet, View } from 'react-native';
 import { useFloorsContext } from '../pages/pathAdvisorPageContext';
 import { getMapTileStartCoordinates, getMapTilesNumber } from '../utils';
 
-export const MAP_TILE_WIDTH = 200;
-export const MAP_TILE_HEIGHT = 200;
+export const LOGIC_MAP_TILE_WIDTH = 200;
+export const LOGIC_MAP_TILE_HEIGHT = 200;
+export const RENDER_MAP_TILE_WIDTH = 80;
+export const RENDER_MAP_TILE_HEIGHT = 80;
 
 interface MapTileBlock {
     floorId: string;
@@ -24,7 +26,6 @@ const MapTilesBackground = ({ floorId, children }: MapTilesBackgroundProps) => {
 
     const { tileStartX, tileStartY } = getMapTileStartCoordinates(floors[floorId]);
     const { numRow, numCol } = getMapTilesNumber(floors[floorId]);
-    const zoomLevel = 0;
 
     const mapTileBlocks = new Array<Array<MapTileBlock>>(numRow);
     for (let i = 0; i < numRow; i++) {
@@ -33,9 +34,9 @@ const MapTilesBackground = ({ floorId, children }: MapTilesBackgroundProps) => {
         for (let j = 0; j < numCol; j++) {
             mapTileBlocks[i][j] = {
                 floorId: floorId,
-                x: j * MAP_TILE_WIDTH + tileStartX,
-                y: i * MAP_TILE_HEIGHT + tileStartY,
-                zoomLevel: zoomLevel
+                x: j * LOGIC_MAP_TILE_WIDTH + tileStartX,
+                y: i * LOGIC_MAP_TILE_HEIGHT + tileStartY,
+                zoomLevel: 0
             }
         }
     }
@@ -50,7 +51,7 @@ const MapTilesBackground = ({ floorId, children }: MapTilesBackgroundProps) => {
                                 return (
                                     <Image
                                         key={`${i}-${j}`}
-                                        style={{ width: MAP_TILE_WIDTH, height: MAP_TILE_HEIGHT }}
+                                        style={{ width: RENDER_MAP_TILE_WIDTH, height: RENDER_MAP_TILE_HEIGHT }}
                                         source={{ uri: `https://pathadvisor.ust.hk/api/floors/${mapTileBlock.floorId}/map-tiles?x=${mapTileBlock.x}&y=${mapTileBlock.y}&zoomLevel=${mapTileBlock.zoomLevel}` }}
                                     />
                                 )

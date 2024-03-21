@@ -3,7 +3,7 @@ import { StyleSheet, View, Image } from "react-native"
 import { Polyline, Svg } from "react-native-svg";
 import { ReactNativeZoomableView } from "@openspacelabs/react-native-zoomable-view"
 
-import MapTilesBackground from "./MapTilesBackground";
+import MapTilesBackground, { LOGIC_MAP_TILE_WIDTH, LOGIC_MAP_TILE_HEIGHT, RENDER_MAP_TILE_WIDTH, RENDER_MAP_TILE_HEIGHT } from "./MapTilesBackground";
 import NodeView from "./NodeView";
 
 import * as api from "../../backend/api"
@@ -12,7 +12,6 @@ import PathNode from "../../backend/schema/PathNode";
 
 import { Path } from "../pages/PathAdvisorPage";
 import { useFloorsContext } from "../pages/pathAdvisorPageContext";
-
 import { getMapTileStartCoordinates, getMapTilesSize } from "../utils";
 
 interface MapViewProps {
@@ -24,44 +23,55 @@ interface MapViewProps {
 
 const MapView = ({ currentFloorId, fromNode, toNode, path }: MapViewProps) => {
     const floors = useFloorsContext();
-    const [showPin, setShowPin] = useState<boolean>(false);
     const [nodes, setNodes] = useState<Node[]>([]);
-
-    useEffect(() => {
-        if (toNode)
-            setShowPin(toNode.floorId === currentFloorId);
-        else
-            setShowPin(false);
-    })
 
     const { tileStartX, tileStartY } = useMemo(() => {
         return getMapTileStartCoordinates(floors[currentFloorId])
     }, [currentFloorId])
 
-    const { width: contentWidth, height: contentHeight } = useMemo(() => {
+    const { logicWidth, logicHeight, renderWidth, renderHeight } = useMemo(() => {
         return getMapTilesSize(floors[currentFloorId]);
     }, [currentFloorId])
 
     useEffect(() => {
-        const boxCoordinates = `${tileStartX},${tileStartY},${tileStartX + contentWidth},${tileStartY + contentHeight}`
+        const boxCoordinates = `${tileStartX},${tileStartY},${tileStartX + logicWidth},${tileStartY + logicHeight}`
         api.getNodesWithinBoundingBox(floors[currentFloorId]._id, boxCoordinates, true).then((res) => {
             setNodes(res.data);
         })
-    }, [tileStartX, tileStartY, contentWidth, contentHeight])
+    }, [tileStartX, tileStartY, logicWidth, logicHeight])
 
     return (
         <ReactNativeZoomableView
             initialZoom={0.3}
             minZoom={0.1}
             maxZoom={undefined}
-            contentWidth={contentWidth}
-            contentHeight={contentHeight}
+            contentWidth={renderWidth}
+            contentHeight={renderHeight}
         >
             <MapTilesBackground floorId={currentFloorId}>
                 {
-                    toNode && showPin &&
+                    fromNode && fromNode.floorId === currentFloorId &&
                     <Image
-                        style={[styles.pin, { left: toNode.centerCoordinates![0] - tileStartX, top: toNode.centerCoordinates![1] - tileStartY }]}
+                        style={
+                            [styles.pin,
+                            {
+                                left: (fromNode.centerCoordinates![0] - tileStartX) * (RENDER_MAP_TILE_WIDTH / LOGIC_MAP_TILE_WIDTH),
+                                top: (fromNode.centerCoordinates![1] - tileStartY) * (RENDER_MAP_TILE_HEIGHT / LOGIC_MAP_TILE_HEIGHT)
+                            }]
+                        }
+                        source={require('../assets/pin.png')}
+                    />
+                }
+                {
+                    toNode && toNode.floorId === currentFloorId &&
+                    <Image
+                        style={
+                            [styles.pin,
+                            {
+                                left: (toNode.centerCoordinates![0] - tileStartX) * (RENDER_MAP_TILE_WIDTH / LOGIC_MAP_TILE_WIDTH),
+                                top: (toNode.centerCoordinates![1] - tileStartY) * (RENDER_MAP_TILE_HEIGHT / LOGIC_MAP_TILE_HEIGHT)
+                            }]
+                        }
                         source={require('../assets/pin.png')}
                     />
                 }
@@ -69,12 +79,13 @@ const MapView = ({ currentFloorId, fromNode, toNode, path }: MapViewProps) => {
                 {
                     path && path["floors"][currentFloorId] &&
 
-                    <View style={[styles.pathContainer, { width: contentWidth / 10, height: contentHeight / 10, }]}>
-                        <Svg viewBox={`${tileStartX} ${tileStartY} ${contentWidth} ${contentHeight}`}>
+                    <View style={[styles.pathContainer, { width: renderWidth / 3, height: renderHeight / 3, }]}>
+                        <Svg viewBox={`${tileStartX} ${tileStartY} ${renderWidth} ${renderHeight}`}>
                             <Polyline
-                                points={path["floors"][currentFloorId].map((pathNode: PathNode) => `${pathNode.coordinates[0]},${pathNode.coordinates[1]}`).join(' ')}
+                                points={path["floors"][currentFloorId].map((pathNode: PathNode) =>
+                                    `${tileStartX + ((pathNode.coordinates[0] - tileStartX) * (RENDER_MAP_TILE_WIDTH / LOGIC_MAP_TILE_WIDTH))},${tileStartY + (pathNode.coordinates[1] - tileStartY) * (RENDER_MAP_TILE_HEIGHT / LOGIC_MAP_TILE_HEIGHT)}`).join(' ')}
                                 stroke="red"
-                                strokeWidth="10"
+                                strokeWidth="3"
                                 fill="none"
                             />
                         </Svg>
@@ -96,7 +107,8 @@ export default MapView;
 const styles = StyleSheet.create({
     pin: {
         position: 'absolute',
-        resizeMode: 'contain',
+        width: 4,
+        height: 9
     },
 
     /* Scale down the width and height of the container to reduce the size of the rendered Svg component */
@@ -105,7 +117,7 @@ const styles = StyleSheet.create({
         top: 0,
         left: 0,
 
-        transform: [{ scale: 10 }],
+        transform: [{ scale: 3 }],
         transformOrigin: "top left",
     }
 });

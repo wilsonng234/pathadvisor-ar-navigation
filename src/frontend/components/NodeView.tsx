@@ -4,6 +4,7 @@ import { Image, Text, View, ViewStyle } from "react-native";
 import Node from "../../backend/schema/Node";
 import { getMapTileStartCoordinates, getNodeImageByConnectorId } from "../utils";
 import { useFloorsContext, useTagsContext } from "../pages/pathAdvisorPageContext";
+import { LOGIC_MAP_TILE_WIDTH, LOGIC_MAP_TILE_HEIGHT, RENDER_MAP_TILE_HEIGHT, RENDER_MAP_TILE_WIDTH } from "./MapTilesBackground";
 
 interface NodeViewProps {
     currentFloorId: string
@@ -21,7 +22,7 @@ const NodeView = ({ currentFloorId, node }: NodeViewProps) => {
     if (!node.centerCoordinates)
         return null;
 
-    return <View style={styles.container(node.centerCoordinates[0] - tileStartX, node.centerCoordinates[1] - tileStartY)}>
+    return <View style={styles.container((node.centerCoordinates[0] - tileStartX) * (RENDER_MAP_TILE_WIDTH / LOGIC_MAP_TILE_WIDTH), (node.centerCoordinates[1] - tileStartY) * (RENDER_MAP_TILE_HEIGHT / LOGIC_MAP_TILE_HEIGHT))}>
         {
             // if node is a room, display the room name
             node.name?.toUpperCase().includes("ROOM") ?
@@ -59,12 +60,12 @@ const styles = {
     }),
 
     text: {
-        fontSize: 20,
+        fontSize: 6,
         color: 'black'
     },
 
     icon: {
-        width: 20,
-        height: 20
+        width: 10,
+        height: 10
     }
 };

@@ -57,7 +57,14 @@ const PathAdvisorPage = () => {
     }, []);
 
     useEffect(() => {
-        setCurrentFloorId(fromNode ? fromNode.floorId : "G");
+        if (!fromNode)
+            setCurrentFloorId(toNode ? toNode.floorId : "1")
+        else
+            setCurrentFloorId(fromNode.floorId);
+    }, [toNode])
+
+    useEffect(() => {
+        setCurrentFloorId(fromNode ? fromNode.floorId : "1");
     }, [fromNode])
 
     // update path when fromNode or toNode changes
