@@ -1,5 +1,4 @@
 import React from 'react';
-import { StyleSheet, Dimensions } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -33,14 +32,3 @@ function App(): React.JSX.Element {
 }
 
 export default App;
-
-const styles = StyleSheet.create({
-  mapDrawerOverlay: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    opacity: 0.0,
-    height: Dimensions.get('window').height,
-    width: '5%',
-  }
-});
