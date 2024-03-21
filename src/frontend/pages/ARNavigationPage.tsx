@@ -1,8 +1,9 @@
-import React, { useEffect, useRef } from "react";
+import React, { RefObject, useRef, useState } from "react";
 import UnityView from '@azesmway/react-native-unity';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import { Button, Text, View } from "react-native";
+import { Button, View } from "react-native";
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface UnityMessage {
     gameObject: string;
@@ -10,8 +11,7 @@ interface UnityMessage {
     message: object;
 }
 
-const Unity = () => {
-    const unityRef = useRef<UnityView>(null);
+const Unity = ({ unityRef, focusedUnityView }: { unityRef: RefObject<UnityView>, focusedUnityView: boolean }) => {
     const sendMessageToUnity = (message: UnityMessage) => {
         if (unityRef?.current) {
             unityRef.current.postMessage(message.gameObject, message.methodName, JSON.stringify(message.message));
@@ -20,13 +20,16 @@ const Unity = () => {
 
     return (
         <View style={{ flex: 1 }}>
-            <UnityView
-                ref={unityRef}
-                style={{ flex: 1 }}
-                onUnityMessage={(result) => {
-                    console.log('Message Here : ', result.nativeEvent.message)
-                }}
-            />
+            {
+                // Remount UnityView when the page is focused
+                focusedUnityView ? <UnityView
+                    ref={unityRef}
+                    style={{ flex: 1 }}
+                    onUnityMessage={(result) => {
+                        console.log('Message Here : ', result.nativeEvent.message)
+                    }}
+                /> : null
+            }
 
             <Button
                 title="Send Message to Unity"
@@ -46,29 +49,26 @@ const Unity = () => {
 };
 
 const ARNavigationPage = ({ navigation }) => {
-    // const [loading, setLoading] = React.useState(true);
+    const unityRef = useRef<UnityView>(null);
+    const [focusedUnityView, setfocusedUnityView] = useState<boolean>(true);
+
+    // Remount UnityView when the page is focused
+    useFocusEffect(() => {
+        setfocusedUnityView(true);
+
+        return () => {
+            setfocusedUnityView(false);
+        };
+    });
 
     const handleExitArNavigationPage = () => {
-        // setLoading(true);
         navigation.goBack();
     };
-    // console.log('rerender')
-    // useEffect(() => {
-    //     setTimeout(() => {
-    //         setLoading(false);
-    //     }, 1000);
-    // })
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
-            {/* {loading ? <Text style={{ fontSize: 100 }}>loading</Text> : <Unity />} */}
-            <Unity />
-            <Button
-                onPress={handleExitArNavigationPage}
-                title="Exit AR Navigation" />
-            {/* <ARTopNavigationBar latitude={22.396427} longitude={114.109497} handleExitArNavigationPage={() => navigation.goBack()} />
-            <ARNavigationCamera />
-            <ARBottomNavigationBar /> */}
+            <Unity unityRef={unityRef} focusedUnityView={focusedUnityView} />
+            <Button title="Exit AR Navigation" onPress={handleExitArNavigationPage} />
         </GestureHandlerRootView>
     );
 }
