@@ -1,7 +1,10 @@
 import React from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
+import { DefaultError, useQuery } from "@tanstack/react-query";
 
-import { useFloorsContext } from '../pages/pathAdvisorPageContext';
+import * as api from "../../backend/api"
+import Floor from 'backend/schema/floor';
+
 import { getMapTileStartCoordinates, getMapTilesNumber } from '../utils';
 
 export const LOGIC_MAP_TILE_WIDTH = 200;
@@ -22,10 +25,34 @@ interface MapTilesBackgroundProps {
 }
 
 const MapTilesBackground = ({ floorId, children }: MapTilesBackgroundProps) => {
-    const floors = useFloorsContext();
+    const { data: floors, isLoading: isLoadingFloors } =
+        useQuery<{ data: Floor[] }, DefaultError, { [floorId: string]: Floor }>({
+            queryKey: ["floors"],
+            queryFn: api.getAllFloors,
+            select: (res) => {
+                const floors: { [floorId: string]: Floor } = {};
 
-    const { tileStartX, tileStartY } = getMapTileStartCoordinates(floors[floorId]);
-    const { numRow, numCol } = getMapTilesNumber(floors[floorId]);
+                res.data.forEach((floor: Floor) => {
+                    floors[floor._id] = floor;
+                });
+
+                return floors;
+            },
+            staleTime: Infinity
+        })
+
+    if (isLoadingFloors) {
+        return <Text style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            fontSize: 80,
+            color: 'red'
+        }}>Loading...</Text>
+    }
+
+    const { tileStartX, tileStartY } = getMapTileStartCoordinates(floors![floorId]);
+    const { numRow, numCol } = getMapTilesNumber(floors![floorId]);
 
     const mapTileBlocks = new Array<Array<MapTileBlock>>(numRow);
     for (let i = 0; i < numRow; i++) {

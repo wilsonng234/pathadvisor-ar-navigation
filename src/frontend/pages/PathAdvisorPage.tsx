@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { View, StyleSheet, Text } from "react-native";
 import { TouchableHighlight, TouchableOpacity } from "react-native-gesture-handler";
+import { DefaultError, useQuery } from "@tanstack/react-query";
 
 import SearchLocationBar from "../components/SearchLocationBar";
 import MapView from "../components/MapView";
 import RoomDetailsBox from "../components/RoomDetailsBox";
-import { PathAdvisorPageContext, PathAdvisorPageContextType } from "./pathAdvisorPageContext";
 
 import * as api from '../../backend/api';
 import Building from "../../backend/schema/Building";
@@ -26,7 +26,6 @@ enum NavigationType {
 }
 
 const PathAdvisorPage = () => {
-    const [pathAdvisorPageContext, setPathAdvisorPageContext] = useState<PathAdvisorPageContextType>({ buildings: null, floors: null, tags: null });
     const [enableFromSearchBar, setEnableFromSearchBar] = useState<boolean>(false);
     const [fromNode, setFromNode] = useState<Node | null>(null);
     const [toNode, setToNode] = useState<Node | null>(null);
@@ -34,27 +33,53 @@ const PathAdvisorPage = () => {
     const [currentFloorId, setCurrentFloorId] = useState<string>("G");  // default floor is G
     const [navigationType, setNavigationType] = useState<NavigationType | null>(null);
 
-    useEffect(() => {
-        Promise.all([api.getAllBuildings(), api.getAllFloors(), api.getAllTags()]).then(([buildingsRes, floorsRes, tagsRes]) => {
-            const buildings = {};
-            const floors = {};
-            const tags = {};
+    const { data: buildings, isLoading: isLoadingBuildings } =
+        useQuery<{ data: Building[] }, DefaultError, { [buildingId: string]: Building }>({
+            queryKey: ["buildings"],
+            queryFn: api.getAllBuildings,
+            select: (res) => {
+                const buildings: { [buildingId: string]: Building } = {};
 
-            buildingsRes.data.forEach((building: Building) => {
-                buildings[building._id] = building;
-            });
+                res.data.forEach((building: Building) => {
+                    buildings[building._id] = building;
+                });
 
-            floorsRes.data.forEach((floor: Floor) => {
-                floors[floor._id] = floor;
-            });
+                return buildings;
+            },
+            staleTime: Infinity
+        })
 
-            tagsRes.data.forEach((tag: Tag) => {
-                tags[tag._id] = tag;
-            });
+    const { data: floors, isLoading: isLoadingFloors } =
+        useQuery<{ data: Floor[] }, DefaultError, { [floorId: string]: Floor }>({
+            queryKey: ["floors"],
+            queryFn: api.getAllFloors,
+            select: (res) => {
+                const floors: { [floorId: string]: Floor } = {};
 
-            setPathAdvisorPageContext({ ...pathAdvisorPageContext, buildings, floors, tags });
-        });
-    }, []);
+                res.data.forEach((floor: Floor) => {
+                    floors[floor._id] = floor;
+                });
+
+                return floors;
+            },
+            staleTime: Infinity
+        })
+
+    const { data: tags, isLoading: isLoadingTags } =
+        useQuery<{ data: Tag[] }, DefaultError, { [tagId: string]: Tag }>({
+            queryKey: ["tags"],
+            queryFn: api.getAllTags,
+            select: (res) => {
+                const tags: { [tagId: string]: Tag } = {};
+
+                res.data.forEach((tag: Tag) => {
+                    tags[tag._id] = tag;
+                });
+
+                return tags;
+            },
+            staleTime: Infinity
+        })
 
     useEffect(() => {
         if (!fromNode)
@@ -154,12 +179,18 @@ const PathAdvisorPage = () => {
         </View>
     }
 
-    if (!pathAdvisorPageContext.buildings || !pathAdvisorPageContext.floors || !pathAdvisorPageContext.tags) {
-        return null;
+    if (isLoadingBuildings || isLoadingFloors || isLoadingTags) {
+        return <Text style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            fontSize: 80,
+            color: 'red'
+        }}>Loading...</Text>
     }
-    else {
+    else
         return (
-            <PathAdvisorPageContext.Provider value={pathAdvisorPageContext}>
+            <View style={{ flex: 1 }}>
                 <View style={{ zIndex: 2 }}>
                     {
                         enableFromSearchBar &&
@@ -169,8 +200,6 @@ const PathAdvisorPage = () => {
                 </View>
 
                 <MapView currentFloorId={currentFloorId} fromNode={fromNode} toNode={toNode} path={path} />
-
-                {/* <View style={styles.mapDrawerOverlay} /> */}
 
                 {
                     path &&
@@ -204,23 +233,13 @@ const PathAdvisorPage = () => {
                         <RoomDetailsBox node={toNode} renderButtons={renderRoomDetailsBoxButtons} />
                     </View>
                 }
-            </PathAdvisorPageContext.Provider>
+            </View>
         );
-    }
 }
 
 export default PathAdvisorPage;
 
 const styles = StyleSheet.create({
-    // mapDrawerOverlay: {
-    //     position: 'absolute',
-    //     left: 0,
-    //     top: 0,
-    //     opacity: 0.0,
-    //     height: Dimensions.get('window').height,
-    //     width: '5%',
-    // },
-
     pathFloorControlContainer: {
         position: "absolute",
         right: 10,
