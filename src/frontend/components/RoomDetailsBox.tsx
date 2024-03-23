@@ -1,10 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-
-import { useBuildingsContext, useFloorsContext } from '../pages/pathAdvisorPageContext';
+import { UseQueryResult } from '@tanstack/react-query';
 
 import Node from '../../backend/schema/Node';
+
 import { convertFloorIdToFloorName } from '../utils';
+import { BuildingsDict, FloorsDict, useBuildingsQuery, useFloorsQuery } from '../utils/reactQueryFactory';
 
 interface RoomDetailsBoxProps {
     node: Node;
@@ -12,21 +13,30 @@ interface RoomDetailsBoxProps {
 }
 
 const RoomDetailsBox = ({ node, renderButtons }: RoomDetailsBoxProps) => {
-    const buildings = useBuildingsContext();
-    const floors = useFloorsContext();
+    const { data: buildings, isLoading: isLoadingBuildings }: UseQueryResult<BuildingsDict> = useBuildingsQuery();
+    const { data: floors, isLoading: isLoadingFloors }: UseQueryResult<FloorsDict> = useFloorsQuery();
 
-    return (
-        <View style={styles.roomDetailsBox}>
-            <Text style={styles.roomName}>
-                {node.name}
-            </Text>
-            <Text style={styles.roomFloor}>
-                {buildings[floors[node.floorId].buildingId].name} - {convertFloorIdToFloorName(floors[node.floorId].name)}
-            </Text>
+    if (isLoadingBuildings || isLoadingFloors)
+        return <Text style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            fontSize: 80,
+            color: 'red'
+        }}>Loading...</Text>
+    else
+        return (
+            <View style={styles.roomDetailsBox}>
+                <Text style={styles.roomName}>
+                    {node.name}
+                </Text>
+                <Text style={styles.roomFloor}>
+                    {buildings![floors![node.floorId].buildingId].name} {floors![node.floorId].name ? `- ${convertFloorIdToFloorName(floors![node.floorId].name)}` : ""}
+                </Text>
 
-            {renderButtons()}
-        </View>
-    );
+                {renderButtons()}
+            </View>
+        );
 }
 
 export default RoomDetailsBox;

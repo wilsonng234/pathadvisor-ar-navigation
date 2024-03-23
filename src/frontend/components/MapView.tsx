@@ -1,18 +1,18 @@
-import React, { useEffect, useMemo, useState } from "react"
-import { StyleSheet, View, Image } from "react-native"
+import React from "react"
+import { StyleSheet, View, Image, Text } from "react-native"
 import { Polyline, Svg } from "react-native-svg";
 import { ReactNativeZoomableView } from "@openspacelabs/react-native-zoomable-view"
+import { UseQueryResult } from "@tanstack/react-query";
 
 import MapTilesBackground, { LOGIC_MAP_TILE_WIDTH, LOGIC_MAP_TILE_HEIGHT, RENDER_MAP_TILE_WIDTH, RENDER_MAP_TILE_HEIGHT } from "./MapTilesBackground";
 import NodeView from "./NodeView";
 
-import * as api from "../../backend/api"
 import Node from "../../backend/schema/Node"
 import PathNode from "../../backend/schema/PathNode";
 
 import { Path } from "../pages/PathAdvisorPage";
-import { useFloorsContext } from "../pages/pathAdvisorPageContext";
 import { getMapTileStartCoordinates, getMapTilesSize } from "../utils";
+import { FloorsDict, useFloorsQuery, useNodesQuery } from "../utils/reactQueryFactory";
 
 interface MapViewProps {
     currentFloorId: string;
@@ -22,23 +22,21 @@ interface MapViewProps {
 }
 
 const MapView = ({ currentFloorId, fromNode, toNode, path }: MapViewProps) => {
-    const floors = useFloorsContext();
-    const [nodes, setNodes] = useState<Node[]>([]);
+    const { data: floors, isLoading: isLoadingFloors }: UseQueryResult<FloorsDict> = useFloorsQuery()
+    const { data: nodes, isLoading: isLoadingNodes }: UseQueryResult<Node[]> = useNodesQuery(floors, currentFloorId)
 
-    const { tileStartX, tileStartY } = useMemo(() => {
-        return getMapTileStartCoordinates(floors[currentFloorId])
-    }, [currentFloorId])
+    if (isLoadingNodes || isLoadingFloors)
+        return <Text style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            fontSize: 80,
+            color: 'red'
+        }}>Loading...</Text>
 
-    const { logicWidth, logicHeight, renderWidth, renderHeight } = useMemo(() => {
-        return getMapTilesSize(floors[currentFloorId]);
-    }, [currentFloorId])
-
-    useEffect(() => {
-        const boxCoordinates = `${tileStartX},${tileStartY},${tileStartX + logicWidth},${tileStartY + logicHeight}`
-        api.getNodesWithinBoundingBox(floors[currentFloorId]._id, boxCoordinates, true).then((res) => {
-            setNodes(res.data);
-        })
-    }, [tileStartX, tileStartY, logicWidth, logicHeight])
+    // floors and nodes are guaranteed to be loaded at this point
+    const { tileStartX, tileStartY } = getMapTileStartCoordinates(floors![currentFloorId]);
+    const { renderWidth, renderHeight } = getMapTilesSize(floors![currentFloorId]);
 
     return (
         <ReactNativeZoomableView
@@ -93,7 +91,7 @@ const MapView = ({ currentFloorId, fromNode, toNode, path }: MapViewProps) => {
                 }
 
                 {
-                    nodes.map((node: Node) =>
+                    nodes!.map((node: Node) =>
                         <NodeView key={node._id} currentFloorId={currentFloorId} node={node} />
                     )
                 }

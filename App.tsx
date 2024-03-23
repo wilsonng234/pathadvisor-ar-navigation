@@ -1,8 +1,8 @@
 import React from 'react';
-import { StyleSheet, View, Button, Dimensions } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import PathAdvisorPage from './src/frontend/pages/PathAdvisorPage';
 import EventPage from './src/frontend/pages/EventPage';
@@ -12,57 +12,23 @@ import ARNavigationPage from './src/frontend/pages/ARNavigationPage';
 const Drawer = createDrawerNavigator();
 // const insets = useSafeAreaInsets();
 
-// function HomeScreen() {
-//   return (
-//     <>
-//       <MapView />
-//       <View style={styles.mapDrawerOverlay} />
-//     </>
-//   );
-// }
-
-function NotificationsScreen({ navigation }) {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Button onPress={() => navigation.goBack()} title="Go back home" />
-    </View>
-  );
-}
-
-// function CustomDrawerContent(props) {
-//   return (
-//     <DrawerContentScrollView {...props}>
-//       <DrawerItemList {...props} />
-//       <DrawerItem label="Help" onPress={() => alert('Link to help')} />
-//     </DrawerContentScrollView>
-//   );
-// }
+const queryClient = new QueryClient()
 
 function App(): React.JSX.Element {
   return (
-    <SafeAreaProvider>
-      <NavigationContainer>
-        {/* <Drawer.Navigator initialRouteName="Main Page" drawerContent={(props) => <CustomDrawerContent {...props} />} > */}
-        <Drawer.Navigator initialRouteName="HKUST PathAdvisor">
-          <Drawer.Screen name="HKUST PathAdvisor" component={PathAdvisorPage} options={{ drawerLabel: 'PathAdvisor Map', }} />
-          <Drawer.Screen name="Events" component={EventPage} />
-          <Drawer.Screen name="Bus Queue Statistics" component={BusQueueStatPage} />
-          <Drawer.Screen name="AR Navigation" component={ARNavigationPage} options={{ headerShown: false }} />
-        </Drawer.Navigator>
-      </NavigationContainer>
-    </SafeAreaProvider>
+    <QueryClientProvider client={queryClient}>
+      <SafeAreaProvider>
+        <NavigationContainer>
+          <Drawer.Navigator initialRouteName="HKUST PathAdvisor">
+            <Drawer.Screen name="HKUST PathAdvisor" component={PathAdvisorPage} options={{ drawerLabel: 'PathAdvisor Map', }} />
+            <Drawer.Screen name="Events" component={EventPage} />
+            <Drawer.Screen name="Bus Queue Statistics" component={BusQueueStatPage} />
+            <Drawer.Screen name="AR Navigation" component={ARNavigationPage} options={{ headerShown: false }} />
+          </Drawer.Navigator>
+        </NavigationContainer>
+      </SafeAreaProvider>
+    </QueryClientProvider>
   );
 }
 
 export default App;
-
-const styles = StyleSheet.create({
-  mapDrawerOverlay: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    opacity: 0.0,
-    height: Dimensions.get('window').height,
-    width: '5%',
-  }
-});

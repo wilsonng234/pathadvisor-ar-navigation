@@ -1,10 +1,13 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { Image, Text, View, ViewStyle } from "react-native";
+import { UseQueryResult } from "@tanstack/react-query";
+
+import { LOGIC_MAP_TILE_WIDTH, LOGIC_MAP_TILE_HEIGHT, RENDER_MAP_TILE_HEIGHT, RENDER_MAP_TILE_WIDTH } from "./MapTilesBackground";
 
 import Node from "../../backend/schema/Node";
+
 import { getMapTileStartCoordinates, getNodeImageByConnectorId } from "../utils";
-import { useFloorsContext, useTagsContext } from "../pages/pathAdvisorPageContext";
-import { LOGIC_MAP_TILE_WIDTH, LOGIC_MAP_TILE_HEIGHT, RENDER_MAP_TILE_HEIGHT, RENDER_MAP_TILE_WIDTH } from "./MapTilesBackground";
+import { FloorsDict, TagsDict, useFloorsQuery, useTagsQuery } from "../utils/reactQueryFactory";
 
 interface NodeViewProps {
     currentFloorId: string
@@ -12,15 +15,23 @@ interface NodeViewProps {
 }
 
 const NodeView = ({ currentFloorId, node }: NodeViewProps) => {
-    const floors = useFloorsContext();
-    const tags = useTagsContext();
-
-    const { tileStartX, tileStartY } = useMemo(() => {
-        return getMapTileStartCoordinates(floors[currentFloorId])
-    }, [currentFloorId])
+    const { data: floors, isLoading: isLoadingFloors }: UseQueryResult<FloorsDict> = useFloorsQuery()
+    const { data: tags, isLoading: isLoadingTags }: UseQueryResult<TagsDict> = useTagsQuery()
 
     if (!node.centerCoordinates)
         return null;
+
+    if (isLoadingFloors || isLoadingTags)
+        return <Text style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            fontSize: 80,
+            color: 'red'
+        }}>Loading...</Text>
+
+    // floors and tags are guaranteed to be loaded at this point
+    const { tileStartX, tileStartY } = getMapTileStartCoordinates(floors![currentFloorId])
 
     return <View style={styles.container((node.centerCoordinates[0] - tileStartX) * (RENDER_MAP_TILE_WIDTH / LOGIC_MAP_TILE_WIDTH), (node.centerCoordinates[1] - tileStartY) * (RENDER_MAP_TILE_HEIGHT / LOGIC_MAP_TILE_HEIGHT))}>
         {
@@ -37,9 +48,9 @@ const NodeView = ({ currentFloorId, node }: NodeViewProps) => {
                         style={styles.icon} /> :
 
                     // else if node contains tagIds, display the image of first tag
-                    node.tagIds && node.tagIds.length > 0 && tags[node.tagIds[0]].imageUrl ?
+                    node.tagIds && node.tagIds.length > 0 && tags![node.tagIds[0]].imageUrl ?
                         <Image
-                            source={{ uri: tags[node.tagIds[0]].imageUrl }}
+                            source={{ uri: tags![node.tagIds[0]].imageUrl }}
                             style={styles.icon} /> :
 
                         // else display the name of the node
