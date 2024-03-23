@@ -31,7 +31,7 @@ const RoomDetailsBox = ({ node, renderButtons }: RoomDetailsBoxProps) => {
                     {node.name}
                 </Text>
                 <Text style={styles.roomFloor}>
-                    {buildings![floors![node.floorId].buildingId].name} {floors![node.floorId].name ? `- ${convertFloorIdToFloorName(floors![node.floorId].name)}}` : ""}
+                    {buildings![floors![node.floorId].buildingId].name} {floors![node.floorId].name ? `- ${convertFloorIdToFloorName(floors![node.floorId].name)}` : ""}
                 </Text>
 
                 {renderButtons()}
