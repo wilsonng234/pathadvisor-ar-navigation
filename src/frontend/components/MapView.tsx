@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react"
+import React from "react"
 import { StyleSheet, View, Image, Text } from "react-native"
 import { Polyline, Svg } from "react-native-svg";
 import { ReactNativeZoomableView } from "@openspacelabs/react-native-zoomable-view"
@@ -39,34 +39,25 @@ const MapView = ({ currentFloorId, fromNode, toNode, path }: MapViewProps) => {
             staleTime: Infinity
         })
 
-    const [nodes, setNodes] = useState<Node[]>([]);
+    const { data: nodes, isLoading: isLoadingNodes } =
+        useQuery<{ data: Node[] }, DefaultError, Node[]>({
+            queryKey: ["nodes", currentFloorId],
+            queryFn: () => {
+                if (!floors)
+                    throw new Error("floors is not loaded yet");
 
-    const { tileStartX, tileStartY } = useMemo(() => {
-        if (!floors)
-            return { tileStartX: undefined, tileStartY: undefined }
-        else {
-            return getMapTileStartCoordinates(floors[currentFloorId])
-        }
-    }, [floors, currentFloorId])
+                const { tileStartX, tileStartY } = getMapTileStartCoordinates(floors[currentFloorId]);
+                const { logicWidth, logicHeight } = getMapTilesSize(floors[currentFloorId]);
+                const boxCoordinates = `${tileStartX},${tileStartY},${tileStartX + logicWidth},${tileStartY + logicHeight}`
 
-    const { logicWidth, logicHeight, renderWidth, renderHeight } = useMemo(() => {
-        if (!floors)
-            return { logicWidth: undefined, logicHeight: undefined, renderWidth: undefined, renderHeight: undefined }
-        else
-            return getMapTilesSize(floors[currentFloorId]);
-    }, [currentFloorId])
-
-    useEffect(() => {
-        if (!floors || !tileStartX || !tileStartY || !logicWidth || !logicHeight)
-            return;
-
-        const boxCoordinates = `${tileStartX},${tileStartY},${tileStartX + logicWidth},${tileStartY + logicHeight}`
-        api.getNodesWithinBoundingBox(floors[currentFloorId]._id, boxCoordinates, true).then((res) => {
-            setNodes(res.data);
+                return api.getNodesWithinBoundingBox(floors[currentFloorId]._id, boxCoordinates, true)
+            },
+            select: (res) => res.data,
+            staleTime: Infinity,
+            enabled: !!floors
         })
-    }, [floors, tileStartX, tileStartY, logicWidth, logicHeight])
 
-    if (isLoadingFloors || !tileStartX || !tileStartY || !logicWidth || !logicHeight)
+    if (isLoadingNodes || isLoadingFloors)
         return <Text style={{
             flex: 1,
             justifyContent: "center",
@@ -74,68 +65,71 @@ const MapView = ({ currentFloorId, fromNode, toNode, path }: MapViewProps) => {
             fontSize: 80,
             color: 'red'
         }}>Loading...</Text>
-    else {
-        return (
-            <ReactNativeZoomableView
-                initialZoom={0.3}
-                minZoom={0.1}
-                maxZoom={undefined}
-                contentWidth={renderWidth}
-                contentHeight={renderHeight}
-            >
-                <MapTilesBackground floorId={currentFloorId}>
-                    {
-                        fromNode && fromNode.floorId === currentFloorId &&
-                        <Image
-                            style={
-                                [styles.pin,
-                                {
-                                    left: (fromNode.centerCoordinates![0] - tileStartX) * (RENDER_MAP_TILE_WIDTH / LOGIC_MAP_TILE_WIDTH),
-                                    top: (fromNode.centerCoordinates![1] - tileStartY) * (RENDER_MAP_TILE_HEIGHT / LOGIC_MAP_TILE_HEIGHT)
-                                }]
-                            }
-                            source={require('../assets/pin.png')}
-                        />
-                    }
-                    {
-                        toNode && toNode.floorId === currentFloorId &&
-                        <Image
-                            style={
-                                [styles.pin,
-                                {
-                                    left: (toNode.centerCoordinates![0] - tileStartX) * (RENDER_MAP_TILE_WIDTH / LOGIC_MAP_TILE_WIDTH),
-                                    top: (toNode.centerCoordinates![1] - tileStartY) * (RENDER_MAP_TILE_HEIGHT / LOGIC_MAP_TILE_HEIGHT)
-                                }]
-                            }
-                            source={require('../assets/pin.png')}
-                        />
-                    }
 
-                    {
-                        path && path["floors"][currentFloorId] &&
+    // floors and nodes are guaranteed to be loaded at this point
+    const { tileStartX, tileStartY } = getMapTileStartCoordinates(floors![currentFloorId]);
+    const { renderWidth, renderHeight } = getMapTilesSize(floors![currentFloorId]);
 
-                        <View style={[styles.pathContainer, { width: renderWidth / 3, height: renderHeight / 3, }]}>
-                            <Svg viewBox={`${tileStartX} ${tileStartY} ${renderWidth} ${renderHeight}`}>
-                                <Polyline
-                                    points={path["floors"][currentFloorId].map((pathNode: PathNode) =>
-                                        `${tileStartX + ((pathNode.coordinates[0] - tileStartX) * (RENDER_MAP_TILE_WIDTH / LOGIC_MAP_TILE_WIDTH))},${tileStartY + (pathNode.coordinates[1] - tileStartY) * (RENDER_MAP_TILE_HEIGHT / LOGIC_MAP_TILE_HEIGHT)}`).join(' ')}
-                                    stroke="red"
-                                    strokeWidth="3"
-                                    fill="none"
-                                />
-                            </Svg>
-                        </View>
-                    }
+    return (
+        <ReactNativeZoomableView
+            initialZoom={0.3}
+            minZoom={0.1}
+            maxZoom={undefined}
+            contentWidth={renderWidth}
+            contentHeight={renderHeight}
+        >
+            <MapTilesBackground floorId={currentFloorId}>
+                {
+                    fromNode && fromNode.floorId === currentFloorId &&
+                    <Image
+                        style={
+                            [styles.pin,
+                            {
+                                left: (fromNode.centerCoordinates![0] - tileStartX) * (RENDER_MAP_TILE_WIDTH / LOGIC_MAP_TILE_WIDTH),
+                                top: (fromNode.centerCoordinates![1] - tileStartY) * (RENDER_MAP_TILE_HEIGHT / LOGIC_MAP_TILE_HEIGHT)
+                            }]
+                        }
+                        source={require('../assets/pin.png')}
+                    />
+                }
+                {
+                    toNode && toNode.floorId === currentFloorId &&
+                    <Image
+                        style={
+                            [styles.pin,
+                            {
+                                left: (toNode.centerCoordinates![0] - tileStartX) * (RENDER_MAP_TILE_WIDTH / LOGIC_MAP_TILE_WIDTH),
+                                top: (toNode.centerCoordinates![1] - tileStartY) * (RENDER_MAP_TILE_HEIGHT / LOGIC_MAP_TILE_HEIGHT)
+                            }]
+                        }
+                        source={require('../assets/pin.png')}
+                    />
+                }
 
-                    {
-                        nodes.map((node: Node) =>
-                            <NodeView key={node._id} currentFloorId={currentFloorId} node={node} />
-                        )
-                    }
-                </MapTilesBackground>
-            </ReactNativeZoomableView >
-        )
-    }
+                {
+                    path && path["floors"][currentFloorId] &&
+
+                    <View style={[styles.pathContainer, { width: renderWidth / 3, height: renderHeight / 3, }]}>
+                        <Svg viewBox={`${tileStartX} ${tileStartY} ${renderWidth} ${renderHeight}`}>
+                            <Polyline
+                                points={path["floors"][currentFloorId].map((pathNode: PathNode) =>
+                                    `${tileStartX + ((pathNode.coordinates[0] - tileStartX) * (RENDER_MAP_TILE_WIDTH / LOGIC_MAP_TILE_WIDTH))},${tileStartY + (pathNode.coordinates[1] - tileStartY) * (RENDER_MAP_TILE_HEIGHT / LOGIC_MAP_TILE_HEIGHT)}`).join(' ')}
+                                stroke="red"
+                                strokeWidth="3"
+                                fill="none"
+                            />
+                        </Svg>
+                    </View>
+                }
+
+                {
+                    nodes!.map((node: Node) =>
+                        <NodeView key={node._id} currentFloorId={currentFloorId} node={node} />
+                    )
+                }
+            </MapTilesBackground>
+        </ReactNativeZoomableView >
+    )
 }
 
 export default MapView;
