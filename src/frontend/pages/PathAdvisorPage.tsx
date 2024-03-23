@@ -21,7 +21,7 @@ enum NavigationType {
     ARView = "ARView",
 }
 
-const PathAdvisorPage = () => {
+const PathAdvisorPage = ({ navigation }) => {
     const [enableFromSearchBar, setEnableFromSearchBar] = useState<boolean>(false);
     const [fromNode, setFromNode] = useState<Node | null>(null);
     const [toNode, setToNode] = useState<Node | null>(null);
@@ -106,8 +106,9 @@ const PathAdvisorPage = () => {
         }
 
         const handleARViewButton = () => {
-            setEnableFromSearchBar(true);
-            setNavigationType(NavigationType.ARView);
+            // setEnableFromSearchBar(true);
+            navigation.navigate("AR Navigation");
+            // setNavigationType(NavigationType.ARView);
         }
 
         return <View style={styles.roomDetailsBoxButtonsContainer}>

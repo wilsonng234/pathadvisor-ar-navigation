@@ -38,8 +38,8 @@ target 'PathadvisorArNavigation' do
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
-  pod 'ViroReact', :path => '../node_modules/@viro-community/react-viro/ios/'
-  pod 'ViroKit', :path => '../node_modules/@viro-community/react-viro/ios/dist/ViroRenderer/'
+  # pod 'ViroReact', :path => '../node_modules/@viro-community/react-viro/ios/'
+  # pod 'ViroKit', :path => '../node_modules/@viro-community/react-viro/ios/dist/ViroRenderer/'
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
   target 'PathadvisorArNavigationTests' do
     inherit! :complete
