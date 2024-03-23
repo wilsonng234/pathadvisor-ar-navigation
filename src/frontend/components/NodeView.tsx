@@ -1,15 +1,13 @@
 import React from "react";
 import { Image, Text, View, ViewStyle } from "react-native";
-import { DefaultError, useQuery } from "@tanstack/react-query";
+import { UseQueryResult } from "@tanstack/react-query";
 
 import { LOGIC_MAP_TILE_WIDTH, LOGIC_MAP_TILE_HEIGHT, RENDER_MAP_TILE_HEIGHT, RENDER_MAP_TILE_WIDTH } from "./MapTilesBackground";
 
-import * as api from "../../backend/api";
 import Node from "../../backend/schema/Node";
-import Floor from "../../backend/schema/Floor";
-import Tag from "../../backend/schema/Tag";
 
 import { getMapTileStartCoordinates, getNodeImageByConnectorId } from "../utils";
+import { FloorsDict, TagsDict, useFloorsQuery, useTagsQuery } from "../utils/reactQueryFactory";
 
 interface NodeViewProps {
     currentFloorId: string
@@ -17,37 +15,8 @@ interface NodeViewProps {
 }
 
 const NodeView = ({ currentFloorId, node }: NodeViewProps) => {
-    const { data: floors, isLoading: isLoadingFloors } =
-        useQuery<{ data: Floor[] }, DefaultError, { [floorId: string]: Floor }>({
-            queryKey: ["floors"],
-            queryFn: api.getAllFloors,
-            select: (res) => {
-                const floors: { [floorId: string]: Floor } = {};
-
-                res.data.forEach((floor: Floor) => {
-                    floors[floor._id] = floor;
-                });
-
-                return floors;
-            },
-            staleTime: Infinity
-        })
-
-    const { data: tags, isLoading: isLoadingTags } =
-        useQuery<{ data: Tag[] }, DefaultError, { [tagId: string]: Tag }>({
-            queryKey: ["tags"],
-            queryFn: api.getAllTags,
-            select: (res) => {
-                const tags: { [tagId: string]: Tag } = {};
-
-                res.data.forEach((tag: Tag) => {
-                    tags[tag._id] = tag;
-                });
-
-                return tags;
-            },
-            staleTime: Infinity
-        })
+    const { data: floors, isLoading: isLoadingFloors }: UseQueryResult<FloorsDict> = useFloorsQuery()
+    const { data: tags, isLoading: isLoadingTags }: UseQueryResult<TagsDict> = useTagsQuery()
 
     if (!node.centerCoordinates)
         return null;
@@ -61,6 +30,7 @@ const NodeView = ({ currentFloorId, node }: NodeViewProps) => {
             color: 'red'
         }}>Loading...</Text>
 
+    // floors and tags are guaranteed to be loaded at this point
     const { tileStartX, tileStartY } = getMapTileStartCoordinates(floors![currentFloorId])
 
     return <View style={styles.container((node.centerCoordinates[0] - tileStartX) * (RENDER_MAP_TILE_WIDTH / LOGIC_MAP_TILE_WIDTH), (node.centerCoordinates[1] - tileStartY) * (RENDER_MAP_TILE_HEIGHT / LOGIC_MAP_TILE_HEIGHT))}>

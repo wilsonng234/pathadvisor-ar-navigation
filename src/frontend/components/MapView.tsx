@@ -2,18 +2,17 @@ import React from "react"
 import { StyleSheet, View, Image, Text } from "react-native"
 import { Polyline, Svg } from "react-native-svg";
 import { ReactNativeZoomableView } from "@openspacelabs/react-native-zoomable-view"
-import { DefaultError, useQuery } from "@tanstack/react-query";
+import { UseQueryResult } from "@tanstack/react-query";
 
 import MapTilesBackground, { LOGIC_MAP_TILE_WIDTH, LOGIC_MAP_TILE_HEIGHT, RENDER_MAP_TILE_WIDTH, RENDER_MAP_TILE_HEIGHT } from "./MapTilesBackground";
 import NodeView from "./NodeView";
 
-import * as api from "../../backend/api"
 import Node from "../../backend/schema/Node"
-import Floor from "../../backend/schema/Floor";
 import PathNode from "../../backend/schema/PathNode";
 
 import { Path } from "../pages/PathAdvisorPage";
 import { getMapTileStartCoordinates, getMapTilesSize } from "../utils";
+import { FloorsDict, useFloorsQuery, useNodesQuery } from "../utils/reactQueryFactory";
 
 interface MapViewProps {
     currentFloorId: string;
@@ -23,39 +22,8 @@ interface MapViewProps {
 }
 
 const MapView = ({ currentFloorId, fromNode, toNode, path }: MapViewProps) => {
-    const { data: floors, isLoading: isLoadingFloors } =
-        useQuery<{ data: Floor[] }, DefaultError, { [floorId: string]: Floor }>({
-            queryKey: ["floors"],
-            queryFn: api.getAllFloors,
-            select: (res) => {
-                const floors: { [floorId: string]: Floor } = {};
-
-                res.data.forEach((floor: Floor) => {
-                    floors[floor._id] = floor;
-                });
-
-                return floors;
-            },
-            staleTime: Infinity
-        })
-
-    const { data: nodes, isLoading: isLoadingNodes } =
-        useQuery<{ data: Node[] }, DefaultError, Node[]>({
-            queryKey: ["nodes", currentFloorId],
-            queryFn: () => {
-                if (!floors)
-                    throw new Error("floors is not loaded yet");
-
-                const { tileStartX, tileStartY } = getMapTileStartCoordinates(floors[currentFloorId]);
-                const { logicWidth, logicHeight } = getMapTilesSize(floors[currentFloorId]);
-                const boxCoordinates = `${tileStartX},${tileStartY},${tileStartX + logicWidth},${tileStartY + logicHeight}`
-
-                return api.getNodesWithinBoundingBox(floors[currentFloorId]._id, boxCoordinates, true)
-            },
-            select: (res) => res.data,
-            staleTime: Infinity,
-            enabled: !!floors
-        })
+    const { data: floors, isLoading: isLoadingFloors }: UseQueryResult<FloorsDict> = useFloorsQuery()
+    const { data: nodes, isLoading: isLoadingNodes }: UseQueryResult<Node[]> = useNodesQuery(floors, currentFloorId)
 
     if (isLoadingNodes || isLoadingFloors)
         return <Text style={{
