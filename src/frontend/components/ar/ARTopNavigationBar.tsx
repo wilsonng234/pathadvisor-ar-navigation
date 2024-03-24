@@ -8,10 +8,10 @@ import { TouchableOpacity } from 'react-native-gesture-handler'
 interface ARTopNavigationBarProps {
     latitude?: number,
     longitude?: number,
-    handleExitArNavigationPage: () => void
+    handleExitArNavigationScreen: () => void
 }
 
-const ARTopNavigationBar = ({ latitude, longitude, handleExitArNavigationPage }: ARTopNavigationBarProps) => {
+const ARTopNavigationBar = ({ latitude, longitude, handleExitArNavigationScreen }: ARTopNavigationBarProps) => {
     return (
         <View style={{ ...styles.overlayContainer, ...styles.topContainer, ...styles.navigationBar }}>
             <MaterialIcon
@@ -22,7 +22,7 @@ const ARTopNavigationBar = ({ latitude, longitude, handleExitArNavigationPage }:
                 <Text style={styles.directionIndicator}>Turn Right</Text>
                 <Text style={styles.coordinateIndicator}>{`${latitude}, ${longitude}`}</Text>
             </View>
-            <TouchableOpacity onPress={handleExitArNavigationPage} >
+            <TouchableOpacity onPress={handleExitArNavigationScreen} >
                 <EntypoIcon
                     name="circle-with-cross"
                     color='white'

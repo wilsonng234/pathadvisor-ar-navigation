@@ -21,7 +21,7 @@ const Unity = ({ unityRef, focusedUnityView }: { unityRef: RefObject<UnityView>,
     return (
         <View style={{ flex: 1 }}>
             {
-                // Remount UnityView when the page is focused
+                // Remount UnityView when the screen is focused
                 focusedUnityView ? <UnityView
                     ref={unityRef}
                     style={{ flex: 1 }}
@@ -52,7 +52,7 @@ const ARNavigationScreen = ({ navigation }) => {
     const unityRef = useRef<UnityView>(null);
     const [focusedUnityView, setfocusedUnityView] = useState<boolean>(true);
 
-    // Remount UnityView when the page is focused
+    // Remount UnityView when the screen is focused
     useFocusEffect(() => {
         setfocusedUnityView(true);
 
