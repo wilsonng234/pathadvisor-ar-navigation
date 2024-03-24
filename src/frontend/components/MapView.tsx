@@ -10,7 +10,7 @@ import NodeView from "./NodeView";
 import Node from "../../backend/schema/Node"
 import PathNode from "../../backend/schema/PathNode";
 
-import { Path } from "../pages/PathAdvisorPage";
+import { Path } from "../pages/Home";
 import { getMapTileStartCoordinates, getMapTilesSize } from "../utils";
 import { FloorsDict, useFloorsQuery, useNodesQuery } from "../utils/reactQueryFactory";
 

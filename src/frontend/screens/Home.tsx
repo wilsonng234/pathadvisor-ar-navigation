@@ -21,7 +21,7 @@ enum NavigationType {
     ARView = "ARView",
 }
 
-const PathAdvisorPage = ({ navigation }) => {
+const HomeScreen = ({ navigation }) => {
     const [enableFromSearchBar, setEnableFromSearchBar] = useState<boolean>(false);
     const [fromNode, setFromNode] = useState<Node | null>(null);
     const [toNode, setToNode] = useState<Node | null>(null);
@@ -176,7 +176,7 @@ const PathAdvisorPage = ({ navigation }) => {
     );
 }
 
-export default PathAdvisorPage;
+export default HomeScreen;
 
 const styles = StyleSheet.create({
     pathFloorControlContainer: {

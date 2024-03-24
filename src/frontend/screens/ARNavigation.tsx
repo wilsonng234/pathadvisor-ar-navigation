@@ -48,7 +48,7 @@ const Unity = ({ unityRef, focusedUnityView }: { unityRef: RefObject<UnityView>,
     );
 };
 
-const ARNavigationPage = ({ navigation }) => {
+const ARNavigationScreen = ({ navigation }) => {
     const unityRef = useRef<UnityView>(null);
     const [focusedUnityView, setfocusedUnityView] = useState<boolean>(true);
 
@@ -61,16 +61,16 @@ const ARNavigationPage = ({ navigation }) => {
         };
     });
 
-    const handleExitArNavigationPage = () => {
+    const handleExitARNavigationScreen = () => {
         navigation.goBack();
     };
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <Unity unityRef={unityRef} focusedUnityView={focusedUnityView} />
-            <Button title="Exit AR Navigation" onPress={handleExitArNavigationPage} />
+            <Button title="Exit AR Navigation" onPress={handleExitARNavigationScreen} />
         </GestureHandlerRootView>
     );
 }
 
-export default ARNavigationPage;
+export default ARNavigationScreen;

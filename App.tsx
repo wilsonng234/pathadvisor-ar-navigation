@@ -4,10 +4,10 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-import PathAdvisorPage from './src/frontend/pages/PathAdvisorPage';
-import EventPage from './src/frontend/pages/EventPage';
-import BusQueueStatPage from './src/frontend/pages/BusQueueStatPage';
-import ARNavigationPage from './src/frontend/pages/ARNavigationPage';
+import HomeScreen from './src/frontend/screens/Home';
+import BusQueueScreen from './src/frontend/screens/BusQueue';
+import EventScreen from './src/frontend/screens/Event';
+import ARNavigationScreen from './src/frontend/screens/ARNavigation';
 
 const Drawer = createDrawerNavigator();
 // const insets = useSafeAreaInsets();
@@ -19,11 +19,11 @@ function App(): React.JSX.Element {
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
         <NavigationContainer>
-          <Drawer.Navigator initialRouteName="HKUST PathAdvisor">
-            <Drawer.Screen name="HKUST PathAdvisor" component={PathAdvisorPage} options={{ drawerLabel: 'PathAdvisor Map', }} />
-            <Drawer.Screen name="Events" component={EventPage} />
-            <Drawer.Screen name="Bus Queue Statistics" component={BusQueueStatPage} />
-            <Drawer.Screen name="AR Navigation" component={ARNavigationPage} options={{ headerShown: false }} />
+          <Drawer.Navigator initialRouteName="Home">
+            <Drawer.Screen name="Home" component={HomeScreen} options={{ drawerLabel: 'PathAdvisor Map', }} />
+            <Drawer.Screen name="Events" component={EventScreen} />
+            <Drawer.Screen name="Bus Queue Statistics" component={BusQueueScreen} />
+            <Drawer.Screen name="AR Navigation" component={ARNavigationScreen} options={{ headerShown: false }} />
           </Drawer.Navigator>
         </NavigationContainer>
       </SafeAreaProvider>
