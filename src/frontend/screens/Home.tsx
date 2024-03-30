@@ -107,7 +107,7 @@ const HomeScreen = ({ navigation }) => {
 
         const handleARViewButton = () => {
             // setEnableFromSearchBar(true);
-            navigation.navigate("AR Navigation");
+            navigation.navigate("AR Navigation", { toNode: toNode });
             // setNavigationType(NavigationType.ARView);
         }
 

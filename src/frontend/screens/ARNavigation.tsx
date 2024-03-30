@@ -1,4 +1,4 @@
-import React, { RefObject, useRef, useState } from "react";
+import React, { RefObject, useRef, useState, useEffect } from "react";
 import UnityView from '@azesmway/react-native-unity';
 
 import { Button, View } from "react-native";
@@ -11,12 +11,21 @@ interface UnityMessage {
     message: object;
 }
 
-const Unity = ({ unityRef, focusedUnityView }: { unityRef: RefObject<UnityView>, focusedUnityView: boolean }) => {
+const Unity = ({ unityRef, focusedUnityView, toNode }: { unityRef: RefObject<UnityView>, focusedUnityView: boolean, toNode:any }) => {
     const sendMessageToUnity = (message: UnityMessage) => {
         if (unityRef?.current) {
             unityRef.current.postMessage(message.gameObject, message.methodName, JSON.stringify(message.message));
         }
     }
+    useEffect(() => {
+        if (toNode) {
+            sendMessageToUnity({
+                gameObject: 'ReactAPI',
+                methodName: 'setToNode',
+                message: {toNode},
+            });
+        }
+    }, [toNode]);
 
     return (
         <View style={{ flex: 1 }}>
@@ -48,10 +57,10 @@ const Unity = ({ unityRef, focusedUnityView }: { unityRef: RefObject<UnityView>,
     );
 };
 
-const ARNavigationScreen = ({ navigation }) => {
+const ARNavigationScreen = ({route, navigation }) => {
     const unityRef = useRef<UnityView>(null);
     const [focusedUnityView, setfocusedUnityView] = useState<boolean>(true);
-
+    const toNode = route.params.toNode;
     // Remount UnityView when the screen is focused
     useFocusEffect(() => {
         setfocusedUnityView(true);
@@ -67,7 +76,7 @@ const ARNavigationScreen = ({ navigation }) => {
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
-            <Unity unityRef={unityRef} focusedUnityView={focusedUnityView} />
+            <Unity unityRef={unityRef} focusedUnityView={focusedUnityView}  toNode={toNode}/>
             <Button title="Exit AR Navigation" onPress={handleExitARNavigationScreen} />
         </GestureHandlerRootView>
     );
