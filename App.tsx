@@ -19,7 +19,7 @@ function App(): React.JSX.Element {
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
         <NavigationContainer>
-          <Drawer.Navigator initialRouteName="Home" screenOptions={{ drawerType: 'front', swipeEnabled: false }}>
+          <Drawer.Navigator initialRouteName="Home" screenOptions={{ drawerType: 'front', swipeEdgeWidth: 0 }}>
             <Drawer.Screen name="Home" component={HomeScreen} />
             <Drawer.Screen name="Events" component={EventScreen} />
             <Drawer.Screen name="Bus Queue Statistics" component={BusQueueScreen} />
