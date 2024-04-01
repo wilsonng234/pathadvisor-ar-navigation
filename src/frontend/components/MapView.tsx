@@ -39,7 +39,7 @@ const MapView = ({ currentFloorId, fromNode, toNode, path }: MapViewProps) => {
                 )
             }, 500)
         }
-    }, [toNode])
+    }, [floors, nodes, toNode])
 
     if (isLoadingNodes || isLoadingFloors)
         return <Text style={{
