@@ -4,15 +4,16 @@ import { Dimensions } from 'react-native';
 import { transformOrigin } from 'react-native-redash';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import { useHeaderHeight } from '@react-navigation/elements';
 
 interface ZoomableViewBackgroundProps {
     children?: React.ReactNode;
 }
 
-const CENTER_X = Dimensions.get('window').width / 2;
-const CENTER_Y = Dimensions.get('window').height / 2;
-
 const ZoomableView = ({ children }: ZoomableViewBackgroundProps) => {
+    const CENTER_X = Dimensions.get('window').width / 2;
+    const CENTER_Y = (Dimensions.get('window').height - useHeaderHeight()) / 2;
+
     const prevX = useSharedValue(0);
     const prevY = useSharedValue(0);
     const currentX = useSharedValue(0);
