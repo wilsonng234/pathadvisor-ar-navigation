@@ -31,12 +31,15 @@ const MapView = ({ currentFloorId, fromNode, toNode, path }: MapViewProps) => {
         if (ref && toNode) {
             const { numCol, numRow } = getMapTilesNumber(floors![toNode.floorId], toNode.centerCoordinates![0], toNode.centerCoordinates![1])
 
-            ref.translate(
-                -(numCol - 1) * RENDER_MAP_TILE_WIDTH,
-                -(numRow - 1) * RENDER_MAP_TILE_HEIGHT
-            )
+            // set time out to avoid map stuck at the initial position
+            setTimeout(() => {
+                ref.translate(
+                    -(numCol - 1) * RENDER_MAP_TILE_WIDTH,
+                    -(numRow - 1) * RENDER_MAP_TILE_HEIGHT
+                )
+            }, 500)
         }
-    }, [floors, nodes, toNode])
+    }, [toNode])
 
     if (isLoadingNodes || isLoadingFloors)
         return <Text style={{
