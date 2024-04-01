@@ -4,6 +4,7 @@ import UnityView from '@azesmway/react-native-unity';
 import { Button, View } from "react-native";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useFocusEffect } from '@react-navigation/native';
+import LoadingScreen from "../components/LoadingScreen";
 
 interface UnityMessage {
     gameObject: string;
@@ -11,7 +12,7 @@ interface UnityMessage {
     message: object;
 }
 
-const Unity = ({ unityRef, focusedUnityView, toNode }: { unityRef: RefObject<UnityView>, focusedUnityView: boolean, toNode:any }) => {
+const Unity = ({ unityRef, focusedUnityView, toNode }: { unityRef: RefObject<UnityView>, focusedUnityView: boolean, toNode: any }) => {
     const sendMessageToUnity = (message: UnityMessage) => {
         if (unityRef?.current) {
             unityRef.current.postMessage(message.gameObject, message.methodName, JSON.stringify(message.message));
@@ -22,7 +23,7 @@ const Unity = ({ unityRef, focusedUnityView, toNode }: { unityRef: RefObject<Uni
             sendMessageToUnity({
                 gameObject: 'ReactAPI',
                 methodName: 'setToNode',
-                message: {toNode},
+                message: { toNode },
             });
         }
     }, [toNode]);
@@ -57,9 +58,10 @@ const Unity = ({ unityRef, focusedUnityView, toNode }: { unityRef: RefObject<Uni
     );
 };
 
-const ARNavigationScreen = ({route, navigation }) => {
+const ARNavigationScreen = ({ route, navigation }) => {
     const unityRef = useRef<UnityView>(null);
     const [focusedUnityView, setfocusedUnityView] = useState<boolean>(true);
+    const [isLoading, setIsLoading] = useState(true)
     const toNode = route.params.toNode;
     // Remount UnityView when the screen is focused
     useFocusEffect(() => {
@@ -70,13 +72,22 @@ const ARNavigationScreen = ({route, navigation }) => {
         };
     });
 
+    useEffect(() => {
+        setTimeout(() => {
+            setIsLoading(false)
+        }, 1000)
+    }, [])
+
     const handleExitARNavigationScreen = () => {
         navigation.goBack();
     };
 
+    if (isLoading)
+        return <LoadingScreen />;
+
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
-            <Unity unityRef={unityRef} focusedUnityView={focusedUnityView}  toNode={toNode}/>
+            <Unity unityRef={unityRef} focusedUnityView={focusedUnityView} toNode={toNode} />
             <Button title="Exit AR Navigation" onPress={handleExitARNavigationScreen} />
         </GestureHandlerRootView>
     );

@@ -13,6 +13,7 @@ import PathNode from "../../backend/schema/PathNode";
 import { Path } from "../screens/Home";
 import { getMapTileStartCoordinates, getMapTilesSize } from "../utils";
 import { FloorsDict, useFloorsQuery, useNodesQuery } from "../utils/reactQueryFactory";
+import LoadingScreen from "./LoadingScreen";
 
 interface MapViewProps {
     currentFloorId: string;
@@ -26,13 +27,7 @@ const MapView = ({ currentFloorId, fromNode, toNode, path }: MapViewProps) => {
     const { data: nodes, isLoading: isLoadingNodes }: UseQueryResult<Node[]> = useNodesQuery(floors, currentFloorId)
 
     if (isLoadingNodes || isLoadingFloors)
-        return <Text style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            fontSize: 80,
-            color: 'red'
-        }}>Loading...</Text>
+        return <LoadingScreen />;
 
     // floors and nodes are guaranteed to be loaded at this point
     const { tileStartX, tileStartY } = getMapTileStartCoordinates(floors![currentFloorId]);

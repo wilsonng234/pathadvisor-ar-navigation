@@ -8,6 +8,7 @@ import Node from "../../backend/schema/Node";
 
 import { getMapTileStartCoordinates, getNodeImageByConnectorId } from "../utils";
 import { FloorsDict, TagsDict, useFloorsQuery, useTagsQuery } from "../utils/reactQueryFactory";
+import LoadingScreen from "./LoadingScreen";
 
 interface NodeViewProps {
     currentFloorId: string
@@ -22,13 +23,7 @@ const NodeView = ({ currentFloorId, node }: NodeViewProps) => {
         return null;
 
     if (isLoadingFloors || isLoadingTags)
-        return <Text style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            fontSize: 80,
-            color: 'red'
-        }}>Loading...</Text>
+        return <LoadingScreen />;
 
     // floors and tags are guaranteed to be loaded at this point
     const { tileStartX, tileStartY } = getMapTileStartCoordinates(floors![currentFloorId])
