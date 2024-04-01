@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { View, StyleSheet, Text } from "react-native";
+import { UseQueryResult } from "@tanstack/react-query";
 import { TouchableHighlight, TouchableOpacity } from "react-native-gesture-handler";
 
 import SearchLocationBar from "../components/SearchLocationBar";
@@ -10,6 +11,8 @@ import RoomDetailsBox from "../components/RoomDetailsBox";
 import * as api from '../../backend/api';
 import Node from "../../backend/schema/Node";
 import PathNode from "../../backend/schema/PathNode";
+
+import { FloorsDict, useFloorsQuery } from "../utils/reactQueryFactory";
 
 export interface Path {
     floorIds: string[];     // floorIds in the order of the path
@@ -22,11 +25,13 @@ enum NavigationType {
 }
 
 const HomeScreen = ({ navigation }) => {
+    const { data: floors, isLoading: isLoadingFloors }: UseQueryResult<FloorsDict> = useFloorsQuery();
+
     const [enableFromSearchBar, setEnableFromSearchBar] = useState<boolean>(false);
     const [fromNode, setFromNode] = useState<Node | null>(null);
     const [toNode, setToNode] = useState<Node | null>(null);
     const [path, setPath] = useState<Path | null>(null);
-    const [currentFloorId, setCurrentFloorId] = useState<string>("G");  // default floor is G
+    const [currentFloorId, setCurrentFloorId] = useState<string>("1");  // default floor is 1
     const [navigationType, setNavigationType] = useState<NavigationType | null>(null);
 
     useEffect(() => {
@@ -111,22 +116,35 @@ const HomeScreen = ({ navigation }) => {
             // setNavigationType(NavigationType.ARView);
         }
 
-        return <View style={styles.roomDetailsBoxButtonsContainer}>
-            <TouchableHighlight
-                style={styles.roomDetailsBoxButton}
-                onPress={handleDirectionButton}
-            >
-                <Text style={styles.roomDetailsBoxButtonText}>Direction</Text>
-            </TouchableHighlight>
+        const disableARViewButton = !!floors && !!toNode && floors[toNode.floorId].buildingId !== 'academicBuilding';
 
-            <TouchableHighlight
-                style={styles.roomDetailsBoxButton}
-                onPress={handleARViewButton}
-            >
-                <Text style={styles.roomDetailsBoxButtonText}>AR View</Text>
-            </TouchableHighlight>
-        </View>
+        return (
+            <View style={styles.roomDetailsBoxButtonsContainer}>
+                <TouchableHighlight
+                    style={styles.roomDetailsBoxButton}
+                    onPress={handleDirectionButton}
+                >
+                    <Text style={styles.roomDetailsBoxButtonText}>Direction</Text>
+                </TouchableHighlight>
+
+                <TouchableHighlight
+                    style={[styles.roomDetailsBoxButton, disableARViewButton && styles.disabledButton]}
+                    onPress={handleARViewButton}
+                    disabled={disableARViewButton}
+                >
+                    <Text style={styles.roomDetailsBoxButtonText}>AR View</Text>
+                </TouchableHighlight>
+            </View>)
     }
+
+    if (isLoadingFloors)
+        return <Text style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            fontSize: 80,
+            color: 'red'
+        }}>Loading...</Text>
 
     return (
         <View style={{ flex: 1 }}>
@@ -222,4 +240,8 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontSize: 16,
     },
+
+    disabledButton: {
+        backgroundColor: "#dcdcdc"
+    }
 });
