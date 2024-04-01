@@ -35,14 +35,19 @@ const HomeScreen = ({ navigation }) => {
     const [navigationType, setNavigationType] = useState<NavigationType | null>(null);
 
     useEffect(() => {
-        if (!fromNode)
-            setCurrentFloorId(toNode ? toNode.floorId : "1")
-        else
+        if (!fromNode) {
+            if (toNode) {
+                setCurrentFloorId(toNode.floorId)
+            }
+        }
+        else {
             setCurrentFloorId(fromNode.floorId);
+        }
     }, [toNode])
 
     useEffect(() => {
-        setCurrentFloorId(fromNode ? fromNode.floorId : "1");
+        if (fromNode)
+            setCurrentFloorId(fromNode.floorId);
     }, [fromNode])
 
     // update path when fromNode or toNode changes
