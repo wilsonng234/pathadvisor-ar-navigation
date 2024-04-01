@@ -19,8 +19,8 @@ function App(): React.JSX.Element {
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
         <NavigationContainer>
-          <Drawer.Navigator initialRouteName="Home">
-            <Drawer.Screen name="Home" component={HomeScreen} options={{ drawerLabel: 'PathAdvisor Map', }} />
+          <Drawer.Navigator initialRouteName="Home" screenOptions={{ drawerType: 'front', swipeEnabled: false }}>
+            <Drawer.Screen name="Home" component={HomeScreen} />
             <Drawer.Screen name="Events" component={EventScreen} />
             <Drawer.Screen name="Bus Queue Statistics" component={BusQueueScreen} />
             <Drawer.Screen name="AR Navigation" component={ARNavigationScreen} options={{ headerShown: false }} />
