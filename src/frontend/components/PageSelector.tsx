@@ -20,13 +20,24 @@ const PageSelector = ({ currentFloorID, currentBuildingID, handleSelectorChangeF
         setCurrentFloorId(buttons[index])
         console.log(floors);
     }
+
     useEffect(() => {
         if (floors === undefined) return;
         Object.keys(floors).forEach(element => {
-            if (floors[element].buildingId === currentBuildingID) {
+            if (floors[element].buildingId === currentBuildingID && buttons.indexOf(element) === -1) {
                 buttons.push(element)
             }
         });
+        buttons.sort((a, b) => {
+            if (floors[a].rank > floors[b].rank) {
+                console.log(1)
+                return 1;
+            }
+            else {
+                console.log(0)
+                return -1;
+            }
+        })
     })
 
     useEffect(() => {
