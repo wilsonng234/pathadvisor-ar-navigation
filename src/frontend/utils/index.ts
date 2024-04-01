@@ -43,12 +43,17 @@ export const getMapTileEndCoordinates = (floor: Floor) => {
     return { tileEndX, tileEndY };
 }
 
-export const getMapTilesNumber = (floor: Floor) => {
+export const getMapTilesNumber = (floor: Floor, x?: number, y?: number) => {
     const { tileStartX, tileStartY } = getMapTileStartCoordinates(floor);
-    const { tileEndX, tileEndY } = getMapTileEndCoordinates(floor);
 
-    const numRow = (tileEndY - tileStartY) / LOGIC_MAP_TILE_HEIGHT;
-    const numCol = (tileEndX - tileStartX) / LOGIC_MAP_TILE_WIDTH;
+    if (!x || !y) {
+        const { tileEndX, tileEndY } = getMapTileEndCoordinates(floor);
+        x = tileEndX;
+        y = tileEndY;
+    }
+
+    const numRow = Math.floor((y - tileStartY) / LOGIC_MAP_TILE_HEIGHT);
+    const numCol = Math.floor((x - tileStartX) / LOGIC_MAP_TILE_WIDTH);
 
     return { numRow, numCol };
 }
