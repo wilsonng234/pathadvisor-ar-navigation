@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Ref, forwardRef, useImperativeHandle } from 'react';
 import Animated from 'react-native-reanimated';
 import { Dimensions } from 'react-native';
 import { transformOrigin } from 'react-native-redash';
@@ -10,7 +10,11 @@ interface ZoomableViewBackgroundProps {
     children?: React.ReactNode;
 }
 
-const ZoomableView = ({ children }: ZoomableViewBackgroundProps) => {
+export type ZoomableViewRef = {
+    translate: (translateX: number, translateY: number) => void;
+}
+
+const ZoomableView = ({ children }: ZoomableViewBackgroundProps, ref: Ref<ZoomableViewRef>) => {
     const CENTER_X = Dimensions.get('window').width / 2;
     const CENTER_Y = (Dimensions.get('window').height - useHeaderHeight()) / 2;
 
@@ -26,18 +30,23 @@ const ZoomableView = ({ children }: ZoomableViewBackgroundProps) => {
     const minScale = 0.5;
     const maxScale = 2;
     const scaleRatio = 0.15;
+    const translationRatio = 1.5;
+
+    const translate = (translateX: number, translateY: number) => {
+        currentX.value = prevX.value = translateX;
+        currentY.value = prevY.value = translateY;
+    }
+
+    useImperativeHandle(ref, () => ({ translate }))
 
     const panGesture = Gesture.Pan()
         .onChange((e) => {
-            currentX.value = prevX.value + e.translationX;
-            currentY.value = prevY.value + e.translationY;
+            currentX.value = prevX.value + e.translationX * translationRatio;
+            currentY.value = prevY.value + e.translationY * translationRatio;
         })
         .onEnd((e) => {
-            currentX.value = prevX.value + e.translationX;
-            currentY.value = prevY.value + e.translationY;
-
-            prevX.value = currentX.value;
-            prevY.value = currentY.value;
+            currentX.value = prevX.value = prevX.value + e.translationX * translationRatio;
+            currentY.value = prevY.value = prevY.value + e.translationY * translationRatio;
         })
 
     const pinchGesture = Gesture.Pinch()
@@ -51,6 +60,7 @@ const ZoomableView = ({ children }: ZoomableViewBackgroundProps) => {
                 scale.value = Math.max(minScale, Math.min(prevScale + (newScale - prevScale) * scaleRatio, maxScale));
             }
         });
+
 
     const animatedStyle = useAnimatedStyle(() => ({
         transform: [
@@ -71,4 +81,4 @@ const ZoomableView = ({ children }: ZoomableViewBackgroundProps) => {
     )
 }
 
-export default ZoomableView;
+export default forwardRef<ZoomableViewRef, ZoomableViewBackgroundProps>(ZoomableView);
