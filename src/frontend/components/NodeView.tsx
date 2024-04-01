@@ -1,5 +1,6 @@
 import React from "react";
-import { Image, Text, View, ViewStyle } from "react-native";
+import FastImage from "react-native-fast-image";
+import { Text, View, ViewStyle } from "react-native";
 import { UseQueryResult } from "@tanstack/react-query";
 
 import { LOGIC_MAP_TILE_WIDTH, LOGIC_MAP_TILE_HEIGHT, RENDER_MAP_TILE_HEIGHT, RENDER_MAP_TILE_WIDTH } from "./MapTilesBackground";
@@ -43,13 +44,13 @@ const NodeView = ({ currentFloorId, node }: NodeViewProps) => {
 
                 // else if node is a connector, display the connector image
                 node.connectorId && getNodeImageByConnectorId(node.connectorId) ?
-                    <Image
+                    <FastImage
                         source={getNodeImageByConnectorId(node.connectorId)}
                         style={styles.icon} /> :
 
                     // else if node contains tagIds, display the image of first tag
                     node.tagIds && node.tagIds.length > 0 && tags![node.tagIds[0]].imageUrl ?
-                        <Image
+                        <FastImage
                             source={{ uri: tags![node.tagIds[0]].imageUrl }}
                             style={styles.icon} /> :
 

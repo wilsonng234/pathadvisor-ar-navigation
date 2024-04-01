@@ -1,5 +1,6 @@
 import React, { useCallback } from "react"
-import { StyleSheet, View, Image, Text } from "react-native"
+import FastImage from "react-native-fast-image";
+import { StyleSheet, View, Text } from "react-native"
 import { Polyline, Svg } from "react-native-svg";
 import { UseQueryResult } from "@tanstack/react-query";
 
@@ -61,7 +62,7 @@ const MapView = ({ currentFloorId, fromNode, toNode, path }: MapViewProps) => {
                     <MapTilesBackground floorId={currentFloorId}>
                         {
                             fromNode && fromNode.floorId === currentFloorId &&
-                            <Image
+                            <FastImage
                                 style={
                                     [styles.pin,
                                     {
@@ -74,7 +75,7 @@ const MapView = ({ currentFloorId, fromNode, toNode, path }: MapViewProps) => {
                         }
                         {
                             toNode && toNode.floorId === currentFloorId &&
-                            <Image
+                            <FastImage
                                 style={
                                     [styles.pin,
                                     {

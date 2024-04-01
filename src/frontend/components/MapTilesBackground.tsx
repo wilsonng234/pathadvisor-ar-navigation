@@ -1,5 +1,6 @@
 import React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import FastImage from 'react-native-fast-image'
+import { StyleSheet, Text, View } from 'react-native';
 import { UseQueryResult } from '@tanstack/react-query';
 
 import { getMapTileStartCoordinates, getMapTilesNumber } from '../utils';
@@ -61,7 +62,7 @@ const MapTilesBackground = ({ floorId, children }: MapTilesBackgroundProps) => {
                         {
                             row.map((mapTileBlock, j) => {
                                 return (
-                                    <Image
+                                    <FastImage
                                         key={`${i}-${j}`}
                                         style={{ width: RENDER_MAP_TILE_WIDTH, height: RENDER_MAP_TILE_HEIGHT }}
                                         source={{ uri: `https://pathadvisor.ust.hk/api/floors/${mapTileBlock.floorId}/map-tiles?x=${mapTileBlock.x}&y=${mapTileBlock.y}&zoomLevel=${mapTileBlock.zoomLevel}` }}

@@ -1,10 +1,11 @@
 import React from 'react';
-import { Dimensions, Image, Platform, StyleSheet, View } from 'react-native';
+import FastImage from 'react-native-fast-image';
+import { Dimensions, Platform, StyleSheet, View } from 'react-native';
 
 const ARBottomNavigationBar = () => {
     return (
         <View style={styles.circle}>
-            <Image
+            <FastImage
                 style={styles.dummy}
                 source={require('../../assets/ar/dummy.png')}
             />
