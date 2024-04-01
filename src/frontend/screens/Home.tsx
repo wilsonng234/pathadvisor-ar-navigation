@@ -11,6 +11,7 @@ import * as api from '../../backend/api';
 import Node from "../../backend/schema/Node";
 import PathNode from "../../backend/schema/PathNode";
 import { ButtonGroup } from "@rneui/base";
+import PageSelector from "../components/PageSelector";
 
 export interface Path {
     floorIds: string[];     // floorIds in the order of the path
@@ -29,8 +30,6 @@ const HomeScreen = ({ navigation }) => {
     const [path, setPath] = useState<Path | null>(null);
     const [currentFloorId, setCurrentFloorId] = useState<string>("G");  // default floor is G
     const [navigationType, setNavigationType] = useState<NavigationType | null>(null);
-    const buttons = ['LG7', 'LG5', 'LG4', 'LG3', 'LG1', 'G', '1', '2', '3', '4', '5', '6', '7'] // Hardcoded for Academic Building
-    const [selectedIndex, setSelectedIndex] = useState(5);
 
     useEffect(() => {
         if (!fromNode)
@@ -102,9 +101,8 @@ const HomeScreen = ({ navigation }) => {
         setCurrentFloorId(path.floorIds[index + offset]);
     }
 
-    const handleSelectorChangeFloor = (index) => {
-        setSelectedIndex(index)
-        setCurrentFloorId(buttons[index])
+    const handleSelectorChangeFloor = (id: string) => {
+        setCurrentFloorId(id);
     }
 
     const renderRoomDetailsBoxButtons = () => {
@@ -176,29 +174,7 @@ const HomeScreen = ({ navigation }) => {
 
             {
                 !path &&
-                <View style={styles.buttonGroupContainer}>
-                    <ScrollView
-                        horizontal={true}
-                        showsHorizontalScrollIndicator={false}
-                        // style={styles.buttonGroupContainer}
-                        contentContainerStyle={styles.contentContainer}
-                        contentOffset={{ x: 230, y: 0 }}
-                    >
-                        {buttons.map((buttonLabel, index) => (
-                            <TouchableOpacity
-                                key={index}
-                                style={[
-                                    styles.button,
-                                    index === selectedIndex ? styles.activeButton : styles.inactiveButton,
-                                ]}
-                                onPress={() => handleSelectorChangeFloor(index)}
-                            >
-                                <Text style={styles.buttonText}>{buttonLabel}</Text>
-                            </TouchableOpacity>
-                        ))}
-                    </ScrollView>
-                </View>
-
+                <PageSelector currentFloorID={currentFloorId} currentBuildingID="academicBuilding" handleSelectorChangeFloor={handleSelectorChangeFloor} />
             }
 
             {
@@ -255,36 +231,6 @@ const styles = StyleSheet.create({
     roomDetailsBoxButtonText: {
         color: "white",
         textAlign: "center",
-        fontSize: 16,
-    },
-    buttonGroupContainer: {
-        marginBottom: 30,
-        height: 50,
-        borderRadius: 30,
-        overflow: 'hidden',
-        backgroundColor: '#E0E0E0',
-    },
-    contentContainer: {
-        alignItems: 'center',
-    },
-    button: {
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        borderRadius: 30,
-        marginHorizontal: 5,
-        elevation: 2, // for Android shadow
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    activeButton: {
-        backgroundColor: '#FFFFFF',
-    },
-    inactiveButton: {
-        backgroundColor: '#E0E0E0',
-    },
-    buttonText: {
-        color: 'black',
-        fontWeight: 'bold',
         fontSize: 16,
     }
 });
