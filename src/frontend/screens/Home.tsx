@@ -174,7 +174,7 @@ const HomeScreen = ({ navigation }) => {
 
             {
                 !path &&
-                <PageSelector currentFloorID={currentFloorId} currentBuildingID="academicBuilding" handleSelectorChangeFloor={handleSelectorChangeFloor} />
+                <PageSelector handleSelectorChangeFloor={handleSelectorChangeFloor} />
             }
 
             {
