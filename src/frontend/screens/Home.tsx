@@ -11,6 +11,8 @@ import RoomDetailsBox from "../components/RoomDetailsBox";
 import * as api from '../../backend/api';
 import Node from "../../backend/schema/Node";
 import PathNode from "../../backend/schema/PathNode";
+import { ButtonGroup } from "@rneui/base";
+import PageSelector from "../components/PageSelector";
 
 import { FloorsDict, useFloorsQuery } from "../utils/reactQueryFactory";
 
@@ -109,6 +111,10 @@ const HomeScreen = ({ navigation }) => {
         setCurrentFloorId(path.floorIds[index + offset]);
     }
 
+    const handleSelectorChangeFloor = (id: string) => {
+        setCurrentFloorId(id);
+    }
+
     const renderRoomDetailsBoxButtons = () => {
         const handleDirectionButton = () => {
             setEnableFromSearchBar(true);
@@ -190,6 +196,11 @@ const HomeScreen = ({ navigation }) => {
             }
 
             {
+                !path &&
+                <PageSelector handleSelectorChangeFloor={handleSelectorChangeFloor} />
+            }
+
+            {
                 !navigationType && toNode &&
                 <View style={styles.roomDetailsBoxContainer}>
                     <RoomDetailsBox node={toNode} renderButtons={renderRoomDetailsBoxButtons} />
@@ -245,7 +256,6 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontSize: 16,
     },
-
     disabledButton: {
         backgroundColor: "#dcdcdc"
     }

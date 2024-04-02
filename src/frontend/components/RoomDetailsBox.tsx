@@ -6,6 +6,7 @@ import Node from '../../backend/schema/Node';
 
 import { convertFloorIdToFloorName } from '../utils';
 import { BuildingsDict, FloorsDict, useBuildingsQuery, useFloorsQuery } from '../utils/reactQueryFactory';
+import LoadingScreen from './LoadingScreen';
 
 interface RoomDetailsBoxProps {
     node: Node;
@@ -17,13 +18,7 @@ const RoomDetailsBox = ({ node, renderButtons }: RoomDetailsBoxProps) => {
     const { data: floors, isLoading: isLoadingFloors }: UseQueryResult<FloorsDict> = useFloorsQuery();
 
     if (isLoadingBuildings || isLoadingFloors)
-        return <Text style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            fontSize: 80,
-            color: 'red'
-        }}>Loading...</Text>
+        return <LoadingScreen />;
     else
         return (
             <View style={styles.roomDetailsBox}>

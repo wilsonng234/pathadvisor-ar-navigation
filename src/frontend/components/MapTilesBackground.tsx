@@ -5,6 +5,7 @@ import { UseQueryResult } from '@tanstack/react-query';
 
 import { getMapTileStartCoordinates, getMapTilesNumber } from '../utils';
 import { FloorsDict, useFloorsQuery } from '../utils/reactQueryFactory';
+import { LoadingScreen } from './LoadingScreen';
 
 export const LOGIC_MAP_TILE_WIDTH = 200;
 export const LOGIC_MAP_TILE_HEIGHT = 200;
@@ -27,13 +28,7 @@ const MapTilesBackground = ({ floorId, children }: MapTilesBackgroundProps) => {
     const { data: floors, isLoading: isLoadingFloors }: UseQueryResult<FloorsDict> = useFloorsQuery();
 
     if (isLoadingFloors) {
-        return <Text style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            fontSize: 80,
-            color: 'red'
-        }}>Loading...</Text>
+        return <LoadingScreen />;
     }
 
     // floors are guaranteed to be loaded at this point

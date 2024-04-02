@@ -6,6 +6,7 @@ import { UseQueryResult } from '@tanstack/react-query';
 import Node from '../../backend/schema/Node';
 
 import { BuildingsDict, FloorsDict, useBuildingsQuery, useFloorsQuery } from '../utils/reactQueryFactory';
+import LoadingScreen from './LoadingScreen';
 
 
 interface SearchNodeProps {
@@ -18,13 +19,7 @@ const SearchNode = ({ node, selectResult }: SearchNodeProps) => {
     const { data: floors, isLoading: isLoadingFloors }: UseQueryResult<FloorsDict> = useFloorsQuery()
 
     if (isLoadingBuildings || isLoadingFloors)
-        return <Text style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            fontSize: 80,
-            color: 'red'
-        }}>Loading...</Text>
+        return <LoadingScreen />;
     else
         return (
             <TouchableOpacity
