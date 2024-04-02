@@ -11,7 +11,6 @@ import RoomDetailsBox from "../components/RoomDetailsBox";
 import * as api from '../../backend/api';
 import Node from "../../backend/schema/Node";
 import PathNode from "../../backend/schema/PathNode";
-import { ButtonGroup } from "@rneui/base";
 import PageSelector from "../components/PageSelector";
 
 import { FloorsDict, useFloorsQuery } from "../utils/reactQueryFactory";
@@ -112,6 +111,7 @@ const HomeScreen = ({ navigation }) => {
     }
 
     const handleSelectorChangeFloor = (id: string) => {
+        console.log("Change floor to", id);
         setCurrentFloorId(id);
     }
 

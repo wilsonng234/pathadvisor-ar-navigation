@@ -7,52 +7,60 @@ interface PageSelectorProps {
     handleSelectorChangeFloor: (id: string) => void;
 }
 
+type FloorsButtonsDict = { [buildingId: string]: string[] }
+
 const PageSelector = ({ handleSelectorChangeFloor }: PageSelectorProps) => {
     const { data: buildings, isLoading: isLoadingBuildings }: UseQueryResult<BuildingsDict> = useBuildingsQuery()
     const { data: floors, isLoading: isLoadingFloors }: UseQueryResult<FloorsDict> = useFloorsQuery()
-    const [floorButtons, setFloorButtons] = useState<string[]>([]);
+    // const [floorButtons, setFloorButtons] = useState<string[]>([]);
+    const [floorButtonList, setFloorButtonList] = useState<FloorsButtonsDict>({});
+    const [buildingList, setBuildingList] = useState<string[]>([]);
     const [buildingButtons, setBuildingButtons] = useState<string[]>([]);
-    const [buildingButtonsId, setBuildingButtonsId] = useState<string[]>([]);
-    const [selectFloorIndex, setSelectFloorIndex] = useState(5);
+    // const [buildingButtonsId, setBuildingButtonsId] = useState<string[]>([]);
+    const [selectFloorIndex, setSelectFloorIndex] = useState(6);
     const [selectBuildingIndex, setSelectBuildingIndex] = useState(0);
     const scrollViewRef = useRef<ScrollView>(null);
 
-    const changeFloor = (index: number, setCurrentFloorId: (id: string) => void) => {
+    useEffect(() => {
+        if (floors === undefined) return;
+        const tempFloorButtonList: FloorsButtonsDict = {};
+        const tempBuildingList: string[] = [];
+        Object.keys(floors).forEach(floorId => {
+            if (tempFloorButtonList[floors[floorId].buildingId] === undefined) {
+                tempFloorButtonList[floors[floorId].buildingId] = [];
+            }
+            tempFloorButtonList[floors[floorId].buildingId].push(floorId);
+        });
+        Object.keys(tempFloorButtonList).forEach(building => {
+            tempBuildingList.push(building);
+            tempFloorButtonList[building].sort((a, b) => {
+                if (floors[a].rank > floors[b].rank) return 1;
+                else return -1;
+            })
+        });
+        setBuildingList(tempBuildingList);
+        console.log(tempFloorButtonList);
+        setFloorButtonList(tempFloorButtonList);
+        console.log(floorButtonList);
+    }, [])
+    const changeFloor = (index: number) => {
         setSelectFloorIndex(index)
-        setCurrentFloorId(floorButtons[index])
+        if (floorButtonList !== undefined && buildingList !== undefined) {
+            console.log(floorButtonList, buildingList, selectBuildingIndex, index)
+            const tempList = floorButtonList[buildingList[selectBuildingIndex]];
+            if (!!tempList) {
+                handleSelectorChangeFloor(floorButtonList[buildingList[selectBuildingIndex]][index])
+            }
+        }
         scrollOffset();
     }
 
     const changeBuilding = (index: number) => {
         setSelectBuildingIndex(index)
-        if (index === 0)
-            changeFloor(5, handleSelectorChangeFloor);
-        else
-            changeFloor(0, handleSelectorChangeFloor);
-
-        updateButtonList(index);
-    }
-
-    const updateButtonList = (index: number) => {
-        if (floors === undefined || buildings === undefined) return;
-        const tempFloorButtons: string[] = [];
-        const tempBuildingButtonsId: string[] = [];
-        Object.keys(buildings).forEach(element => {
-            if (tempFloorButtons.indexOf(buildings[element]._id) === -1) {
-                tempBuildingButtonsId.push(buildings[element]._id)
-            }
-        });
-        Object.keys(floors).forEach(element => {
-            if (floors[element].buildingId === tempBuildingButtonsId[index] && tempFloorButtons.indexOf(element) === -1) {
-                tempFloorButtons.push(element)
-            }
-        });
-        tempFloorButtons.sort((a, b) => {
-            if (floors[a].rank > floors[b].rank) return 1;
-            else return -1;
-        })
-        setBuildingButtonsId(tempBuildingButtonsId);
-        setFloorButtons(tempFloorButtons);
+        // if (index === 0)
+        //     changeFloor(6);
+        // else
+        //     changeFloor(0);
     }
 
     const scrollOffset = () => {
@@ -62,19 +70,19 @@ const PageSelector = ({ handleSelectorChangeFloor }: PageSelectorProps) => {
             scrollViewRef.current?.scrollTo({ x: 0, y: 0, animated: true });
     }
 
-
-    useEffect(() => {
-        updateButtonList(0);
-    }, [floors, buildings])
-
     useEffect(() => {
         const temp: string[] = [];
-        buildingButtonsId.forEach(element => {
+        buildingList.forEach(building => {
             if (buildings === undefined) return;
-            temp.push(buildings[element].name)
+            temp.push(buildings[building].name)
         })
         setBuildingButtons(temp);
-    }, [buildingButtonsId])
+    }, [buildings, buildingList])
+
+    useEffect(() => {
+        // console.log(selectBuildingIndex ?? 0)
+        changeFloor(selectBuildingIndex === 0 ? 6 : 0);
+    }, [selectBuildingIndex])
 
     if (isLoadingBuildings || isLoadingFloors)
         return <View></View>;
@@ -112,14 +120,14 @@ const PageSelector = ({ handleSelectorChangeFloor }: PageSelectorProps) => {
                             scrollOffset();
                         }}
                     >
-                        {floorButtons.map((buttonLabel, index) => (
+                        {floorButtonList[buildingList[selectBuildingIndex]] && floorButtonList[buildingList[selectBuildingIndex]].map((buttonLabel, index) => (
                             <TouchableOpacity
                                 key={index}
                                 style={[
                                     styles.button,
                                     index === selectFloorIndex ? styles.activeButton : styles.inactiveButton,
                                 ]}
-                                onPress={() => changeFloor(index, handleSelectorChangeFloor)}
+                                onPress={() => changeFloor(index)}
                             >
                                 <Text style={styles.buttonText}>{buttonLabel}</Text>
                             </TouchableOpacity>
