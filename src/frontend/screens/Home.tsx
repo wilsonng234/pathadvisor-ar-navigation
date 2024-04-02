@@ -197,7 +197,9 @@ const HomeScreen = ({ navigation }) => {
 
             {
                 !path &&
-                <PageSelector handleSelectorChangeFloor={handleSelectorChangeFloor} />
+                <View style={styles.floorSelector}>
+                    <PageSelector handleSelectorChangeFloor={handleSelectorChangeFloor} />
+                </View>
             }
 
             {
@@ -258,5 +260,10 @@ const styles = StyleSheet.create({
     },
     disabledButton: {
         backgroundColor: "#dcdcdc"
+    },
+    floorSelector: {
+        position: "absolute",
+        bottom: 0
+
     }
 });
