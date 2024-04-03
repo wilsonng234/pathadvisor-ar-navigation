@@ -7,6 +7,7 @@ import { TouchableHighlight, TouchableOpacity } from "react-native-gesture-handl
 import SearchLocationBar from "../components/SearchLocationBar";
 import MapView from "../components/MapView";
 import RoomDetailsBox from "../components/RoomDetailsBox";
+import LoadingScreen from "../components/LoadingScreen";
 
 import * as api from '../../backend/api';
 import Node from "../../backend/schema/Node";
@@ -149,13 +150,7 @@ const HomeScreen = ({ navigation }) => {
     }
 
     if (isLoadingFloors)
-        return <Text style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            fontSize: 80,
-            color: 'red'
-        }}>Loading...</Text>
+        return <LoadingScreen />;
 
     return (
         <View style={{ flex: 1 }}>
