@@ -31,6 +31,7 @@ const PageSelector = ({ handleSelectorChangeFloor }: PageSelectorProps) => {
             }
             tempFloorButtonList[floors[floorId].buildingId].push(floorId);
         });
+
         Object.keys(tempFloorButtonList).forEach(building => {
             tempBuildingList.push(building);
             tempFloorButtonList[building].sort((a, b) => {
@@ -39,14 +40,11 @@ const PageSelector = ({ handleSelectorChangeFloor }: PageSelectorProps) => {
             })
         });
         setBuildingList(tempBuildingList);
-        console.log(tempFloorButtonList);
         setFloorButtonList(tempFloorButtonList);
-        console.log(floorButtonList);
     }, [])
     const changeFloor = (index: number) => {
         setSelectFloorIndex(index)
         if (floorButtonList !== undefined && buildingList !== undefined) {
-            console.log(floorButtonList, buildingList, selectBuildingIndex, index)
             const tempList = floorButtonList[buildingList[selectBuildingIndex]];
             if (!!tempList) {
                 handleSelectorChangeFloor(floorButtonList[buildingList[selectBuildingIndex]][index])
@@ -80,7 +78,6 @@ const PageSelector = ({ handleSelectorChangeFloor }: PageSelectorProps) => {
     }, [buildings, buildingList])
 
     useEffect(() => {
-        // console.log(selectBuildingIndex ?? 0)
         changeFloor(selectBuildingIndex === 0 ? 6 : 0);
     }, [selectBuildingIndex])
 
@@ -156,7 +153,6 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         borderRadius: 30,
         marginHorizontal: 5,
-        elevation: 2, // for Android shadow
         justifyContent: 'center',
         alignItems: 'center',
     },

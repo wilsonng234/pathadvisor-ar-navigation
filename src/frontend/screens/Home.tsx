@@ -112,7 +112,6 @@ const HomeScreen = ({ navigation }) => {
     }
 
     const handleSelectorChangeFloor = (id: string) => {
-        console.log("Change floor to", id);
         setCurrentFloorId(id);
     }
 

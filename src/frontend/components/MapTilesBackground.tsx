@@ -5,7 +5,7 @@ import { UseQueryResult } from '@tanstack/react-query';
 
 import { getMapTileStartCoordinates, getMapTilesNumber } from '../utils';
 import { FloorsDict, useFloorsQuery } from '../utils/reactQueryFactory';
-import { LoadingScreen } from './LoadingScreen';
+import LoadingScreen from './LoadingScreen';
 
 export const LOGIC_MAP_TILE_WIDTH = 200;
 export const LOGIC_MAP_TILE_HEIGHT = 200;
