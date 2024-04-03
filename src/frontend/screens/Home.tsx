@@ -190,7 +190,7 @@ const HomeScreen = ({ navigation }) => {
             }
 
             {
-                !path &&
+                (!path && (navigationType || !toNode)) &&
                 <View style={styles.floorSelector}>
                     <PageSelector handleSelectorChangeFloor={handleSelectorChangeFloor} />
                 </View>
