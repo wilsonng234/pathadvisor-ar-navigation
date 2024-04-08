@@ -87,14 +87,12 @@ const styles = StyleSheet.create({
     },
     dropDownContainer: {
         position: "absolute",
-        top: 60,
+        top: 65,
         left: 8,
         zIndex: 1,
-        elevation: (Platform.OS === 'android') ? 1 : 0,
-        width: "80%",
+        width: "96%",
         maxHeight: 200,
         backgroundColor: "white",
-        borderBottomLeftRadius: 15,
-        borderBottomEndRadius: 15,
+        borderRadius: 15,
     }
 })
