@@ -1,4 +1,4 @@
-import { DefaultError, UseQueryResult, useQuery } from '@tanstack/react-query'
+import { DefaultError, UseQueryOptions, UseQueryResult, useQueries, useQuery } from '@tanstack/react-query'
 
 import * as api from '../../backend/api'
 import Node from 'backend/schema/node';
@@ -66,7 +66,24 @@ export const useTagsQuery = (): UseQueryResult<TagsDict> => {
     )
 }
 
-export const useNodesQuery = (floors: FloorsDict | undefined, floorId: string): UseQueryResult<Node[]> => {
+export const useNodeQueriesByNodeIds = (nodeIds: string[]) => {
+    return useQueries<UseQueryOptions<{ data: Node }>[]>(
+        {
+            queries: nodeIds.map(
+                (nodeId) => {
+                    return {
+                        queryKey: ['node', nodeId],
+                        queryFn: () => api.getNodeById(nodeId),
+                        // select: (res) => res.data,
+                        staleTime: Infinity,
+                    }
+                }
+            ),
+        }
+    );
+}
+
+export const useNodesQueryByFloorId = (floors: FloorsDict | undefined, floorId: string): UseQueryResult<Node[]> => {
     return (
         useQuery<{ data: Node[] }, DefaultError, Node[]>({
             queryKey: ["nodes", floorId],
