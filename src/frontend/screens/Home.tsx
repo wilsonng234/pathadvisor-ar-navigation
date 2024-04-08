@@ -14,6 +14,7 @@ import Node from "../../backend/schema/Node";
 import PathNode from "../../backend/schema/PathNode";
 import PageSelector from "../components/PageSelector";
 
+import { storage } from "../utils/mmkvStorage";
 import { FloorsDict, useFloorsQuery } from "../utils/reactQueryFactory";
 
 export interface Path {
@@ -84,9 +85,35 @@ const HomeScreen = ({ navigation }) => {
         setFromNode(node);
     }
 
+    const getSuggestions = () => {
+        const suggestions = storage.getString("to.suggestions");
+        return suggestions ? JSON.parse(suggestions) : [];
+    }
+
+    const setSuggestions = (suggestions: string[]) => {
+        storage.set("to.suggestions", JSON.stringify(suggestions));
+    }
+
     const handleSelectToNode = (node: Node) => {
         setToNode(node);
         setFocusNode(node)
+
+        // set suggestions
+        const suggestions = getSuggestions();
+
+        if (suggestions.includes(node._id)) {
+            suggestions.unshift(node._id);
+
+            suggestions.splice(suggestions.indexOf(node._id), 1);
+        }
+        else {
+            suggestions.unshift(node._id);
+
+            if (suggestions.length > 5)
+                suggestions.pop();
+        }
+
+        setSuggestions(suggestions);
     }
 
     const handleCancelFromNode = () => {
