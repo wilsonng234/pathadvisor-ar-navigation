@@ -31,28 +31,22 @@ const MapView = ({ currentFloorId, fromNode, toNode, path, focusNode }: MapViewP
         if (!floors || !nodes || !ref)
             return;
 
+        let numCol: number, numRow: number;
         if (focusNode) {
-            const { numCol, numRow } = getMapTilesNumber(floors![focusNode.floorId], focusNode.centerCoordinates![0], focusNode.centerCoordinates![1])
-
-            // set time out to avoid map stuck at the initial position
-            setTimeout(() => {
-                ref.translate(
-                    -(numCol - 1) * RENDER_MAP_TILE_WIDTH,
-                    -(numRow - 1) * RENDER_MAP_TILE_HEIGHT
-                )
-            }, 500)
+            ({ numCol, numRow } = getMapTilesNumber(floors![focusNode.floorId], focusNode.coordinates![0], focusNode.coordinates![1]))
         }
         else {
-            const { numCol, numRow } = getMapTilesNumber(floors![currentFloorId], floors![currentFloorId].mobileDefaultX, floors![currentFloorId].mobileDefaultY)
-
-            // set time out to avoid map stuck at the initial position
-            setTimeout(() => {
-                ref.translate(
-                    -(numCol - 1) * RENDER_MAP_TILE_WIDTH,
-                    -(numRow - 1) * RENDER_MAP_TILE_HEIGHT
-                )
-            }, 500)
+            ({ numCol, numRow } = getMapTilesNumber(floors![currentFloorId], floors![currentFloorId].mobileDefaultX, floors![currentFloorId].mobileDefaultY))
         }
+
+        // set time out to avoid map stuck at the initial position
+        setTimeout(() => {
+            ref.translate(
+                -(numCol - 1) * RENDER_MAP_TILE_WIDTH,
+                -(numRow - 1) * RENDER_MAP_TILE_HEIGHT
+            )
+        }, 500)
+
     }, [floors, nodes, focusNode])
 
     if (isLoadingNodes || isLoadingFloors)

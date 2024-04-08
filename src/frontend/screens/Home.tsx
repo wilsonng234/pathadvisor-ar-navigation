@@ -35,6 +35,7 @@ const HomeScreen = ({ navigation }) => {
     const [path, setPath] = useState<Path | null>(null);
     const [currentFloorId, setCurrentFloorId] = useState<string>("1");  // default floor is 1
     const [navigationType, setNavigationType] = useState<NavigationType | null>(null);
+    const [focusNode, setFocusNode] = useState<Node | null>(null);
 
     useEffect(() => {
         if (!fromNode) {
@@ -58,6 +59,8 @@ const HomeScreen = ({ navigation }) => {
             setPath(null);
         }
         else {
+            setFocusNode(fromNode);
+
             api.getShortestPath(fromNode._id, toNode._id).then((res) => {
                 const path: Path = { "floorIds": [], "floors": {} };
 
@@ -83,6 +86,7 @@ const HomeScreen = ({ navigation }) => {
 
     const handleSelectToNode = (node: Node) => {
         setToNode(node);
+        setFocusNode(node)
     }
 
     const handleCancelFromNode = () => {
@@ -109,10 +113,12 @@ const HomeScreen = ({ navigation }) => {
         }
 
         setCurrentFloorId(path.floorIds[index + offset]);
+        setFocusNode(path.floors[path.floorIds[index + offset]][0])
     }
 
     const handleSelectorChangeFloor = (id: string) => {
         setCurrentFloorId(id);
+        setFocusNode(null);
     }
 
     const renderRoomDetailsBoxButtons = () => {
@@ -161,7 +167,7 @@ const HomeScreen = ({ navigation }) => {
                 <SearchLocationBar selectNode={handleSelectToNode} placeholder="Where are you going?" onClickCancel={handleCancelToNode} />
             </View>
 
-            <MapView currentFloorId={currentFloorId} fromNode={fromNode} toNode={toNode} path={path} focusNode={null} />
+            <MapView currentFloorId={currentFloorId} fromNode={fromNode} toNode={toNode} path={path} focusNode={focusNode} />
 
             {
                 path &&
