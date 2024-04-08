@@ -46,7 +46,7 @@ export const getMapTileEndCoordinates = (floor: Floor) => {
 export const getMapTilesNumber = (floor: Floor, x?: number, y?: number) => {
     const { tileStartX, tileStartY } = getMapTileStartCoordinates(floor);
 
-    if (!x || !y) {
+    if (x === undefined || y === undefined) {
         const { tileEndX, tileEndY } = getMapTileEndCoordinates(floor);
         x = tileEndX;
         y = tileEndY;

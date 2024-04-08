@@ -21,17 +21,18 @@ interface MapViewProps {
     fromNode: Node | null;
     toNode: Node | null;
     path: Path | null,
+    focusNode: Node | null;
 }
 
-const MapView = ({ currentFloorId, fromNode, toNode, path }: MapViewProps) => {
+const MapView = ({ currentFloorId, fromNode, toNode, path, focusNode }: MapViewProps) => {
     const { data: floors, isLoading: isLoadingFloors }: UseQueryResult<FloorsDict> = useFloorsQuery()
     const { data: nodes, isLoading: isLoadingNodes }: UseQueryResult<Node[]> = useNodesQuery(floors, currentFloorId)
     const onZoomableViewRefChange = useCallback((ref: ZoomableViewRef) => {
-        if (!floors || !nodes)
+        if (!floors || !nodes || !ref)
             return;
 
-        if (ref && toNode) {
-            const { numCol, numRow } = getMapTilesNumber(floors![toNode.floorId], toNode.centerCoordinates![0], toNode.centerCoordinates![1])
+        if (focusNode) {
+            const { numCol, numRow } = getMapTilesNumber(floors![focusNode.floorId], focusNode.centerCoordinates![0], focusNode.centerCoordinates![1])
 
             // set time out to avoid map stuck at the initial position
             setTimeout(() => {
@@ -41,7 +42,18 @@ const MapView = ({ currentFloorId, fromNode, toNode, path }: MapViewProps) => {
                 )
             }, 500)
         }
-    }, [floors, nodes, toNode])
+        else {
+            const { numCol, numRow } = getMapTilesNumber(floors![currentFloorId], floors![currentFloorId].mobileDefaultX, floors![currentFloorId].mobileDefaultY)
+
+            // set time out to avoid map stuck at the initial position
+            setTimeout(() => {
+                ref.translate(
+                    -(numCol - 1) * RENDER_MAP_TILE_WIDTH,
+                    -(numRow - 1) * RENDER_MAP_TILE_HEIGHT
+                )
+            }, 500)
+        }
+    }, [floors, nodes, focusNode])
 
     if (isLoadingNodes || isLoadingFloors)
         return <LoadingScreen />;
@@ -53,58 +65,56 @@ const MapView = ({ currentFloorId, fromNode, toNode, path }: MapViewProps) => {
     return (
         <View>
             <ZoomableView ref={onZoomableViewRefChange}>
-                <View style={{ width: '100%', height: '100%' }}>
-                    <MapTilesBackground floorId={currentFloorId}>
-                        {
-                            fromNode && fromNode.floorId === currentFloorId &&
-                            <FastImage
-                                style={
-                                    [styles.pin,
-                                    {
-                                        left: (fromNode.centerCoordinates![0] - tileStartX) * (RENDER_MAP_TILE_WIDTH / LOGIC_MAP_TILE_WIDTH),
-                                        top: (fromNode.centerCoordinates![1] - tileStartY) * (RENDER_MAP_TILE_HEIGHT / LOGIC_MAP_TILE_HEIGHT)
-                                    }]
-                                }
-                                source={require('../assets/pin.png')}
-                            />
-                        }
-                        {
-                            toNode && toNode.floorId === currentFloorId &&
-                            <FastImage
-                                style={
-                                    [styles.pin,
-                                    {
-                                        left: (toNode.centerCoordinates![0] - tileStartX) * (RENDER_MAP_TILE_WIDTH / LOGIC_MAP_TILE_WIDTH),
-                                        top: (toNode.centerCoordinates![1] - tileStartY) * (RENDER_MAP_TILE_HEIGHT / LOGIC_MAP_TILE_HEIGHT)
-                                    }]
-                                }
-                                source={require('../assets/pin.png')}
-                            />
-                        }
+                <MapTilesBackground floorId={currentFloorId}>
+                    {
+                        fromNode && fromNode.floorId === currentFloorId &&
+                        <FastImage
+                            style={
+                                [styles.pin,
+                                {
+                                    left: (fromNode.centerCoordinates![0] - tileStartX) * (RENDER_MAP_TILE_WIDTH / LOGIC_MAP_TILE_WIDTH),
+                                    top: (fromNode.centerCoordinates![1] - tileStartY) * (RENDER_MAP_TILE_HEIGHT / LOGIC_MAP_TILE_HEIGHT)
+                                }]
+                            }
+                            source={require('../assets/pin.png')}
+                        />
+                    }
+                    {
+                        toNode && toNode.floorId === currentFloorId &&
+                        <FastImage
+                            style={
+                                [styles.pin,
+                                {
+                                    left: (toNode.centerCoordinates![0] - tileStartX) * (RENDER_MAP_TILE_WIDTH / LOGIC_MAP_TILE_WIDTH),
+                                    top: (toNode.centerCoordinates![1] - tileStartY) * (RENDER_MAP_TILE_HEIGHT / LOGIC_MAP_TILE_HEIGHT)
+                                }]
+                            }
+                            source={require('../assets/pin.png')}
+                        />
+                    }
 
-                        {
-                            path && path["floors"][currentFloorId] &&
+                    {
+                        path && path["floors"][currentFloorId] &&
 
-                            <View style={[styles.pathContainer, { width: renderWidth / 3, height: renderHeight / 3, }]}>
-                                <Svg viewBox={`${tileStartX} ${tileStartY} ${renderWidth} ${renderHeight}`}>
-                                    <Polyline
-                                        points={path["floors"][currentFloorId].map((pathNode: PathNode) =>
-                                            `${tileStartX + ((pathNode.coordinates[0] - tileStartX) * (RENDER_MAP_TILE_WIDTH / LOGIC_MAP_TILE_WIDTH))},${tileStartY + (pathNode.coordinates[1] - tileStartY) * (RENDER_MAP_TILE_HEIGHT / LOGIC_MAP_TILE_HEIGHT)}`).join(' ')}
-                                        stroke="red"
-                                        strokeWidth="3"
-                                        fill="none"
-                                    />
-                                </Svg>
-                            </View>
-                        }
+                        <View style={[styles.pathContainer, { width: renderWidth / 3, height: renderHeight / 3, }]}>
+                            <Svg viewBox={`${tileStartX} ${tileStartY} ${renderWidth} ${renderHeight}`}>
+                                <Polyline
+                                    points={path["floors"][currentFloorId].map((pathNode: PathNode) =>
+                                        `${tileStartX + ((pathNode.coordinates[0] - tileStartX) * (RENDER_MAP_TILE_WIDTH / LOGIC_MAP_TILE_WIDTH))},${tileStartY + (pathNode.coordinates[1] - tileStartY) * (RENDER_MAP_TILE_HEIGHT / LOGIC_MAP_TILE_HEIGHT)}`).join(' ')}
+                                    stroke="red"
+                                    strokeWidth="3"
+                                    fill="none"
+                                />
+                            </Svg>
+                        </View>
+                    }
 
-                        {
-                            nodes!.map((node: Node) =>
-                                <NodeView key={node._id} currentFloorId={currentFloorId} node={node} />
-                            )
-                        }
-                    </MapTilesBackground>
-                </View>
+                    {
+                        nodes!.map((node: Node) =>
+                            <NodeView key={node._id} currentFloorId={currentFloorId} node={node} />
+                        )
+                    }
+                </MapTilesBackground>
             </ZoomableView>
         </View>
     )

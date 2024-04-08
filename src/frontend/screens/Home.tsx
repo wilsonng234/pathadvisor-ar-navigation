@@ -161,7 +161,7 @@ const HomeScreen = ({ navigation }) => {
                 <SearchLocationBar selectNode={handleSelectToNode} placeholder="Where are you going?" onClickCancel={handleCancelToNode} />
             </View>
 
-            <MapView currentFloorId={currentFloorId} fromNode={fromNode} toNode={toNode} path={path} />
+            <MapView currentFloorId={currentFloorId} fromNode={fromNode} toNode={toNode} path={path} focusNode={null} />
 
             {
                 path &&
