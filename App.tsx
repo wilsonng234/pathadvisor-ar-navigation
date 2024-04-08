@@ -22,7 +22,7 @@ function App(): React.JSX.Element {
           <Drawer.Navigator initialRouteName="Home" screenOptions={{ drawerType: 'front', swipeEdgeWidth: 0 }}>
             <Drawer.Screen name="Home" component={HomeScreen} />
             <Drawer.Screen name="Events" component={EventScreen} />
-            <Drawer.Screen name="Bus Queue Statistics" component={BusQueueScreen} />
+            <Drawer.Screen name="Bus Queue" component={BusQueueScreen} />
             <Drawer.Screen name="AR Navigation" component={ARNavigationScreen} options={{ headerShown: false }} />
           </Drawer.Navigator>
         </NavigationContainer>
