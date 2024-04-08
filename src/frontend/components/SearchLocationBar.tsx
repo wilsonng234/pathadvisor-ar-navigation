@@ -7,13 +7,14 @@ import * as api from '../../backend/api';
 import Node from '../../backend/schema/Node';
 import SearchNode from './SearchNode';
 
-import { storage } from '../utils/mmkvStorage';
+import { StorageKeys, storage } from '../utils/mmkvStorage';
 import { useNodeQueriesByNodeIds } from '../utils/reactQueryFactory';
 
 interface SearchLocationBarProps {
     placeholder: string;
     selectNode: (node: Node) => void;
     onClickCancel?: () => void;
+    cacheKey: StorageKeys;
 }
 
 /**
@@ -21,9 +22,10 @@ interface SearchLocationBarProps {
  * @param {string} placeholder - placeholder for search bar
  * @param {function} selectNode - function to run when a node is selected
  * @param {function} onClickCancel - function to run when cancel button is clicked
+ * @param {string} cacheKey - cache key for search results
  * @returns 
  */
-const SearchLocationBar = ({ placeholder, selectNode, onClickCancel }: SearchLocationBarProps) => {
+const SearchLocationBar = ({ placeholder, selectNode, onClickCancel, cacheKey }: SearchLocationBarProps) => {
     const [searchText, setSearchText] = useState<string>('');
     const [searchResults, setSearchResults] = useState<Node[]>([]);
     const [suggestionIds, setSuggestionIds] = useState<string[]>([]);
@@ -71,7 +73,7 @@ const SearchLocationBar = ({ placeholder, selectNode, onClickCancel }: SearchLoc
 
     const handleFocusSearchBar = () => {
         if (searchText === '') {
-            const suggestions = storage.getString('to.suggestions');
+            const suggestions = storage.getString(cacheKey);
             const suggestionArray = suggestions ? JSON.parse(suggestions) : [];
 
             setSuggestionIds(suggestionArray);

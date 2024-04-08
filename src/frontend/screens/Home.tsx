@@ -14,7 +14,7 @@ import Node from "../../backend/schema/Node";
 import PathNode from "../../backend/schema/PathNode";
 import PageSelector from "../components/PageSelector";
 
-import { storage } from "../utils/mmkvStorage";
+import { StorageKeys, storage } from "../utils/mmkvStorage";
 import { FloorsDict, useFloorsQuery } from "../utils/reactQueryFactory";
 
 export interface Path {
@@ -81,39 +81,40 @@ const HomeScreen = ({ navigation }) => {
         }
     }, [fromNode, toNode])
 
+    const updateSuggestions = (cacheKey: string, nodeId: string) => {
+        const getSuggestions = (cacheKey: string) => {
+            const suggestions = storage.getString(cacheKey);
+            return suggestions ? JSON.parse(suggestions) : [];
+        }
+
+        const setSuggestions = (cacheKey: string, suggestions: string[]) => {
+            storage.set(cacheKey, JSON.stringify(suggestions));
+        }
+
+        const suggestions = getSuggestions(cacheKey);
+        if (suggestions.includes(nodeId)) {
+            suggestions.unshift(nodeId);
+
+            suggestions.splice(suggestions.indexOf(nodeId), 1);
+        }
+        else {
+            suggestions.unshift(nodeId);
+
+            if (suggestions.length > 5)
+                suggestions.pop();
+        }
+        setSuggestions(cacheKey, suggestions);
+    }
+
     const handleSelectFromNode = (node: Node) => {
         setFromNode(node);
-    }
-
-    const getSuggestions = () => {
-        const suggestions = storage.getString("to.suggestions");
-        return suggestions ? JSON.parse(suggestions) : [];
-    }
-
-    const setSuggestions = (suggestions: string[]) => {
-        storage.set("to.suggestions", JSON.stringify(suggestions));
+        updateSuggestions(StorageKeys.FromSuggestions, node._id);
     }
 
     const handleSelectToNode = (node: Node) => {
         setToNode(node);
         setFocusNode(node)
-
-        // set suggestions
-        const suggestions = getSuggestions();
-
-        if (suggestions.includes(node._id)) {
-            suggestions.unshift(node._id);
-
-            suggestions.splice(suggestions.indexOf(node._id), 1);
-        }
-        else {
-            suggestions.unshift(node._id);
-
-            if (suggestions.length > 5)
-                suggestions.pop();
-        }
-
-        setSuggestions(suggestions);
+        updateSuggestions(StorageKeys.ToSuggestions, node._id);
     }
 
     const handleCancelFromNode = () => {
@@ -189,9 +190,9 @@ const HomeScreen = ({ navigation }) => {
             <View style={{ zIndex: 2 }}>
                 {
                     enableFromSearchBar &&
-                    <SearchLocationBar selectNode={handleSelectFromNode} placeholder="FROM" onClickCancel={handleCancelFromNode} />
+                    <SearchLocationBar selectNode={handleSelectFromNode} placeholder="FROM" onClickCancel={handleCancelFromNode} cacheKey={StorageKeys.FromSuggestions} />
                 }
-                <SearchLocationBar selectNode={handleSelectToNode} placeholder="Where are you going?" onClickCancel={handleCancelToNode} />
+                <SearchLocationBar selectNode={handleSelectToNode} placeholder="Where are you going?" onClickCancel={handleCancelToNode} cacheKey={StorageKeys.ToSuggestions} />
             </View>
 
             <MapView currentFloorId={currentFloorId} fromNode={fromNode} toNode={toNode} path={path} focusNode={focusNode} />
