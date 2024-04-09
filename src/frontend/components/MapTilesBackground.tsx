@@ -26,6 +26,7 @@ interface MapTilesBackgroundProps {
 
 const MapTilesBackground = ({ floorId, children }: MapTilesBackgroundProps) => {
     const { data: floors, isLoading: isLoadingFloors }: UseQueryResult<FloorsDict> = useFloorsQuery();
+    const mapTileDict = require('../assets/mapTileImg/mapTileDict.json');
 
     if (isLoadingFloors) {
         return <LoadingScreen />;
@@ -56,11 +57,14 @@ const MapTilesBackground = ({ floorId, children }: MapTilesBackgroundProps) => {
                     <View key={i} style={styles.mapTilesRow}>
                         {
                             row.map((mapTileBlock, j) => {
+                                let key = `${mapTileBlock.floorId}_${mapTileBlock.x}_${mapTileBlock.y}_${mapTileBlock.zoomLevel}`;
+                                let imageUri = "data:image/png;base64," + `${mapTileDict[key]}`;
                                 return (
                                     <FastImage
                                         key={`${i}-${j}`}
                                         style={{ width: RENDER_MAP_TILE_WIDTH, height: RENDER_MAP_TILE_HEIGHT }}
-                                        source={{ uri: `https://pathadvisor.ust.hk/api/floors/${mapTileBlock.floorId}/map-tiles?x=${mapTileBlock.x}&y=${mapTileBlock.y}&zoomLevel=${mapTileBlock.zoomLevel}` }}
+                                        // source={{ uri: `https://pathadvisor.ust.hk/api/floors/${mapTileBlock.floorId}/map-tiles?x=${mapTileBlock.x}&y=${mapTileBlock.y}&zoomLevel=${mapTileBlock.zoomLevel}` }}
+                                        source={{ uri: imageUri }}
                                     />
                                 )
                             })

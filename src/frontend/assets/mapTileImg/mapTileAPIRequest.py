@@ -1,7 +1,7 @@
 import requests
 import json
 from pathlib import Path
-import os
+import base64
 
 # The path to the JSON file containing the floors data
 input_file_path = './src/frontend/assets/floor/floor_response.json'
@@ -10,6 +10,8 @@ LOGIC_MAP_TILE_WIDTH = 200;
 LOGIC_MAP_TILE_HEIGHT = 200;
 RENDER_MAP_TILE_WIDTH = 80;
 RENDER_MAP_TILE_HEIGHT = 80;
+
+mapTileDict={}
 
 # Function to construct the API URL
 def construct_api_url(floor_id, x, y, zoom_level):
@@ -56,10 +58,6 @@ def getMapTileBlocksByFloorId(floor, floor_id):
     
     return map_tile_blocks
 
-def save_png_image(response_content, file_path):
-    with open(file_path, 'wb') as image_file:
-        image_file.write(response_content)
-
 with open(input_file_path, 'r') as file:
     floors_dict = json.load(file)
 
@@ -70,7 +68,12 @@ for floor in floors_dict['data']:
             api_url = construct_api_url(mapTileBlock['floorId'], mapTileBlock['x'], mapTileBlock['y'], mapTileBlock['zoomLevel'])
             response = requests.get(api_url)
             if response.status_code == 200:
-                image_path = Path(output_file_path) / f"{floor['_id']}_{mapTileBlock['x']}_{mapTileBlock['y']}_{mapTileBlock['zoomLevel']}.png"
-                save_png_image(response.content, image_path)
+                image_path = f"{floor['_id']}_{mapTileBlock['x']}_{mapTileBlock['y']}_{mapTileBlock['zoomLevel']}"
+                base64_encoded_string = base64.b64encode(response.content).decode('utf-8')
+                mapTileDict[image_path] = base64_encoded_string
             else:
-                print(f'Failed to retrieve data for floor {mapTileBlock["floorId"]}, status code: {response.status_code}')
+                print(f'Failed to retrieve data for floor {mapTileBlock["floorId"]}, status code: {response.status_code}')             
+
+json_data = json.dumps(mapTileDict, indent=4)
+with open('./src/frontend/assets/mapTileImg/mapTileDict.json', 'w') as file:
+    file.write(json_data)
