@@ -22,7 +22,7 @@ const Unity = ({ unityRef, focusedUnityView, toNode }: { unityRef: RefObject<Uni
         if (toNode) {
             sendMessageToUnity({
                 gameObject: 'ReactAPI',
-                methodName: 'setToNode',
+                methodName: 'SetToNode',
                 message: { toNode },
             });
         }
@@ -45,12 +45,9 @@ const Unity = ({ unityRef, focusedUnityView, toNode }: { unityRef: RefObject<Uni
                 title="Send Message to Unity"
                 onPress={() => {
                     sendMessageToUnity({
-                        gameObject: 'Canvas/ReactToUnity',
-                        methodName: 'GetDatas',
-                        message: {
-                            name: "Tom",
-                            age: 25,
-                        },
+                        gameObject: 'ReactAPI',
+                        methodName: 'SetToNode',
+                        message: { toNode },
                     });
                 }}
             />
