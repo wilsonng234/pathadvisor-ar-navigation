@@ -63,7 +63,6 @@ const MapTilesBackground = ({ floorId, children }: MapTilesBackgroundProps) => {
                                     <FastImage
                                         key={`${i}-${j}`}
                                         style={{ width: RENDER_MAP_TILE_WIDTH, height: RENDER_MAP_TILE_HEIGHT }}
-                                        // source={{ uri: `https://pathadvisor.ust.hk/api/floors/${mapTileBlock.floorId}/map-tiles?x=${mapTileBlock.x}&y=${mapTileBlock.y}&zoomLevel=${mapTileBlock.zoomLevel}` }}
                                         source={{ uri: imageUri }}
                                     />
                                 )

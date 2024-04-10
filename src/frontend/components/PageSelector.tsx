@@ -50,15 +50,11 @@ const PageSelector = ({ handleSelectorChangeFloor }: PageSelectorProps) => {
                 handleSelectorChangeFloor(floorButtonList[buildingList[selectBuildingIndex]][index])
             }
         }
-        scrollOffset();
     }
 
     const changeBuilding = (index: number) => {
         setSelectBuildingIndex(index)
-        // if (index === 0)
-        //     changeFloor(6);
-        // else
-        //     changeFloor(0);
+        scrollOffset();
     }
 
     const scrollOffset = () => {
