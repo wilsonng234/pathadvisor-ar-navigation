@@ -5,6 +5,7 @@ import { Text, View } from "react-native";
 import { Dimensions, ScrollView, StyleSheet } from "react-native";
 import { WebView } from 'react-native-webview';
 import axios from "axios";
+import { useFocusEffect } from "@react-navigation/native";
 
 const BusQueueScreen = () => {
     const [northPeople, setNorthPeople] = useState(0);
@@ -19,15 +20,14 @@ const BusQueueScreen = () => {
                     setNorthTime(response.data[response.data.length - 1]["north_waiting"]);
                     setSouthPeople(response.data[response.data.length - 1]["south_count"]);
                     setSouthTime(response.data[response.data.length - 1]["south_waiting"]);
-                    console.log(response.data[response.data.length - 1]["south_count"])
                 }
             )
             .catch(e => console.log(e));
     }
 
-    useEffect(() => {
+    useFocusEffect(() => {
         getStat();
-    }, []);
+    });
 
     return (
         <ScrollView>
