@@ -1,9 +1,11 @@
 # Getting Started
 1. `npm ci` to install the dependencies
-2. add `sdk.dir` in android local.properties
-e.g. `sdk.dir = C:\\Users\\username\\AppData\\Local\\Android\\Sdk`
+2. Create a `local.properties` file at `android` folder with the following content:
+```
+sdk.dir = C:\\Users\\username\\AppData\\Local\\Android\\Sdk
+```
 3. export unity project to `unity/builds/android` folder
-4. Create a `build.gradle` at `unity/builds/android/unityLibrary/libs` with the following content:
+4. Create a `build.gradle` file at `unity/builds/android/unityLibrary/libs` with the following content:
 ```
 configurations.maybeCreate("default")
 artifacts.add("default", file('arcore_client.aar'))
@@ -12,7 +14,7 @@ artifacts.add("default", file('ARPresto.aar'))
 artifacts.add("default", file('unityandroidpermissions.aar'))
 ```
 
-6. Replace the dependencies block of `unity/builds/android/unityLibrary/build.gradle` as the following:
+5. Replace the dependencies block of `unity/builds/android/unityLibrary/build.gradle` as the following:
 ```
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
