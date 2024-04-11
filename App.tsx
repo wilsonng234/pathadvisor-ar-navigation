@@ -23,7 +23,7 @@ function App(): React.JSX.Element {
             <Drawer.Screen name="Home" component={HomeScreen} />
             <Drawer.Screen name="Events" component={EventScreen} />
             <Drawer.Screen name="Bus Queue" component={BusQueueScreen} />
-            {/* <Drawer.Screen name="AR Navigation" component={ARNavigationScreen} options={{ headerShown: false }} /> */}
+            <Drawer.Screen name="AR Navigation" component={ARNavigationScreen} options={{ headerShown: false, drawerItemStyle: { display: 'none' } }} />
           </Drawer.Navigator>
         </NavigationContainer>
       </SafeAreaProvider>
