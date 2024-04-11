@@ -66,3 +66,5 @@ yarn-error.log
 /coverage
 
 /unity/builds
+
+index.android.bundle
