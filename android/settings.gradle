@@ -13,5 +13,5 @@ project(':viro_renderer').projectDir = new File('../node_modules/@viro-community
 // react-native-unity
 include ':unityLibrary'
 project(':unityLibrary').projectDir=new File('..\\unity\\builds\\android\\unityLibrary')
-include ':unityLibrary:aar'
+include ':unityLibrary:libs'
 include ':unityLibrary:xrmanifest.androidlib'
