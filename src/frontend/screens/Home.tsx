@@ -12,7 +12,7 @@ import LoadingScreen from "../components/LoadingScreen";
 import * as api from '../../backend/api';
 import Node from "../../backend/schema/Node";
 import PathNode from "../../backend/schema/PathNode";
-import PageSelector from "../components/PageSelector";
+import PageSelector from "../components/FloorSelector";
 
 import { StorageKeys, storage } from "../utils/mmkvStorage";
 import { FloorsDict, useFloorsQuery } from "../utils/reactQueryFactory";
