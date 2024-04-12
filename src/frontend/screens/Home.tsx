@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { View, StyleSheet, Text } from "react-native";
 import { UseQueryResult } from "@tanstack/react-query";
@@ -12,7 +12,7 @@ import LoadingScreen from "../components/LoadingScreen";
 import * as api from '../../backend/api';
 import Node from "../../backend/schema/Node";
 import PathNode from "../../backend/schema/PathNode";
-import PageSelector from "../components/PageSelector";
+import PageSelector from "../components/FloorSelector";
 
 import { StorageKeys, storage } from "../utils/mmkvStorage";
 import { FloorsDict, useFloorsQuery } from "../utils/reactQueryFactory";
@@ -111,22 +111,22 @@ const HomeScreen = ({ navigation }) => {
         updateSuggestions(StorageKeys.FromSuggestions, node._id);
     }
 
-    const handleSelectToNode = (node: Node) => {
+    const handleSelectToNode = useCallback((node: Node) => {
         setToNode(node);
         setFocusNode(node)
         updateSuggestions(StorageKeys.ToSuggestions, node._id);
-    }
+    }, [])
 
-    const handleCancelFromNode = () => {
+    const handleCancelFromNode = useCallback(() => {
         setFromNode(null);
-    }
+    }, [])
 
-    const handleCancelToNode = () => {
+    const handleCancelToNode = useCallback(() => {
         setToNode(null);
         setNavigationType(null);
         setFromNode(null);
         setEnableFromSearchBar(false);
-    }
+    }, [])
 
     const handleChangeFloor = (offset: number) => {
         if (!path) {
@@ -144,10 +144,10 @@ const HomeScreen = ({ navigation }) => {
         setFocusNode(path.floors[path.floorIds[index + offset]][0])
     }
 
-    const handleSelectorChangeFloor = (id: string) => {
+    const handleSelectorChangeFloor = useCallback((id: string) => {
         setCurrentFloorId(id);
         setFocusNode(null);
-    }
+    }, []);
 
     const renderRoomDetailsBoxButtons = () => {
         const handleDirectionButton = () => {

@@ -1,59 +1,76 @@
-import React, { useEffect, useState, useRef, useCallback, RefObject } from 'react'
+import React, { useEffect, useState, useRef, memo } from 'react'
 import { StyleSheet, ScrollView, TouchableOpacity, View, Text } from 'react-native';
 import { UseQueryResult } from '@tanstack/react-query';
 import { BuildingsDict, FloorsDict, useBuildingsQuery, useFloorsQuery } from '../utils/reactQueryFactory';
 
-interface PageSelectorProps {
+interface FloorSelectorProps {
     handleSelectorChangeFloor: (id: string) => void;
 }
 
 type FloorsButtonsDict = { [buildingId: string]: string[] }
 
-const PageSelector = ({ handleSelectorChangeFloor }: PageSelectorProps) => {
+const FloorSelector = ({ handleSelectorChangeFloor }: FloorSelectorProps) => {
     const { data: buildings, isLoading: isLoadingBuildings }: UseQueryResult<BuildingsDict> = useBuildingsQuery()
     const { data: floors, isLoading: isLoadingFloors }: UseQueryResult<FloorsDict> = useFloorsQuery()
-    // const [floorButtons, setFloorButtons] = useState<string[]>([]);
-    const [floorButtonList, setFloorButtonList] = useState<FloorsButtonsDict>({});
+
+    const [floorButtonDict, setFloorButtonDict] = useState<FloorsButtonsDict>({});
     const [buildingList, setBuildingList] = useState<string[]>([]);
     const [buildingButtons, setBuildingButtons] = useState<string[]>([]);
-    // const [buildingButtonsId, setBuildingButtonsId] = useState<string[]>([]);
     const [selectFloorIndex, setSelectFloorIndex] = useState(6);
     const [selectBuildingIndex, setSelectBuildingIndex] = useState(0);
+
     const scrollViewRef = useRef<ScrollView>(null);
 
     useEffect(() => {
-        if (floors === undefined) return;
+        if (floors === undefined)
+            return;
+
         const tempFloorButtonList: FloorsButtonsDict = {};
         const tempBuildingList: string[] = [];
+
         Object.keys(floors).forEach(floorId => {
-            if (tempFloorButtonList[floors[floorId].buildingId] === undefined) {
+            if (tempFloorButtonList[floors[floorId].buildingId] === undefined)
                 tempFloorButtonList[floors[floorId].buildingId] = [];
-            }
+
             tempFloorButtonList[floors[floorId].buildingId].push(floorId);
         });
 
         Object.keys(tempFloorButtonList).forEach(building => {
-            tempBuildingList.push(building);
             tempFloorButtonList[building].sort((a, b) => {
                 if (floors[a].rank > floors[b].rank) return 1;
                 else return -1;
             })
+
+            tempBuildingList.push(building);
         });
+
+        buildingList.sort();
+        setFloorButtonDict(tempFloorButtonList);
         setBuildingList(tempBuildingList);
-        setFloorButtonList(tempFloorButtonList);
-    }, [])
-    const changeFloor = (index: number) => {
-        setSelectFloorIndex(index)
-        if (floorButtonList !== undefined && buildingList !== undefined) {
-            const tempList = floorButtonList[buildingList[selectBuildingIndex]];
-            if (!!tempList) {
-                handleSelectorChangeFloor(floorButtonList[buildingList[selectBuildingIndex]][index])
-            }
-        }
+
+    }, [floors])
+
+    useEffect(() => {
+        if (buildings === undefined)
+            return;
+
+        setBuildingButtons(buildingList.map(building => buildings[building].name));
+    }, [buildings, buildingList])
+
+    const changeFloor = (floorIndex: number) => {
+        if (Object.keys(floorButtonDict).length === 0)
+            return;
+        if (buildingList.length === 0)
+            return;
+
+        handleSelectorChangeFloor(floorButtonDict[buildingList[selectBuildingIndex]][floorIndex])
+        setSelectFloorIndex(floorIndex)
     }
 
-    const changeBuilding = (index: number) => {
-        setSelectBuildingIndex(index)
+    const changeBuilding = (buildingIndex: number) => {
+        setSelectBuildingIndex(buildingIndex);
+        changeFloor(buildingIndex === 0 ? 6 : 0);
+
         scrollOffset();
     }
 
@@ -63,19 +80,6 @@ const PageSelector = ({ handleSelectorChangeFloor }: PageSelectorProps) => {
         else
             scrollViewRef.current?.scrollTo({ x: 0, y: 0, animated: true });
     }
-
-    useEffect(() => {
-        const temp: string[] = [];
-        buildingList.forEach(building => {
-            if (buildings === undefined) return;
-            temp.push(buildings[building].name)
-        })
-        setBuildingButtons(temp);
-    }, [buildings, buildingList])
-
-    useEffect(() => {
-        changeFloor(selectBuildingIndex === 0 ? 6 : 0);
-    }, [selectBuildingIndex])
 
     if (isLoadingBuildings || isLoadingFloors)
         return <View></View>;
@@ -88,14 +92,14 @@ const PageSelector = ({ handleSelectorChangeFloor }: PageSelectorProps) => {
                         showsHorizontalScrollIndicator={false}
                         contentContainerStyle={styles.contentContainer}
                     >
-                        {buildingButtons.map((buttonLabel, index) => (
+                        {buildingButtons.map((buttonLabel, buildingIndex) => (
                             <TouchableOpacity
-                                key={index}
+                                key={buildingIndex}
                                 style={[
                                     styles.button,
-                                    index === selectBuildingIndex ? styles.activeButton : styles.inactiveButton,
+                                    buildingIndex === selectBuildingIndex ? styles.activeButton : styles.inactiveButton,
                                 ]}
-                                onPress={() => changeBuilding(index)}
+                                onPress={() => changeBuilding(buildingIndex)}
                             >
                                 <Text style={styles.buttonText}>{buttonLabel}</Text>
                             </TouchableOpacity>
@@ -113,14 +117,14 @@ const PageSelector = ({ handleSelectorChangeFloor }: PageSelectorProps) => {
                             scrollOffset();
                         }}
                     >
-                        {floorButtonList[buildingList[selectBuildingIndex]] && floorButtonList[buildingList[selectBuildingIndex]].map((buttonLabel, index) => (
+                        {floorButtonDict[buildingList[selectBuildingIndex]] && floorButtonDict[buildingList[selectBuildingIndex]].map((buttonLabel, floorIndex) => (
                             <TouchableOpacity
-                                key={index}
+                                key={floorIndex}
                                 style={[
                                     styles.button,
-                                    index === selectFloorIndex ? styles.activeButton : styles.inactiveButton,
+                                    floorIndex === selectFloorIndex ? styles.activeButton : styles.inactiveButton,
                                 ]}
-                                onPress={() => changeFloor(index)}
+                                onPress={() => changeFloor(floorIndex)}
                             >
                                 <Text style={styles.buttonText}>{buttonLabel}</Text>
                             </TouchableOpacity>
@@ -131,7 +135,7 @@ const PageSelector = ({ handleSelectorChangeFloor }: PageSelectorProps) => {
         );
 }
 
-export default PageSelector;
+export default memo(FloorSelector);
 
 const styles = StyleSheet.create({
     buttonGroupContainer: {
