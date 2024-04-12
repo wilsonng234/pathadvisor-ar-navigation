@@ -111,22 +111,22 @@ const HomeScreen = ({ navigation }) => {
         updateSuggestions(StorageKeys.FromSuggestions, node._id);
     }
 
-    const handleSelectToNode = (node: Node) => {
+    const handleSelectToNode = useCallback((node: Node) => {
         setToNode(node);
         setFocusNode(node)
         updateSuggestions(StorageKeys.ToSuggestions, node._id);
-    }
+    }, [])
 
-    const handleCancelFromNode = () => {
+    const handleCancelFromNode = useCallback(() => {
         setFromNode(null);
-    }
+    }, [])
 
-    const handleCancelToNode = () => {
+    const handleCancelToNode = useCallback(() => {
         setToNode(null);
         setNavigationType(null);
         setFromNode(null);
         setEnableFromSearchBar(false);
-    }
+    }, [])
 
     const handleChangeFloor = (offset: number) => {
         if (!path) {
