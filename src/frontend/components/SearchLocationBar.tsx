@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { Keyboard, StyleSheet, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { SearchBar } from '@rneui/themed';
@@ -103,7 +103,7 @@ const SearchLocationBar = ({ placeholder, selectNode, onClickCancel, cacheKey }:
     );
 }
 
-export default SearchLocationBar
+export default memo(SearchLocationBar);
 
 const styles = StyleSheet.create({
     searchResult: {
