@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { View, StyleSheet, Text } from "react-native";
 import { UseQueryResult } from "@tanstack/react-query";
@@ -144,10 +144,10 @@ const HomeScreen = ({ navigation }) => {
         setFocusNode(path.floors[path.floorIds[index + offset]][0])
     }
 
-    const handleSelectorChangeFloor = (id: string) => {
+    const handleSelectorChangeFloor = useCallback((id: string) => {
         setCurrentFloorId(id);
         setFocusNode(null);
-    }
+    }, []);
 
     const renderRoomDetailsBoxButtons = () => {
         const handleDirectionButton = () => {

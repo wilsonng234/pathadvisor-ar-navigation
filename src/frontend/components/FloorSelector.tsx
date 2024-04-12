@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback, RefObject } from 'react'
+import React, { useEffect, useState, useRef, memo } from 'react'
 import { StyleSheet, ScrollView, TouchableOpacity, View, Text } from 'react-native';
 import { UseQueryResult } from '@tanstack/react-query';
 import { BuildingsDict, FloorsDict, useBuildingsQuery, useFloorsQuery } from '../utils/reactQueryFactory';
@@ -135,7 +135,7 @@ const FloorSelector = ({ handleSelectorChangeFloor }: FloorSelectorProps) => {
         );
 }
 
-export default FloorSelector;
+export default memo(FloorSelector);
 
 const styles = StyleSheet.create({
     buttonGroupContainer: {
