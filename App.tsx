@@ -17,9 +17,8 @@ const Drawer = createDrawerNavigator();
 const queryClient = new QueryClient()
 
 function App(): React.JSX.Element {
-
   const downloadMapTileAlert = () =>
-  //warning message
+    //warning message
     Alert.alert('Update HKUST Map data', 'Do you want to update the HKUST Map data to latest version?', [
       {
         text: 'Cancel',
@@ -35,12 +34,16 @@ function App(): React.JSX.Element {
           <Drawer.Navigator initialRouteName="Home" screenOptions={{ drawerType: 'front', swipeEdgeWidth: 0 }}>
             <Drawer.Screen name="Home" component={HomeScreen}
               options={{
+                headerTitle: 'HKUST PathAdvisor',
+                headerTitleAlign: 'center',
                 headerRight: () => (
                   <TouchableOpacity onPress={downloadMapTileAlert}>
                     <MaterialIcons
                       name="update"
                       style={{ marginRight: 10 }}
-                      size={25} />
+                      size={25}
+                      color={'black'}
+                    />
                   </TouchableOpacity>
                 ),
               }}
