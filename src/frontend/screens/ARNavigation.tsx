@@ -1,7 +1,7 @@
 import React, { RefObject, useRef, useState, useEffect } from "react";
 import UnityView from '@azesmway/react-native-unity';
 
-import { Button, View } from "react-native";
+import { View } from "react-native";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useFocusEffect } from '@react-navigation/native';
 import LoadingScreen from "../components/LoadingScreen";
@@ -40,17 +40,6 @@ const Unity = ({ unityRef, focusedUnityView, toNode }: { unityRef: RefObject<Uni
                     }}
                 /> : null
             }
-
-            <Button
-                title="Send Message to Unity"
-                onPress={() => {
-                    sendMessageToUnity({
-                        gameObject: 'ReactAPI',
-                        methodName: 'SetToNode',
-                        message: { toNode },
-                    });
-                }}
-            />
         </View>
     );
 };
@@ -85,7 +74,6 @@ const ARNavigationScreen = ({ route, navigation }) => {
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <Unity unityRef={unityRef} focusedUnityView={focusedUnityView} toNode={toNode} />
-            <Button title="Exit AR Navigation" onPress={handleExitARNavigationScreen} />
         </GestureHandlerRootView>
     );
 }
