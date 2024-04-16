@@ -48,9 +48,18 @@ function App(): React.JSX.Element {
                 ),
               }}
             />
-            <Drawer.Screen name="Events" component={EventScreen} />
-            <Drawer.Screen name="Bus Queue Statistics" component={BusQueueStatisticsScreen} />
-            <Drawer.Screen name="AR Navigation" component={ARNavigationScreen} options={{ headerShown: false, drawerItemStyle: { display: 'none' } }} />
+            <Drawer.Screen name="Events"
+              component={EventScreen}
+              options={{ headerTitleAlign: 'center', }}
+            />
+            <Drawer.Screen name="Bus Queue Statistics"
+              component={BusQueueStatisticsScreen}
+              options={{ headerTitleAlign: 'center', }}
+            />
+            <Drawer.Screen name="AR Navigation"
+              component={ARNavigationScreen}
+              options={{ headerShown: false, drawerItemStyle: { display: 'none' } }}
+            />
           </Drawer.Navigator>
         </NavigationContainer>
       </SafeAreaProvider>
