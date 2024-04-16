@@ -1,9 +1,10 @@
 import React, { useState } from "react";
+import axios from "axios";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+
 import { Text, View } from "react-native";
 import { Dimensions, ScrollView, StyleSheet } from "react-native";
 import { WebView } from 'react-native-webview';
-import axios from "axios";
 import { useFocusEffect } from "@react-navigation/native";
 
 const BusQueueStatisticsScreen = () => {
@@ -11,7 +12,8 @@ const BusQueueStatisticsScreen = () => {
     const [northTime, setNorthTime] = useState(0);
     const [southPeople, setSouthPeople] = useState(0);
     const [southTime, setSouthTime] = useState(0);
-    const getStat = () => {
+
+    useFocusEffect(() => {
         axios.get('https://eek123.ust.hk/BusQueue/clientAPI/busqueue')
             .then(
                 response => {
@@ -21,11 +23,7 @@ const BusQueueStatisticsScreen = () => {
                     setSouthTime(response.data[response.data.length - 1]["south_waiting"]);
                 }
             )
-            .catch(e => console.log(e));
-    }
-
-    useFocusEffect(() => {
-        getStat();
+            .catch(e => console.error(e));
     });
 
     return (
@@ -50,7 +48,11 @@ const BusQueueStatisticsScreen = () => {
                         <Text style={styles.infoText}>{Math.floor(northTime / 60)}m{northTime % 60}s</Text>
                     </View>
                 </View>
-                <WebView style={styles.live} source={{ uri: 'https://pathadvisor.ust.hk/liveview/liveview-north.html' }} />
+                <WebView
+                    style={styles.live}
+                    source={{ uri: 'https://pathadvisor.ust.hk/liveview/liveview-north.html' }}
+                    allowsFullscreenVideo={true}
+                />
 
                 {/* South Bus Stop */}
                 <View style={styles.infoBox}>
@@ -71,7 +73,11 @@ const BusQueueStatisticsScreen = () => {
                         <Text style={styles.infoText}>{Math.floor(southTime / 60)}m{southTime % 60}s</Text>
                     </View>
                 </View>
-                <WebView style={styles.live} source={{ uri: 'https://pathadvisor.ust.hk/liveview/liveview-south.html' }} />
+                <WebView
+                    style={styles.live}
+                    source={{ uri: 'https://pathadvisor.ust.hk/liveview/liveview-south.html' }}
+                    allowsFullscreenVideo={true}
+                />
 
                 <View style={{ alignItems: 'center', marginTop: 20 }}>
                     <View style={styles.reminderRow}>
