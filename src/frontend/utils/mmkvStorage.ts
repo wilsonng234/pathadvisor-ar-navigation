@@ -3,6 +3,7 @@ import { MMKV } from 'react-native-mmkv'
 export const storage = new MMKV()
 
 export enum StorageKeys {
-    FromSuggestions = 'from.suggestions',
-    ToSuggestions = 'to.suggestions',
+    META = 'meta',
+    FROM_SUGGESTIONS = 'from.suggestions',
+    TO_SUGGESTIONS = 'to.suggestions',
 }

@@ -10,3 +10,4 @@ export { getNodesWithinBoundingBox } from "./node/getNodesWithinBoundingBox";
 export { getNearestItem } from "./search/getNearestItem";
 export { getShortestPath } from "./search/getShortestPath";
 export { getAllTags } from "./tag/getAllTags";
+export { getMeta } from "./versions/getMeta";

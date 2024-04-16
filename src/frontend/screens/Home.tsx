@@ -108,13 +108,13 @@ const HomeScreen = ({ navigation }) => {
 
     const handleSelectFromNode = (node: Node) => {
         setFromNode(node);
-        updateSuggestions(StorageKeys.FromSuggestions, node._id);
+        updateSuggestions(StorageKeys.FROM_SUGGESTIONS, node._id);
     }
 
     const handleSelectToNode = useCallback((node: Node) => {
         setToNode(node);
         setFocusNode(node)
-        updateSuggestions(StorageKeys.ToSuggestions, node._id);
+        updateSuggestions(StorageKeys.TO_SUGGESTIONS, node._id);
     }, [])
 
     const handleCancelFromNode = useCallback(() => {
@@ -190,9 +190,9 @@ const HomeScreen = ({ navigation }) => {
             <View style={{ zIndex: 2 }}>
                 {
                     enableFromSearchBar &&
-                    <SearchLocationBar selectNode={handleSelectFromNode} placeholder="FROM" onClickCancel={handleCancelFromNode} cacheKey={StorageKeys.FromSuggestions} />
+                    <SearchLocationBar selectNode={handleSelectFromNode} placeholder="FROM" onClickCancel={handleCancelFromNode} cacheKey={StorageKeys.FROM_SUGGESTIONS} />
                 }
-                <SearchLocationBar selectNode={handleSelectToNode} placeholder="Where are you going?" onClickCancel={handleCancelToNode} cacheKey={StorageKeys.ToSuggestions} />
+                <SearchLocationBar selectNode={handleSelectToNode} placeholder="Where are you going?" onClickCancel={handleCancelToNode} cacheKey={StorageKeys.TO_SUGGESTIONS} />
             </View>
 
             <MapView currentFloorId={currentFloorId} fromNode={fromNode} toNode={toNode} path={path} focusNode={focusNode} />
