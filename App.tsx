@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import HomeScreen from './src/frontend/screens/Home';
-import BusQueueScreen from './src/frontend/screens/BusQueue';
+import BusQueueStatisticsScreen from './src/frontend/screens/BusQueueStatistics';
 import EventScreen from './src/frontend/screens/Event';
 import ARNavigationScreen from './src/frontend/screens/ARNavigation';
 import { Alert, Button, TouchableOpacity } from 'react-native';
@@ -49,7 +49,7 @@ function App(): React.JSX.Element {
               }}
             />
             <Drawer.Screen name="Events" component={EventScreen} />
-            <Drawer.Screen name="Bus Queue" component={BusQueueScreen} />
+            <Drawer.Screen name="Bus Queue Statistics" component={BusQueueStatisticsScreen} />
             <Drawer.Screen name="AR Navigation" component={ARNavigationScreen} options={{ headerShown: false, drawerItemStyle: { display: 'none' } }} />
           </Drawer.Navigator>
         </NavigationContainer>
