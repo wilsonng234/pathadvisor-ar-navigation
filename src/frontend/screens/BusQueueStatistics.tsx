@@ -8,12 +8,44 @@ import { WebView } from 'react-native-webview';
 import { useFocusEffect } from "@react-navigation/native";
 
 const BusQueueStatisticsScreen = () => {
+    const [time, setTime] = useState<string>("");
     const [northPeople, setNorthPeople] = useState(0);
     const [northTime, setNorthTime] = useState(0);
     const [southPeople, setSouthPeople] = useState(0);
     const [southTime, setSouthTime] = useState(0);
 
     useFocusEffect(() => {
+        // Fetch current time
+        getTime();
+        const fetchTime = setInterval(() => {
+            getTime();
+        }, 1000);
+
+        // Fetch bus queue statistics
+        getBusQueueStatistics();
+        const fetchStat = setInterval(() => {
+            getBusQueueStatistics();
+
+        }, 10000);
+
+        return () => {
+            clearInterval(fetchTime);
+            clearInterval(fetchStat);
+        }
+    });
+
+    const getTime = () => {
+        const addZero = (date: number) => ("0" + date).slice(-2);
+
+        const today = new Date();
+        const date = today.getFullYear() + '-' + addZero(today.getMonth() + 1) + '-' + addZero(today.getDate());
+        const time = addZero(today.getHours()) + ":" + addZero(today.getMinutes()) + ":" + addZero(today.getSeconds());
+        const dateTime = date + ' ' + time;
+
+        setTime(dateTime);
+    }
+
+    const getBusQueueStatistics = () => {
         axios.get('https://eek123.ust.hk/BusQueue/clientAPI/busqueue')
             .then(
                 response => {
@@ -24,7 +56,7 @@ const BusQueueStatisticsScreen = () => {
                 }
             )
             .catch(e => console.error(e));
-    });
+    }
 
     return (
         <ScrollView>
@@ -79,7 +111,11 @@ const BusQueueStatisticsScreen = () => {
                     allowsFullscreenVideo={true}
                 />
 
-                <View style={{ alignItems: 'center', marginTop: 20 }}>
+                <View style={styles.timerBox}>
+                    <Text style={styles.timerText}>{time}</Text>
+                </View>
+
+                <View style={styles.reminderBox}>
                     <View style={styles.reminderRow}>
                         <FontAwesome
                             name="users"
@@ -161,6 +197,21 @@ const styles = StyleSheet.create({
     infoClock: {
         color: '#57aed3',
         fontSize: 30
+    },
+
+    timerBox: {
+        marginTop: 15
+    },
+
+    timerText: {
+        fontSize: 16,
+        color: 'black',
+        fontWeight: '400'
+    },
+
+    reminderBox: {
+        alignItems: 'center',
+        marginTop: 20
     },
 
     reminderRow: {
