@@ -6,4 +6,5 @@ export enum StorageKeys {
     META = 'meta',
     FROM_SUGGESTIONS = 'from.suggestions',
     TO_SUGGESTIONS = 'to.suggestions',
+    REACT_QUERY_OFFLINE_CACHE = 'REACT_QUERY_OFFLINE_CACHE'
 }

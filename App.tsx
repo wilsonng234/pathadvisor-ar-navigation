@@ -1,22 +1,38 @@
 import React from 'react';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { Alert, TouchableOpacity } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { QueryClient } from '@tanstack/react-query';
 
 import HomeScreen from './src/frontend/screens/Home';
 import BusQueueStatisticsScreen from './src/frontend/screens/BusQueueStatistics';
 import EventScreen from './src/frontend/screens/Event';
 import ARNavigationScreen from './src/frontend/screens/ARNavigation';
-import { Alert, Button, TouchableOpacity } from 'react-native';
+import { storage } from './src/frontend/utils/mmkvStorage';
+import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 
 const Drawer = createDrawerNavigator();
-// const insets = useSafeAreaInsets();
 
+const clientStorage = {
+  setItem: (key, value) => {
+    storage.set(key, value);
+  },
+  getItem: (key) => {
+    const value = storage.getString(key);
+    return value === undefined ? null : value;
+  },
+  removeItem: (key) => {
+    storage.delete(key);
+  },
+};
 const queryClient = new QueryClient()
+const clientPersister = createSyncStoragePersister({ storage: clientStorage });
 
 function App(): React.JSX.Element {
+  console.log(storage.getAllKeys());
   const downloadMapTileAlert = () =>
     //warning message
     Alert.alert('Update HKUST Map data', 'Do you want to update the HKUST Map data to latest version?', [
@@ -28,7 +44,7 @@ function App(): React.JSX.Element {
     ]);
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider client={queryClient} persistOptions={{ persister: clientPersister }}>
       <SafeAreaProvider>
         <NavigationContainer>
           <Drawer.Navigator initialRouteName="Home" screenOptions={{ drawerType: 'front', swipeEdgeWidth: 0 }}>
@@ -63,7 +79,7 @@ function App(): React.JSX.Element {
           </Drawer.Navigator>
         </NavigationContainer>
       </SafeAreaProvider>
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   );
 }
 
