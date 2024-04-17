@@ -1,7 +1,7 @@
 import React, { RefObject, useRef, useState, useEffect } from "react";
 import UnityView from '@azesmway/react-native-unity';
 
-import { NativeSyntheticEvent, View } from "react-native";
+import { Button, NativeSyntheticEvent, Text, View } from "react-native";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useFocusEffect } from '@react-navigation/native';
 import LoadingScreen from "../components/LoadingScreen";
@@ -20,15 +20,17 @@ interface UnityProps {
 }
 
 enum Message {
-    GO_BACK = "EXIT"
+    START = "START",
+    EXIT = "EXIT"
 }
 
-const Unity = ({ unityRef, focusedUnityView, toNode, onUnityMessage: onUnityMessage }: UnityProps) => {
+const Unity = ({ unityRef, focusedUnityView, toNode, onUnityMessage }: UnityProps) => {
     const sendMessageToUnity = (message: UnityMessage) => {
         if (unityRef?.current) {
             unityRef.current.postMessage(message.gameObject, message.methodName, JSON.stringify(message.message));
         }
     }
+
     useEffect(() => {
         if (toNode) {
             sendMessageToUnity({
@@ -39,15 +41,18 @@ const Unity = ({ unityRef, focusedUnityView, toNode, onUnityMessage: onUnityMess
         }
     }, [toNode]);
 
+
     return (
         <View style={{ flex: 1 }}>
             {
                 // Remount UnityView when the screen is focused
+                // Otherwise, the UnityView becomes black or white screen
+
                 focusedUnityView ? <UnityView
                     ref={unityRef}
                     style={{ flex: 1 }}
                     onUnityMessage={onUnityMessage}
-                /> : null
+                /> : <></>
             }
         </View>
     );
@@ -56,8 +61,10 @@ const Unity = ({ unityRef, focusedUnityView, toNode, onUnityMessage: onUnityMess
 const ARNavigationScreen = ({ route, navigation }) => {
     const unityRef = useRef<UnityView>(null);
     const [focusedUnityView, setfocusedUnityView] = useState<boolean>(true);
-    const [isLoading, setIsLoading] = useState(true)
+    const [isLoading, setIsLoading] = useState<boolean>(true)
+    const [ready, setReady] = useState<boolean>(false);
     const toNode = route.params.toNode;
+
     // Remount UnityView when the screen is focused
     useFocusEffect(() => {
         setfocusedUnityView(true);
@@ -74,11 +81,14 @@ const ARNavigationScreen = ({ route, navigation }) => {
     }, [])
 
     const handleUnityMessage = (result: NativeSyntheticEvent<Readonly<{ message: string; }>>) => {
-        const message = result.nativeEvent.message;
-        console.log(message);
+        let message = result.nativeEvent.message;
+
         if (message in Message) {
             switch (message) {
-                case Message.GO_BACK:
+                case Message.START:
+                    setReady(true);
+                    break;
+                case Message.EXIT:
                     navigation.goBack();
                     break;
             }
