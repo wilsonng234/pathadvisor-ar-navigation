@@ -14,8 +14,9 @@ interface UnityMessage {
 
 interface UnityProps {
     unityRef: RefObject<UnityView>;
-    focusedUnityView: boolean;
     toNode: any;
+    focusedUnityView: boolean;
+    unityStarted: boolean;
     onUnityMessage: (result: NativeSyntheticEvent<Readonly<{ message: string; }>>) => void;
 }
 
@@ -24,22 +25,25 @@ enum Message {
     EXIT = "EXIT"
 }
 
-const Unity = ({ unityRef, focusedUnityView, toNode, onUnityMessage }: UnityProps) => {
+const Unity = ({ unityRef, toNode, focusedUnityView, unityStarted, onUnityMessage }: UnityProps) => {
     const sendMessageToUnity = (message: UnityMessage) => {
         if (unityRef?.current) {
             unityRef.current.postMessage(message.gameObject, message.methodName, JSON.stringify(message.message));
+            console.log("Message sent to Unity: ", message.message);
         }
     }
 
     useEffect(() => {
-        if (toNode) {
+        // avoid sending message to Unity before UnityView is started
+
+        if (unityStarted && toNode) {
             sendMessageToUnity({
                 gameObject: 'ReactAPI',
                 methodName: 'SetToNode',
                 message: { toNode },
             });
         }
-    }, [toNode]);
+    }, [unityStarted]);
 
 
     return (
@@ -62,7 +66,7 @@ const ARNavigationScreen = ({ route, navigation }) => {
     const unityRef = useRef<UnityView>(null);
     const [focusedUnityView, setfocusedUnityView] = useState<boolean>(true);
     const [isLoading, setIsLoading] = useState<boolean>(true)
-    const [ready, setReady] = useState<boolean>(false);
+    const [unityStarted, setUnityStarted] = useState<boolean>(false);
     const toNode = route.params.toNode;
 
     // Remount UnityView when the screen is focused
@@ -70,6 +74,7 @@ const ARNavigationScreen = ({ route, navigation }) => {
         setfocusedUnityView(true);
 
         return () => {
+            setUnityStarted(false);
             setfocusedUnityView(false);
         };
     });
@@ -82,11 +87,12 @@ const ARNavigationScreen = ({ route, navigation }) => {
 
     const handleUnityMessage = (result: NativeSyntheticEvent<Readonly<{ message: string; }>>) => {
         let message = result.nativeEvent.message;
+        console.log("Unity message: ", message)
 
         if (message in Message) {
             switch (message) {
                 case Message.START:
-                    setReady(true);
+                    setUnityStarted(true);
                     break;
                 case Message.EXIT:
                     navigation.goBack();
@@ -100,7 +106,12 @@ const ARNavigationScreen = ({ route, navigation }) => {
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
-            <Unity unityRef={unityRef} focusedUnityView={focusedUnityView} toNode={toNode} onUnityMessage={handleUnityMessage} />
+            <Unity
+                unityRef={unityRef}
+                toNode={toNode}
+                focusedUnityView={focusedUnityView}
+                unityStarted={unityStarted} onUnityMessage={handleUnityMessage}
+            />
         </GestureHandlerRootView>
     );
 }
