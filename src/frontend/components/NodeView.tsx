@@ -1,16 +1,15 @@
 import React, { useState } from "react";
 import FastImage from "react-native-fast-image";
 import { LayoutChangeEvent, Text, View, ViewStyle } from "react-native";
-import { UseQueryResult } from "@tanstack/react-query";
 
 import { LOGIC_MAP_TILE_WIDTH, LOGIC_MAP_TILE_HEIGHT, RENDER_MAP_TILE_HEIGHT, RENDER_MAP_TILE_WIDTH } from "./MapTilesBackground";
 
 import LoadingScreen from "./LoadingScreen";
 import Node from "../../backend/schema/Node";
 import useGetFloors from "../hooks/api/useGetFloors";
+import useGetTags from "../hooks/api/useGetTags";
 
 import { getMapTileStartCoordinates, getNodeImageByConnectorId } from "../utils";
-import { TagsDict, useTagsQuery } from "../utils/reactQueryFactory";
 
 interface NodeViewProps {
     currentFloorId: string
@@ -26,7 +25,7 @@ interface NodeRenderSize {
 
 const NodeView = ({ currentFloorId, node }: NodeViewProps) => {
     const { data: floors, isLoading: isLoadingFloors } = useGetFloors();
-    const { data: tags, isLoading: isLoadingTags }: UseQueryResult<TagsDict> = useTagsQuery()
+    const { data: tags, isLoading: isLoadingTags } = useGetTags();
     const [nodeRenderSizes, setNodeRenderSizes] = useState<NodeRenderSize>({})
 
     if (!node.centerCoordinates)

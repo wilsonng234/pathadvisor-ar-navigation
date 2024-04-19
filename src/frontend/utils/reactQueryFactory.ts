@@ -5,27 +5,6 @@ import Node from 'backend/schema/node';
 import Tag from 'backend/schema/tag';
 import { getMapTileStartCoordinates, getMapTilesSize } from '.';
 
-export type TagsDict = { [tagId: string]: Tag }
-
-
-export const useTagsQuery = (): UseQueryResult<TagsDict> => {
-    return (
-        useQuery<{ data: Tag[] }, DefaultError, TagsDict>({
-            queryKey: ["tags"],
-            queryFn: api.getAllTags,
-            select: (res) => {
-                const tags: TagsDict = {};
-
-                res.data.forEach((tag: Tag) => {
-                    tags[tag._id] = tag;
-                });
-
-                return tags;
-            },
-            staleTime: Infinity
-        })
-    )
-}
 
 // export const useMapTilesQueryByFloorId = (floorId: string): UseQueryResult<string[]> => {
 //     return (
