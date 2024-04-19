@@ -7,7 +7,7 @@ import Node from '../../backend/schema/Node';
 
 import { FloorsDict, useFloorsQuery } from '../utils/reactQueryFactory';
 import LoadingScreen from './LoadingScreen';
-import useGetBuildings from '../hooks/useGetBuildings';
+import useGetBuildings from '../hooks/api/useGetBuildings';
 
 
 interface SearchNodeProps {

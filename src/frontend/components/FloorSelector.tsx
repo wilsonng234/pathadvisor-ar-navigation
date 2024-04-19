@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, memo } from 'react'
 import { StyleSheet, ScrollView, TouchableOpacity, View, Text } from 'react-native';
 import { UseQueryResult } from '@tanstack/react-query';
 import { FloorsDict, useFloorsQuery } from '../utils/reactQueryFactory';
-import useGetBuildings from '../hooks/useGetBuildings';
+import useGetBuildings from '../hooks/api/useGetBuildings';
 
 interface FloorSelectorProps {
     handleSelectorChangeFloor: (id: string) => void;

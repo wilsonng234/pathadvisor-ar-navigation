@@ -1,9 +1,9 @@
 import { DefaultError, useQuery } from "@tanstack/react-query";
 import { useNetInfoInstance } from "@react-native-community/netinfo";
 
-import * as api from "../../backend/api";
-import Building from "../../backend/schema/building";
-import { storage } from "../utils/mmkvStorage"
+import * as api from "../../../backend/api";
+import Building from "../../../backend/schema/building";
+import { storage } from "../../utils/mmkvStorage"
 
 type BuildingsDict = { [buildingId: string]: Building }
 

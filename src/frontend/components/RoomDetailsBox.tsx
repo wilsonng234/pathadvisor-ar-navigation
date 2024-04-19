@@ -4,7 +4,7 @@ import { UseQueryResult } from '@tanstack/react-query';
 
 import LoadingScreen from './LoadingScreen';
 import Node from '../../backend/schema/Node';
-import useGetBuildings from '../hooks/useGetBuildings';
+import useGetBuildings from '../hooks/api/useGetBuildings';
 import { convertFloorIdToFloorName } from '../utils';
 import { FloorsDict, useFloorsQuery } from '../utils/reactQueryFactory';
 
