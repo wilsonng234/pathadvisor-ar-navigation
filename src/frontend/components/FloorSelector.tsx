@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef, memo } from 'react'
 import { StyleSheet, ScrollView, TouchableOpacity, View, Text } from 'react-native';
-import { UseQueryResult } from '@tanstack/react-query';
-import { FloorsDict, useFloorsQuery } from '../utils/reactQueryFactory';
+
 import useGetBuildings from '../hooks/api/useGetBuildings';
+import useGetFloors from '../hooks/api/useGetFloors';
 
 interface FloorSelectorProps {
     handleSelectorChangeFloor: (id: string) => void;
@@ -12,7 +12,7 @@ type FloorsButtonsDict = { [buildingId: string]: string[] }
 
 const FloorSelector = ({ handleSelectorChangeFloor }: FloorSelectorProps) => {
     const { data: buildings, isLoading: isLoadingBuildings } = useGetBuildings();
-    const { data: floors, isLoading: isLoadingFloors }: UseQueryResult<FloorsDict> = useFloorsQuery()
+    const { data: floors, isLoading: isLoadingFloors } = useGetFloors();
 
     const [floorButtonDict, setFloorButtonDict] = useState<FloorsButtonsDict>({});
     const [buildingList, setBuildingList] = useState<string[]>([]);

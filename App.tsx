@@ -32,7 +32,7 @@ const queryClient = new QueryClient()
 const clientPersister = createSyncStoragePersister({ storage: clientStorage });
 
 function App(): React.JSX.Element {
-  console.log(storage.getAllKeys());
+  // console.log(storage.getAllKeys());
   const downloadMapTileAlert = () =>
     //warning message
     Alert.alert('Update HKUST Map data', 'Do you want to update the HKUST Map data to latest version?', [

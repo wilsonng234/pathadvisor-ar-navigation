@@ -2,12 +2,11 @@ import React, { useEffect, useState } from 'react';
 import FastImage from 'react-native-fast-image'
 import { Buffer } from "buffer";
 import { StyleSheet, View } from 'react-native';
-import { UseQueryResult } from '@tanstack/react-query';
 
 
 import LoadingScreen from './LoadingScreen';
+import useGetFloors from '../../frontend/hooks/api/useGetFloors';
 import { getMapTileStartCoordinates, getMapTilesNumber } from '../utils';
-import { FloorsDict, useFloorsQuery } from '../utils/reactQueryFactory';
 import { storage } from '../../frontend/utils/mmkvStorage';
 import { getMapTiles } from '../../backend/api/image/getMapTiles';
 
@@ -29,7 +28,7 @@ interface MapTilesBackgroundProps {
 }
 
 const MapTilesBackground = ({ floorId, children }: MapTilesBackgroundProps) => {
-    const { data: floors, isLoading: isLoadingFloors }: UseQueryResult<FloorsDict> = useFloorsQuery()
+    const { data: floors, isLoading: isLoadingFloors } = useGetFloors();
     const [mapTileBlocks, setMapTileBlocks] = useState<MapTileBlock[][]>([]);
     const [downloaded, setDownloaded] = useState<boolean>(false);
 

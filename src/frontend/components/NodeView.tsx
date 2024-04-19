@@ -5,11 +5,12 @@ import { UseQueryResult } from "@tanstack/react-query";
 
 import { LOGIC_MAP_TILE_WIDTH, LOGIC_MAP_TILE_HEIGHT, RENDER_MAP_TILE_HEIGHT, RENDER_MAP_TILE_WIDTH } from "./MapTilesBackground";
 
+import LoadingScreen from "./LoadingScreen";
 import Node from "../../backend/schema/Node";
+import useGetFloors from "../hooks/api/useGetFloors";
 
 import { getMapTileStartCoordinates, getNodeImageByConnectorId } from "../utils";
-import { FloorsDict, TagsDict, useFloorsQuery, useTagsQuery } from "../utils/reactQueryFactory";
-import LoadingScreen from "./LoadingScreen";
+import { TagsDict, useTagsQuery } from "../utils/reactQueryFactory";
 
 interface NodeViewProps {
     currentFloorId: string
@@ -24,7 +25,7 @@ interface NodeRenderSize {
 }
 
 const NodeView = ({ currentFloorId, node }: NodeViewProps) => {
-    const { data: floors, isLoading: isLoadingFloors }: UseQueryResult<FloorsDict> = useFloorsQuery()
+    const { data: floors, isLoading: isLoadingFloors } = useGetFloors();
     const { data: tags, isLoading: isLoadingTags }: UseQueryResult<TagsDict> = useTagsQuery()
     const [nodeRenderSizes, setNodeRenderSizes] = useState<NodeRenderSize>({})
 

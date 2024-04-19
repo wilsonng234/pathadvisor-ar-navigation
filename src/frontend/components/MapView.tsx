@@ -10,10 +10,11 @@ import NodeView from "./NodeView";
 
 import Node from "../../backend/schema/Node"
 import PathNode from "../../backend/schema/PathNode";
+import useGetFloors from "../hooks/api/useGetFloors";
 
 import { Path } from "../screens/Home";
 import { getMapTileStartCoordinates, getMapTilesNumber, getMapTilesSize } from "../utils";
-import { FloorsDict, useFloorsQuery, useNodesQueryByFloorId } from "../utils/reactQueryFactory";
+import { useNodesQueryByFloorId } from "../utils/reactQueryFactory";
 import LoadingScreen from "./LoadingScreen";
 
 interface MapViewProps {
@@ -25,7 +26,7 @@ interface MapViewProps {
 }
 
 const MapView = ({ currentFloorId, fromNode, toNode, path, focusNode }: MapViewProps) => {
-    const { data: floors, isLoading: isLoadingFloors }: UseQueryResult<FloorsDict> = useFloorsQuery()
+    const { data: floors, isLoading: isLoadingFloors } = useGetFloors();
     const { data: nodes, isLoading: isLoadingNodes }: UseQueryResult<Node[]> = useNodesQueryByFloorId(floors, currentFloorId)
     const onZoomableViewRefChange = useCallback((ref: ZoomableViewRef) => {
         if (!floors || !nodes || !ref)

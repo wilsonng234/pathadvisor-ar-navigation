@@ -5,10 +5,9 @@ import { UseQueryResult } from '@tanstack/react-query';
 
 import Node from '../../backend/schema/Node';
 
-import { FloorsDict, useFloorsQuery } from '../utils/reactQueryFactory';
 import LoadingScreen from './LoadingScreen';
 import useGetBuildings from '../hooks/api/useGetBuildings';
-
+import useGetFloors from '../hooks/api/useGetFloors';
 
 interface SearchNodeProps {
     node: Node;
@@ -17,7 +16,7 @@ interface SearchNodeProps {
 
 const SearchNode = ({ node, selectResult }: SearchNodeProps) => {
     const { data: buildings, isLoading: isLoadingBuildings } = useGetBuildings();
-    const { data: floors, isLoading: isLoadingFloors }: UseQueryResult<FloorsDict> = useFloorsQuery()
+    const { data: floors, isLoading: isLoadingFloors } = useGetFloors();
 
     if (isLoadingBuildings || isLoadingFloors)
         return <LoadingScreen />;

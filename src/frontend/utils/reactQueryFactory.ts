@@ -2,30 +2,11 @@ import { DefaultError, UseQueryOptions, UseQueryResult, useQueries, useQuery } f
 
 import * as api from '../../backend/api'
 import Node from 'backend/schema/node';
-import Floor from 'backend/schema/floor';
 import Tag from 'backend/schema/tag';
 import { getMapTileStartCoordinates, getMapTilesSize } from '.';
 
-export type FloorsDict = { [floorId: string]: Floor }
 export type TagsDict = { [tagId: string]: Tag }
 
-export const useFloorsQuery = (): UseQueryResult<FloorsDict> => {
-    return (
-        useQuery<{ data: Floor[] }, DefaultError, FloorsDict>({
-            queryKey: ["floors"],
-            queryFn: api.getAllFloors,
-            select: (res) => {
-                const floors: FloorsDict = {};
-
-                res.data.forEach((floor: Floor) => {
-                    floors[floor._id] = floor;
-                });
-
-                return floors;
-            },
-            staleTime: Infinity
-        }))
-}
 
 export const useTagsQuery = (): UseQueryResult<TagsDict> => {
     return (

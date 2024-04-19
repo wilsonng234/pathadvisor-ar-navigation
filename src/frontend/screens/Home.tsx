@@ -13,9 +13,9 @@ import * as api from '../../backend/api';
 import Node from "../../backend/schema/Node";
 import PathNode from "../../backend/schema/PathNode";
 import PageSelector from "../components/FloorSelector";
+import useGetFloors from "../hooks/api/useGetFloors";
 
 import { StorageKeys, storage } from "../utils/mmkvStorage";
-import { FloorsDict, useFloorsQuery } from "../utils/reactQueryFactory";
 
 export interface Path {
     floorIds: string[];     // floorIds in the order of the path
@@ -28,7 +28,7 @@ enum NavigationType {
 }
 
 const HomeScreen = ({ navigation }) => {
-    const { data: floors, isLoading: isLoadingFloors }: UseQueryResult<FloorsDict> = useFloorsQuery();
+    const { data: floors, isLoading: isLoadingFloors } = useGetFloors();
 
     const [enableFromSearchBar, setEnableFromSearchBar] = useState<boolean>(false);
     const [fromNode, setFromNode] = useState<Node | null>(null);
