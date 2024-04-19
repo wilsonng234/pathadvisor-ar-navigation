@@ -7,7 +7,7 @@ import { storage } from "../utils/mmkvStorage"
 
 type BuildingsDict = { [buildingId: string]: Building }
 
-const useGetBuildings = (): { data: BuildingsDict | null, isLoading: boolean } => {
+const useGetBuildings = (): { data: BuildingsDict | undefined, isLoading: boolean } => {
     const downloaded = storage.contains("buildings");
     const { netInfo: { isInternetReachable } } = useNetInfoInstance();
 
@@ -38,9 +38,9 @@ const useGetBuildings = (): { data: BuildingsDict | null, isLoading: boolean } =
         return { data: buildingsDict, isLoading: false };
     }
     if (isInternetReachable === false)
-        return { data: null, isLoading: false };
+        return { data: undefined, isLoading: false };
     if (isLoading)
-        return { data: null, isLoading: true };
+        return { data: undefined, isLoading: true };
     else
         return { data: data, isLoading: false };
 }
