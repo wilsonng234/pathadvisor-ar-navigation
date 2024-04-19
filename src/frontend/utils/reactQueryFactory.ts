@@ -2,32 +2,12 @@ import { DefaultError, UseQueryOptions, UseQueryResult, useQueries, useQuery } f
 
 import * as api from '../../backend/api'
 import Node from 'backend/schema/node';
-import Building from '../../backend/schema/building';
 import Floor from 'backend/schema/floor';
 import Tag from 'backend/schema/tag';
 import { getMapTileStartCoordinates, getMapTilesSize } from '.';
 
-export type BuildingsDict = { [buildingId: string]: Building }
 export type FloorsDict = { [floorId: string]: Floor }
 export type TagsDict = { [tagId: string]: Tag }
-
-export const useBuildingsQuery = (): UseQueryResult<BuildingsDict> => {
-    return (
-        useQuery<{ data: Building[] }, DefaultError, BuildingsDict>({
-            queryKey: ['buildings'],
-            queryFn: api.getAllBuildings,
-            select: (res) => {
-                const buildings: BuildingsDict = {}
-
-                res.data.forEach((building: Building) => {
-                    buildings[building._id] = building
-                })
-
-                return buildings
-            },
-            staleTime: Infinity
-        }))
-}
 
 export const useFloorsQuery = (): UseQueryResult<FloorsDict> => {
     return (
@@ -65,6 +45,17 @@ export const useTagsQuery = (): UseQueryResult<TagsDict> => {
         })
     )
 }
+
+// export const useMapTilesQueryByFloorId = (floorId: string): UseQueryResult<string[]> => {
+//     return (
+//         useQuery<{ data: string[] }, DefaultError, string[]>({
+//             queryKey: ["mapTiles", floorId],
+//             queryFn: () => api.getMapTilesByFloorId(floorId),
+//             select: (res) => res.data,
+//             staleTime: Infinity
+//         }
+//         )
+// }
 
 export const useNodeQueriesByNodeIds = (nodeIds: string[]) => {
     return useQueries<UseQueryOptions<{ data: Node }>[]>(

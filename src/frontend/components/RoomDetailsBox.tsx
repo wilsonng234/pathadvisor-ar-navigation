@@ -2,11 +2,11 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { UseQueryResult } from '@tanstack/react-query';
 
-import Node from '../../backend/schema/Node';
-
-import { convertFloorIdToFloorName } from '../utils';
-import { BuildingsDict, FloorsDict, useBuildingsQuery, useFloorsQuery } from '../utils/reactQueryFactory';
 import LoadingScreen from './LoadingScreen';
+import Node from '../../backend/schema/Node';
+import useGetBuildings from '../hooks/useGetBuildings';
+import { convertFloorIdToFloorName } from '../utils';
+import { FloorsDict, useFloorsQuery } from '../utils/reactQueryFactory';
 
 interface RoomDetailsBoxProps {
     node: Node;
@@ -14,7 +14,7 @@ interface RoomDetailsBoxProps {
 }
 
 const RoomDetailsBox = ({ node, renderButtons }: RoomDetailsBoxProps) => {
-    const { data: buildings, isLoading: isLoadingBuildings }: UseQueryResult<BuildingsDict> = useBuildingsQuery();
+    const { data: buildings, isLoading: isLoadingBuildings } = useGetBuildings();
     const { data: floors, isLoading: isLoadingFloors }: UseQueryResult<FloorsDict> = useFloorsQuery();
 
     if (isLoadingBuildings || isLoadingFloors)
