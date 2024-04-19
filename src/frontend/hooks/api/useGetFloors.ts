@@ -9,7 +9,8 @@ type FloorsDict = { [floorId: string]: Floor }
 
 const useGetFloors = (): { data: FloorsDict | undefined, isLoading: boolean } => {
     const downloaded = storage.contains("floors");
-    const { netInfo: { isInternetReachable } } = useNetInfoInstance();
+    const isInternetReachable = true;
+    // const { netInfo: { isInternetReachable } } = useNetInfoInstance();
 
     const { data, isLoading } = useQuery<{ data: Floor[] }, DefaultError, FloorsDict>({
         queryKey: ["floors"],

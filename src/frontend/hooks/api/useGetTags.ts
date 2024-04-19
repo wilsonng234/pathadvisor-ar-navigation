@@ -9,7 +9,8 @@ type TagsDict = { [tagId: string]: Tag }
 
 const useGetTags = (): { data: TagsDict | undefined, isLoading: boolean } => {
     const downloaded = storage.contains("tags");
-    const { netInfo: { isInternetReachable } } = useNetInfoInstance();
+    const isInternetReachable = true;
+    // const { netInfo: { isInternetReachable } } = useNetInfoInstance();
 
     const { data, isLoading } = useQuery<{ data: Tag[] }, DefaultError, TagsDict>({
         queryKey: ["tags"],

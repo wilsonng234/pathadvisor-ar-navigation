@@ -9,7 +9,8 @@ type BuildingsDict = { [buildingId: string]: Building }
 
 const useGetBuildings = (): { data: BuildingsDict | undefined, isLoading: boolean } => {
     const downloaded = storage.contains("buildings");
-    const { netInfo: { isInternetReachable } } = useNetInfoInstance();
+    const isInternetReachable = true;
+    // const { netInfo: { isInternetReachable } } = useNetInfoInstance();
 
     const { data, isLoading } = useQuery<{ data: Building[] }, DefaultError, BuildingsDict>({
         queryKey: ['buildings'],
