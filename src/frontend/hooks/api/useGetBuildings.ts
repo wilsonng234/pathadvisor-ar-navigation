@@ -3,12 +3,12 @@ import { useNetInfoInstance } from "@react-native-community/netinfo";
 
 import * as api from "../../../backend/api";
 import Building from "../../../backend/schema/building";
-import { storage } from "../../utils/mmkvStorage"
+import { StorageKeys, storage } from "../../utils/mmkvStorage"
 
 type BuildingsDict = { [buildingId: string]: Building }
 
 const useGetBuildings = (): { data: BuildingsDict | undefined, isLoading: boolean } => {
-    const downloaded = storage.contains("buildings");
+    const downloaded = storage.contains(StorageKeys.BUILDINGS);
     const isInternetReachable = true;
     // const { netInfo: { isInternetReachable } } = useNetInfoInstance();
 
@@ -29,7 +29,7 @@ const useGetBuildings = (): { data: BuildingsDict | undefined, isLoading: boolea
     })
 
     if (downloaded) {
-        const buildings = JSON.parse(storage.getString("buildings")!);
+        const buildings = JSON.parse(storage.getString(StorageKeys.BUILDINGS)!);
         const buildingsDict: BuildingsDict = {};
 
         buildings.forEach((building: Building) => {

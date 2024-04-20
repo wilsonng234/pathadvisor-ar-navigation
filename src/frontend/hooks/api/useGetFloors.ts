@@ -3,12 +3,12 @@ import { useNetInfoInstance } from "@react-native-community/netinfo";
 
 import * as api from "../../../backend/api";
 import Floor from "backend/schema/floor";
-import { storage } from "../../utils/mmkvStorage"
+import { StorageKeys, storage } from "../../utils/mmkvStorage"
 
 export type FloorsDict = { [floorId: string]: Floor }
 
 const useGetFloors = (): { data: FloorsDict | undefined, isLoading: boolean } => {
-    const downloaded = storage.contains("floors");
+    const downloaded = storage.contains(StorageKeys.FLOORS);
     const isInternetReachable = true;
     // const { netInfo: { isInternetReachable } } = useNetInfoInstance();
 
@@ -29,7 +29,7 @@ const useGetFloors = (): { data: FloorsDict | undefined, isLoading: boolean } =>
     });
 
     if (downloaded) {
-        const floors = JSON.parse(storage.getString("floors")!);
+        const floors = JSON.parse(storage.getString(StorageKeys.FLOORS)!);
         const floordDict: FloorsDict = {};
 
         floors.forEach((floor: Floor) => {

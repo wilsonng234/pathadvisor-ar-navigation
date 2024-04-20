@@ -3,12 +3,12 @@ import { useNetInfoInstance } from "@react-native-community/netinfo";
 
 import * as api from "../../../backend/api";
 import Tag from "backend/schema/tag";
-import { storage } from "../../utils/mmkvStorage"
+import { StorageKeys, storage } from "../../utils/mmkvStorage"
 
 type TagsDict = { [tagId: string]: Tag }
 
 const useGetTags = (): { data: TagsDict | undefined, isLoading: boolean } => {
-    const downloaded = storage.contains("tags");
+    const downloaded = storage.contains(StorageKeys.TAGS);
     const isInternetReachable = true;
     // const { netInfo: { isInternetReachable } } = useNetInfoInstance();
 
@@ -29,7 +29,7 @@ const useGetTags = (): { data: TagsDict | undefined, isLoading: boolean } => {
     })
 
     if (downloaded) {
-        const tags = JSON.parse(storage.getString("tags")!);
+        const tags = JSON.parse(storage.getString(StorageKeys.TAGS)!);
         const tagsDict: TagsDict = {};
 
         tags.forEach((tag: Tag) => {

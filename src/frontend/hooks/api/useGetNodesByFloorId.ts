@@ -5,10 +5,12 @@ import Node from "../../../backend/schema/node";
 
 import { FloorsDict } from "./useGetFloors";
 import { getMapTileStartCoordinates, getMapTilesSize } from "../../utils";
-import { storage } from "../../utils/mmkvStorage";
+import { StorageKeys, storage } from "../../utils/mmkvStorage";
 
 const useNodesQueryByFloorId = (floors: FloorsDict | undefined, floorId: string) => {
-    const downloaded = storage.contains(`nodes_${floorId}`);
+    const nodes = storage.getString(StorageKeys.NODES_BY_FLOOR);
+    const nodesByFloor = nodes ? JSON.parse(nodes) : {};
+    const downloaded = nodesByFloor.hasOwnProperty(floorId);
     const isInternetReachable = true;
     // const { netInfo: { isInternetReachable } } = useNetInfoInstance();
 
@@ -27,7 +29,7 @@ const useNodesQueryByFloorId = (floors: FloorsDict | undefined, floorId: string)
     })
 
     if (downloaded) {
-        const nodes: Node[] = JSON.parse(storage.getString(`nodes_${floorId}`)!)
+        const nodes: Node[] = nodesByFloor.floorId;
         return { data: nodes, isLoading: false };
     }
     if (isInternetReachable === false)
