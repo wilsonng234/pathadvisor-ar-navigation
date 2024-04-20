@@ -5,7 +5,7 @@ import * as api from "../../../backend/api";
 import Floor from "backend/schema/floor";
 import { storage } from "../../utils/mmkvStorage"
 
-type FloorsDict = { [floorId: string]: Floor }
+export type FloorsDict = { [floorId: string]: Floor }
 
 const useGetFloors = (): { data: FloorsDict | undefined, isLoading: boolean } => {
     const downloaded = storage.contains("floors");

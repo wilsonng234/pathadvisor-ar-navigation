@@ -6,9 +6,9 @@ import { SearchBar } from '@rneui/themed';
 import * as api from '../../backend/api';
 import Node from '../../backend/schema/Node';
 import SearchNode from './SearchNode';
+import useGetNodesByNodeIds from '../hooks/api/useGetNodesByNodeIds';
 
 import { StorageKeys, storage } from '../utils/mmkvStorage';
-import { useNodeQueriesByNodeIds } from '../utils/reactQueryFactory';
 
 interface SearchLocationBarProps {
     placeholder: string;
@@ -30,7 +30,7 @@ const SearchLocationBar = ({ placeholder, selectNode, onClickCancel, cacheKey }:
     const [searchResults, setSearchResults] = useState<Node[]>([]);
     const [suggestionIds, setSuggestionIds] = useState<string[]>([]);
 
-    const suggestionQueries = useNodeQueriesByNodeIds(suggestionIds);
+    const suggestionQueries = useGetNodesByNodeIds(suggestionIds);
 
     useEffect(() => {
         if (searchText === '') {

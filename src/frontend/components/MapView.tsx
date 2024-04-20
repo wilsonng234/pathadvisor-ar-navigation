@@ -8,14 +8,14 @@ import MapTilesBackground, { LOGIC_MAP_TILE_WIDTH, LOGIC_MAP_TILE_HEIGHT, RENDER
 import ZoomableView, { ZoomableViewRef } from "./ZoomableView";
 import NodeView from "./NodeView";
 
+import LoadingScreen from "./LoadingScreen";
 import Node from "../../backend/schema/Node"
 import PathNode from "../../backend/schema/PathNode";
 import useGetFloors from "../hooks/api/useGetFloors";
+import useGetNodesByFloorId from "../hooks/api/useGetNodesByFloorId";
 
 import { Path } from "../screens/Home";
 import { getMapTileStartCoordinates, getMapTilesNumber, getMapTilesSize } from "../utils";
-import { useNodesQueryByFloorId } from "../utils/reactQueryFactory";
-import LoadingScreen from "./LoadingScreen";
 
 interface MapViewProps {
     currentFloorId: string;
@@ -27,7 +27,7 @@ interface MapViewProps {
 
 const MapView = ({ currentFloorId, fromNode, toNode, path, focusNode }: MapViewProps) => {
     const { data: floors, isLoading: isLoadingFloors } = useGetFloors();
-    const { data: nodes, isLoading: isLoadingNodes }: UseQueryResult<Node[]> = useNodesQueryByFloorId(floors, currentFloorId)
+    const { data: nodes, isLoading: isLoadingNodes }: UseQueryResult<Node[]> = useGetNodesByFloorId(floors, currentFloorId)
     const onZoomableViewRefChange = useCallback((ref: ZoomableViewRef) => {
         if (!floors || !nodes || !ref)
             return;
