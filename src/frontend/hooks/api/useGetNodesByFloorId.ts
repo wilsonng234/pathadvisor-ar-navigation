@@ -5,7 +5,7 @@ import Node from "../../../backend/schema/node";
 
 import { FloorsDict } from "./useGetFloors";
 import { getMapTileStartCoordinates, getMapTilesSize } from "../../utils";
-import { storage } from "frontend/utils/mmkvStorage";
+import { storage } from "../../utils/mmkvStorage";
 
 const useNodesQueryByFloorId = (floors: FloorsDict | undefined, floorId: string) => {
     const downloaded = storage.contains(`nodes_${floorId}`);
@@ -25,7 +25,6 @@ const useNodesQueryByFloorId = (floors: FloorsDict | undefined, floorId: string)
         staleTime: Infinity,
         enabled: !!floors && !downloaded && isInternetReachable === true
     })
-
 
     if (downloaded) {
         const nodes: Node[] = JSON.parse(storage.getString(`nodes_${floorId}`)!)

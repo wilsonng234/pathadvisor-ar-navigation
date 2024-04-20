@@ -1,16 +1,15 @@
 import React, { useCallback } from "react"
 import FastImage from "react-native-fast-image";
-import { StyleSheet, View, Text } from "react-native"
+import { StyleSheet, View } from "react-native"
 import { Polyline, Svg } from "react-native-svg";
-import { UseQueryResult } from "@tanstack/react-query";
 
 import MapTilesBackground, { LOGIC_MAP_TILE_WIDTH, LOGIC_MAP_TILE_HEIGHT, RENDER_MAP_TILE_WIDTH, RENDER_MAP_TILE_HEIGHT } from "./MapTilesBackground";
 import ZoomableView, { ZoomableViewRef } from "./ZoomableView";
 import NodeView from "./NodeView";
 
 import LoadingScreen from "./LoadingScreen";
-import Node from "../../backend/schema/Node"
-import PathNode from "../../backend/schema/PathNode";
+import Node from "../../backend/schema/node"
+import PathNode from "../../backend/schema/pathNode";
 import useGetFloors from "../hooks/api/useGetFloors";
 import useGetNodesByFloorId from "../hooks/api/useGetNodesByFloorId";
 
@@ -27,7 +26,7 @@ interface MapViewProps {
 
 const MapView = ({ currentFloorId, fromNode, toNode, path, focusNode }: MapViewProps) => {
     const { data: floors, isLoading: isLoadingFloors } = useGetFloors();
-    const { data: nodes, isLoading: isLoadingNodes }: UseQueryResult<Node[]> = useGetNodesByFloorId(floors, currentFloorId)
+    const { data: nodes, isLoading: isLoadingNodes } = useGetNodesByFloorId(floors, currentFloorId)
     const onZoomableViewRefChange = useCallback((ref: ZoomableViewRef) => {
         if (!floors || !nodes || !ref)
             return;
