@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
@@ -9,10 +9,19 @@ import BusQueueStatisticsScreen from './screens/BusQueueStatistics';
 import EventScreen from './screens/Event';
 import ARNavigationScreen from './screens/ARNavigation';
 import { Alert } from 'react-native';
+import * as api from '../backend/api';
 
 const Drawer = createDrawerNavigator();
 
 const Navigator = () => {
+    const [startDownload, setStartDownload] = useState<boolean>(false);
+    api.getMeta().then((res) => {
+        if (res) {
+            console.log(res);
+            // setStartDownload(true);
+        }
+    });
+
     const downloadMapTileAlert = () =>
         //warning message
         Alert.alert('Update HKUST Map data', 'Do you want to update the HKUST Map data to latest version?', [
