@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { View, StyleSheet, Text } from "react-native";
-import { UseQueryResult } from "@tanstack/react-query";
 import { TouchableHighlight, TouchableOpacity } from "react-native-gesture-handler";
 
 import SearchLocationBar from "../components/SearchLocationBar";
@@ -10,9 +9,9 @@ import RoomDetailsBox from "../components/RoomDetailsBox";
 import LoadingScreen from "../components/LoadingScreen";
 
 import * as api from '../../backend/api';
-import Node from "../../backend/schema/Node";
-import PathNode from "../../backend/schema/PathNode";
-import PageSelector from "../components/FloorSelector";
+import Node from "../../backend/schema/node";
+import PathNode from "../../backend/schema/pathNode";
+import FloorSelector from "../components/FloorSelector";
 import useGetFloors from "../hooks/api/useGetFloors";
 
 import { StorageKeys, storage } from "../utils/storage_utils";
@@ -226,7 +225,7 @@ const HomeScreen = ({ navigation }) => {
             {
                 (!path && (navigationType || !toNode)) &&
                 <View style={styles.floorSelector}>
-                    <PageSelector handleSelectorChangeFloor={handleSelectorChangeFloor} />
+                    <FloorSelector handleSelectorChangeFloor={handleSelectorChangeFloor} />
                 </View>
             }
 
