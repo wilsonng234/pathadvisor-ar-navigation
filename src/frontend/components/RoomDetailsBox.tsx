@@ -1,10 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import LoadingScreen from './LoadingScreen';
-import Node from '../../backend/schema/Node';
-import useGetBuildings from '../hooks/api/useGetBuildings';
-import useGetFloors from '../hooks/api/useGetFloors';
+import Node from '../../backend/schema/node';
+import useHomeStore from '../hooks/store/useHomeStore';
 import { convertFloorIdToFloorName } from '../utils';
 
 interface RoomDetailsBoxProps {
@@ -13,24 +11,20 @@ interface RoomDetailsBoxProps {
 }
 
 const RoomDetailsBox = ({ node, renderButtons }: RoomDetailsBoxProps) => {
-    const { data: buildings, isLoading: isLoadingBuildings } = useGetBuildings();
-    const { data: floors, isLoading: isLoadingFloors } = useGetFloors();
+    const { buildings, floors } = useHomeStore();
 
-    if (isLoadingBuildings || isLoadingFloors)
-        return <LoadingScreen />;
-    else
-        return (
-            <View style={styles.roomDetailsBox}>
-                <Text style={styles.roomName}>
-                    {node.name}
-                </Text>
-                <Text style={styles.roomFloor}>
-                    {buildings![floors![node.floorId].buildingId].name} {floors![node.floorId].name ? `- ${convertFloorIdToFloorName(floors![node.floorId].name)}` : ""}
-                </Text>
+    return (
+        <View style={styles.roomDetailsBox}>
+            <Text style={styles.roomName}>
+                {node.name}
+            </Text>
+            <Text style={styles.roomFloor}>
+                {buildings![floors![node.floorId].buildingId].name} {floors![node.floorId].name ? `- ${convertFloorIdToFloorName(floors![node.floorId].name)}` : ""}
+            </Text>
 
-                {renderButtons()}
-            </View>
-        );
+            {renderButtons()}
+        </View>
+    );
 }
 
 export default RoomDetailsBox;

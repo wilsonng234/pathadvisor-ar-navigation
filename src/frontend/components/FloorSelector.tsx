@@ -1,8 +1,7 @@
 import React, { useEffect, useState, useRef, memo } from 'react'
 import { StyleSheet, ScrollView, TouchableOpacity, View, Text } from 'react-native';
 
-import useGetBuildings from '../hooks/api/useGetBuildings';
-import useGetFloors from '../hooks/api/useGetFloors';
+import useHomeStore from '../hooks/store/useHomeStore';
 
 interface FloorSelectorProps {
     handleSelectorChangeFloor: (id: string) => void;
@@ -11,8 +10,7 @@ interface FloorSelectorProps {
 type FloorsButtonsDict = { [buildingId: string]: string[] }
 
 const FloorSelector = ({ handleSelectorChangeFloor }: FloorSelectorProps) => {
-    const { data: buildings, isLoading: isLoadingBuildings } = useGetBuildings();
-    const { data: floors, isLoading: isLoadingFloors } = useGetFloors();
+    const { buildings, floors } = useHomeStore();
 
     const [floorButtonDict, setFloorButtonDict] = useState<FloorsButtonsDict>({});
     const [buildingList, setBuildingList] = useState<string[]>([]);
@@ -82,58 +80,55 @@ const FloorSelector = ({ handleSelectorChangeFloor }: FloorSelectorProps) => {
             scrollViewRef.current?.scrollTo({ x: 0, y: 0, animated: true });
     }
 
-    if (isLoadingBuildings || isLoadingFloors)
-        return <View></View>;
-    else
-        return (
-            <View style={{ marginBottom: 20 }}>
-                <View style={styles.buttonGroupContainer}>
-                    <ScrollView
-                        horizontal={true}
-                        showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={styles.contentContainer}
-                    >
-                        {buildingButtons.map((buttonLabel, buildingIndex) => (
-                            <TouchableOpacity
-                                key={buildingIndex}
-                                style={[
-                                    styles.button,
-                                    buildingIndex === selectBuildingIndex ? styles.activeButton : styles.inactiveButton,
-                                ]}
-                                onPress={() => changeBuilding(buildingIndex)}
-                            >
-                                <Text style={styles.buttonText}>{buttonLabel}</Text>
-                            </TouchableOpacity>
-                        ))}
+    return (
+        <View style={{ marginBottom: 20 }}>
+            <View style={styles.buttonGroupContainer}>
+                <ScrollView
+                    horizontal={true}
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.contentContainer}
+                >
+                    {buildingButtons.map((buttonLabel, buildingIndex) => (
+                        <TouchableOpacity
+                            key={buildingIndex}
+                            style={[
+                                styles.button,
+                                buildingIndex === selectBuildingIndex ? styles.activeButton : styles.inactiveButton,
+                            ]}
+                            onPress={() => changeBuilding(buildingIndex)}
+                        >
+                            <Text style={styles.buttonText}>{buttonLabel}</Text>
+                        </TouchableOpacity>
+                    ))}
 
-                    </ScrollView>
-                </View>
-                <View style={styles.buttonGroupContainer}>
-                    <ScrollView
-                        horizontal={true}
-                        showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={styles.contentContainer}
-                        ref={scrollViewRef}
-                        onContentSizeChange={() => {
-                            scrollOffset();
-                        }}
-                    >
-                        {floorButtonDict[buildingList[selectBuildingIndex]] && floorButtonDict[buildingList[selectBuildingIndex]].map((buttonLabel, floorIndex) => (
-                            <TouchableOpacity
-                                key={floorIndex}
-                                style={[
-                                    styles.button,
-                                    floorIndex === selectFloorIndex ? styles.activeButton : styles.inactiveButton,
-                                ]}
-                                onPress={() => changeFloor(floorIndex)}
-                            >
-                                <Text style={styles.buttonText}>{buttonLabel}</Text>
-                            </TouchableOpacity>
-                        ))}
-                    </ScrollView>
-                </View>
+                </ScrollView>
             </View>
-        );
+            <View style={styles.buttonGroupContainer}>
+                <ScrollView
+                    horizontal={true}
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.contentContainer}
+                    ref={scrollViewRef}
+                    onContentSizeChange={() => {
+                        scrollOffset();
+                    }}
+                >
+                    {floorButtonDict[buildingList[selectBuildingIndex]] && floorButtonDict[buildingList[selectBuildingIndex]].map((buttonLabel, floorIndex) => (
+                        <TouchableOpacity
+                            key={floorIndex}
+                            style={[
+                                styles.button,
+                                floorIndex === selectFloorIndex ? styles.activeButton : styles.inactiveButton,
+                            ]}
+                            onPress={() => changeFloor(floorIndex)}
+                        >
+                            <Text style={styles.buttonText}>{buttonLabel}</Text>
+                        </TouchableOpacity>
+                    ))}
+                </ScrollView>
+            </View>
+        </View>
+    );
 }
 
 export default memo(FloorSelector);

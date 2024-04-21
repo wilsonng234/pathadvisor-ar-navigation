@@ -3,9 +3,8 @@ import FastImage from 'react-native-fast-image'
 import { Buffer } from "buffer";
 import { StyleSheet, View } from 'react-native';
 
+import useHomeStore from '../hooks/store/useHomeStore';
 
-import LoadingScreen from './LoadingScreen';
-import useGetFloors from '../../frontend/hooks/api/useGetFloors';
 import { getMapTileStartCoordinates, getMapTilesNumber } from '../utils';
 import { storage } from '../utils/storage_utils';
 import { getMapTiles } from '../../backend/api/image/getMapTiles';
@@ -28,7 +27,7 @@ interface MapTilesBackgroundProps {
 }
 
 const MapTilesBackground = ({ floorId, children }: MapTilesBackgroundProps) => {
-    const { data: floors, isLoading: isLoadingFloors } = useGetFloors();
+    const { floors } = useHomeStore();
     const [mapTileBlocks, setMapTileBlocks] = useState<MapTileBlock[][]>([]);
     const [downloaded, setDownloaded] = useState<boolean>(false);
 
@@ -74,12 +73,6 @@ const MapTilesBackground = ({ floorId, children }: MapTilesBackgroundProps) => {
         }
     }, [floors, floorId])
 
-
-    if (isLoadingFloors || !downloaded) {
-        return <LoadingScreen />;
-    }
-
-    // floors are guaranteed to be loaded at this point
     return (
         <View>
             {mapTileBlocks.map((row, i) => {

@@ -4,10 +4,8 @@ import { LayoutChangeEvent, Text, View, ViewStyle } from "react-native";
 
 import { LOGIC_MAP_TILE_WIDTH, LOGIC_MAP_TILE_HEIGHT, RENDER_MAP_TILE_HEIGHT, RENDER_MAP_TILE_WIDTH } from "./MapTilesBackground";
 
-import LoadingScreen from "./LoadingScreen";
 import Node from "../../backend/schema/node";
-import useGetFloors from "../hooks/api/useGetFloors";
-import useGetTags from "../hooks/api/useGetTags";
+import useHomeStore from "../hooks/store/useHomeStore";
 
 import { getMapTileStartCoordinates, getNodeImageByConnectorId } from "../utils";
 
@@ -24,15 +22,11 @@ interface NodeRenderSize {
 }
 
 const NodeView = ({ currentFloorId, node }: NodeViewProps) => {
-    const { data: floors, isLoading: isLoadingFloors } = useGetFloors();
-    const { data: tags, isLoading: isLoadingTags } = useGetTags();
+    const { floors, tags } = useHomeStore();
     const [nodeRenderSizes, setNodeRenderSizes] = useState<NodeRenderSize>({})
 
     if (!node.centerCoordinates)
         return null;
-
-    if (isLoadingFloors || isLoadingTags)
-        return <LoadingScreen />;
 
     // floors and tags are guaranteed to be loaded at this point
     const { tileStartX, tileStartY } = getMapTileStartCoordinates(floors![currentFloorId])

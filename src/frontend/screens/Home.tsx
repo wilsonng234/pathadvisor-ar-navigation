@@ -13,6 +13,9 @@ import Node from "../../backend/schema/node";
 import PathNode from "../../backend/schema/pathNode";
 import FloorSelector from "../components/FloorSelector";
 import useGetFloors from "../hooks/api/useGetFloors";
+import useGetBuildings from "../hooks/api/useGetBuildings";
+import useGetTags from "../hooks/api/useGetTags";
+import useHomeStore from "../hooks/store/useHomeStore";
 
 import { StorageKeys, storage } from "../utils/storage_utils";
 
@@ -27,7 +30,11 @@ enum NavigationType {
 }
 
 const HomeScreen = ({ navigation }) => {
+    const { data: buildings, isLoading: isLoadingBuildings } = useGetBuildings();
     const { data: floors, isLoading: isLoadingFloors } = useGetFloors();
+    const { data: tags, isLoading: isLoadingTags } = useGetTags();
+    const [ready, setReady] = useState<boolean>(false);
+    const { setBuildings, setFloors, setTags } = useHomeStore();
 
     const [enableFromSearchBar, setEnableFromSearchBar] = useState<boolean>(false);
     const [fromNode, setFromNode] = useState<Node | null>(null);
@@ -36,6 +43,15 @@ const HomeScreen = ({ navigation }) => {
     const [currentFloorId, setCurrentFloorId] = useState<string>("1");  // default floor is 1
     const [navigationType, setNavigationType] = useState<NavigationType | null>(null);
     const [focusNode, setFocusNode] = useState<Node | null>(null);
+
+    useEffect(() => {
+        if (floors && buildings && tags) {
+            setFloors(floors);
+            setBuildings(buildings);
+            setTags(tags);
+            setReady(true);
+        }
+    }, [buildings, floors, tags]);
 
     useEffect(() => {
         if (!fromNode) {
@@ -181,62 +197,62 @@ const HomeScreen = ({ navigation }) => {
             </View>)
     }
 
-    if (isLoadingFloors)
+    if (!ready)
         return <LoadingScreen />;
+    else
+        return (
+            <View style={{ flex: 1 }}>
+                <View style={{ zIndex: 2 }}>
+                    {
+                        enableFromSearchBar &&
+                        <SearchLocationBar selectNode={handleSelectFromNode} placeholder="FROM" onClickCancel={handleCancelFromNode} cacheKey={StorageKeys.FROM_SUGGESTIONS} />
+                    }
+                    <SearchLocationBar selectNode={handleSelectToNode} placeholder="Where are you going?" onClickCancel={handleCancelToNode} cacheKey={StorageKeys.TO_SUGGESTIONS} />
+                </View>
 
-    return (
-        <View style={{ flex: 1 }}>
-            <View style={{ zIndex: 2 }}>
+                <MapView currentFloorId={currentFloorId} fromNode={fromNode} toNode={toNode} path={path} focusNode={focusNode} />
+
                 {
-                    enableFromSearchBar &&
-                    <SearchLocationBar selectNode={handleSelectFromNode} placeholder="FROM" onClickCancel={handleCancelFromNode} cacheKey={StorageKeys.FROM_SUGGESTIONS} />
+                    path &&
+                    <View style={styles.pathFloorControlContainer}>
+                        {
+                            path.floorIds.indexOf(currentFloorId) > 0 &&
+                            <TouchableOpacity onPress={() => { handleChangeFloor(-1) }} style={styles.pathFloorControlButtonContainer}>
+                                <Icon
+                                    name="arrow-back-ios"
+                                    color="black"
+                                    style={{ marginLeft: 8 }}   // move icon to the center
+                                    size={20} />
+                            </TouchableOpacity>
+                        }
+
+                        {
+                            path.floorIds.indexOf(currentFloorId) + 1 < path.floorIds.length &&
+                            <TouchableOpacity onPress={() => { handleChangeFloor(+1) }} style={styles.pathFloorControlButtonContainer}>
+                                <Icon
+                                    name="arrow-forward-ios"
+                                    color="black"
+                                    size={20} />
+                            </TouchableOpacity>
+                        }
+                    </View>
                 }
-                <SearchLocationBar selectNode={handleSelectToNode} placeholder="Where are you going?" onClickCancel={handleCancelToNode} cacheKey={StorageKeys.TO_SUGGESTIONS} />
+
+                {
+                    (!path && (navigationType || !toNode)) &&
+                    <View style={styles.floorSelector}>
+                        <FloorSelector handleSelectorChangeFloor={handleSelectorChangeFloor} />
+                    </View>
+                }
+
+                {
+                    !navigationType && toNode &&
+                    <View style={styles.roomDetailsBoxContainer}>
+                        <RoomDetailsBox node={toNode} renderButtons={renderRoomDetailsBoxButtons} />
+                    </View>
+                }
             </View>
-
-            <MapView currentFloorId={currentFloorId} fromNode={fromNode} toNode={toNode} path={path} focusNode={focusNode} />
-
-            {
-                path &&
-                <View style={styles.pathFloorControlContainer}>
-                    {
-                        path.floorIds.indexOf(currentFloorId) > 0 &&
-                        <TouchableOpacity onPress={() => { handleChangeFloor(-1) }} style={styles.pathFloorControlButtonContainer}>
-                            <Icon
-                                name="arrow-back-ios"
-                                color="black"
-                                style={{ marginLeft: 8 }}   // move icon to the center
-                                size={20} />
-                        </TouchableOpacity>
-                    }
-
-                    {
-                        path.floorIds.indexOf(currentFloorId) + 1 < path.floorIds.length &&
-                        <TouchableOpacity onPress={() => { handleChangeFloor(+1) }} style={styles.pathFloorControlButtonContainer}>
-                            <Icon
-                                name="arrow-forward-ios"
-                                color="black"
-                                size={20} />
-                        </TouchableOpacity>
-                    }
-                </View>
-            }
-
-            {
-                (!path && (navigationType || !toNode)) &&
-                <View style={styles.floorSelector}>
-                    <FloorSelector handleSelectorChangeFloor={handleSelectorChangeFloor} />
-                </View>
-            }
-
-            {
-                !navigationType && toNode &&
-                <View style={styles.roomDetailsBoxContainer}>
-                    <RoomDetailsBox node={toNode} renderButtons={renderRoomDetailsBoxButtons} />
-                </View>
-            }
-        </View>
-    );
+        );
 }
 
 export default HomeScreen;

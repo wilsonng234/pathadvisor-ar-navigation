@@ -10,7 +10,7 @@ import NodeView from "./NodeView";
 import LoadingScreen from "./LoadingScreen";
 import Node from "../../backend/schema/node"
 import PathNode from "../../backend/schema/pathNode";
-import useGetFloors from "../hooks/api/useGetFloors";
+import useHomeStore from "../hooks/store/useHomeStore";
 import useGetNodesByFloorId from "../hooks/api/useGetNodesByFloorId";
 
 import { Path } from "../screens/Home";
@@ -25,7 +25,8 @@ interface MapViewProps {
 }
 
 const MapView = ({ currentFloorId, fromNode, toNode, path, focusNode }: MapViewProps) => {
-    const { data: floors, isLoading: isLoadingFloors } = useGetFloors();
+    const { floors } = useHomeStore();
+
     const { data: nodes, isLoading: isLoadingNodes } = useGetNodesByFloorId(floors, currentFloorId)
     const onZoomableViewRefChange = useCallback((ref: ZoomableViewRef) => {
         if (!floors || !nodes || !ref)
@@ -49,7 +50,7 @@ const MapView = ({ currentFloorId, fromNode, toNode, path, focusNode }: MapViewP
 
     }, [floors, nodes, focusNode])
 
-    if (isLoadingNodes || isLoadingFloors)
+    if (isLoadingNodes)
         return <LoadingScreen />;
 
     // floors and nodes are guaranteed to be loaded at this point

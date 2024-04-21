@@ -1,13 +1,10 @@
 import React from 'react';
 import { StyleSheet, Text } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { UseQueryResult } from '@tanstack/react-query';
 
-import Node from '../../backend/schema/Node';
+import Node from '../../backend/schema/node';
 
-import LoadingScreen from './LoadingScreen';
-import useGetBuildings from '../hooks/api/useGetBuildings';
-import useGetFloors from '../hooks/api/useGetFloors';
+import useHomeStore from '../hooks/store/useHomeStore';
 
 interface SearchNodeProps {
     node: Node;
@@ -15,21 +12,17 @@ interface SearchNodeProps {
 }
 
 const SearchNode = ({ node, selectResult }: SearchNodeProps) => {
-    const { data: buildings, isLoading: isLoadingBuildings } = useGetBuildings();
-    const { data: floors, isLoading: isLoadingFloors } = useGetFloors();
+    const { buildings, floors } = useHomeStore();
 
-    if (isLoadingBuildings || isLoadingFloors)
-        return <LoadingScreen />;
-    else
-        return (
-            <TouchableOpacity
-                onPress={() => { selectResult(node) }}
-            >
-                <Text style={styles.searchResultText}>
-                    {node.name}, {node.floorId}, {buildings![floors![node.floorId].buildingId].name}
-                </Text>
-            </TouchableOpacity>
-        );
+    return (
+        <TouchableOpacity
+            onPress={() => { selectResult(node) }}
+        >
+            <Text style={styles.searchResultText}>
+                {node.name}, {node.floorId}, {buildings![floors![node.floorId].buildingId].name}
+            </Text>
+        </TouchableOpacity>
+    );
 }
 
 export default SearchNode;

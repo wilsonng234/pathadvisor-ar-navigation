@@ -36,7 +36,8 @@ const useGetBuildings = (): { data: BuildingsDict | undefined, isLoading: boolea
     if (downloaded) {
         if (buildings)
             return { data: buildings, isLoading: false };
-        return { data: undefined, isLoading: true };
+        else
+            return { data: undefined, isLoading: true };
     }
     if (isInternetReachable === false)
         return { data: undefined, isLoading: false };
