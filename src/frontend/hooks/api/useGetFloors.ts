@@ -4,10 +4,12 @@ import { useNetInfoInstance } from "@react-native-community/netinfo";
 import * as api from "../../../backend/api";
 import Floor from "backend/schema/floor";
 import { FloorsDict, StorageKeys, storage } from "../../utils/storage_utils"
+import { useEffect, useState } from "react";
 
 
 const useGetFloors = (): { data: FloorsDict | undefined, isLoading: boolean } => {
     const downloaded = storage.contains(StorageKeys.FLOORS);
+    const [floors, setFloors] = useState<FloorsDict | undefined>(undefined);
     const isInternetReachable = true;
     // const { netInfo: { isInternetReachable } } = useNetInfoInstance();
 
@@ -27,15 +29,14 @@ const useGetFloors = (): { data: FloorsDict | undefined, isLoading: boolean } =>
         enabled: !downloaded && isInternetReachable === true
     });
 
+    useEffect(() => {
+        setFloors(JSON.parse(storage.getString(StorageKeys.FLOORS)!));
+    }, [downloaded])
+
     if (downloaded) {
-        const floors = JSON.parse(storage.getString(StorageKeys.FLOORS)!);
-        const floordDict: FloorsDict = {};
-
-        floors.forEach((floor: Floor) => {
-            floordDict[floor._id] = floor;
-        });
-
-        return { data: floordDict, isLoading: false };
+        if (floors)
+            return { data: floors, isLoading: false };
+        return { data: undefined, isLoading: true };
     }
     if (isInternetReachable === false)
         return { data: undefined, isLoading: false };

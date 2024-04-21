@@ -4,9 +4,11 @@ import { useNetInfoInstance } from "@react-native-community/netinfo";
 import * as api from "../../../backend/api";
 import Building from "../../../backend/schema/building";
 import { BuildingsDict, StorageKeys, storage } from "../../utils/storage_utils"
+import { useEffect, useState } from "react";
 
 const useGetBuildings = (): { data: BuildingsDict | undefined, isLoading: boolean } => {
     const downloaded = storage.contains(StorageKeys.BUILDINGS);
+    const [buildings, setBuildings] = useState<BuildingsDict | undefined>(undefined);
     const isInternetReachable = true;
     // const { netInfo: { isInternetReachable } } = useNetInfoInstance();
 
@@ -26,10 +28,15 @@ const useGetBuildings = (): { data: BuildingsDict | undefined, isLoading: boolea
         enabled: !downloaded && isInternetReachable === true
     })
 
-    if (downloaded) {
-        const buildings: BuildingsDict = JSON.parse(storage.getString(StorageKeys.BUILDINGS)!);
+    useEffect(() => {
+        if (downloaded)
+            setBuildings(JSON.parse(storage.getString(StorageKeys.BUILDINGS)!));
+    }, [downloaded])
 
-        return { data: buildings, isLoading: false };
+    if (downloaded) {
+        if (buildings)
+            return { data: buildings, isLoading: false };
+        return { data: undefined, isLoading: true };
     }
     if (isInternetReachable === false)
         return { data: undefined, isLoading: false };

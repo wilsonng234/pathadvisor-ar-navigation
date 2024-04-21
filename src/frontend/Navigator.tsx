@@ -10,19 +10,17 @@ import BusQueueStatisticsScreen from './screens/BusQueueStatistics';
 import EventScreen from './screens/Event';
 import ARNavigationScreen from './screens/ARNavigation';
 import useGetMetaVersion from './hooks/api/useGetMetaVersion';
-import useGetBuildings, { BuildingsDict } from './hooks/api/useGetBuildings';
-import useGetFloors, { FloorsDict } from './hooks/api/useGetFloors';
-import useGetTags, { TagsDict } from './hooks/api/useGetTags';
-import { StorageKeys, downloadBuildings, downloadFloors, downloadNodesByFloor, downloadTags, storage } from './utils/storage_utils';
+import {
+    storage, StorageKeys,
+    downloadBuildings, downloadFloors, downloadNodesByFloor, downloadTags,
+    BuildingsDict, FloorsDict, TagsDict, NodeByFloorDict
+} from './utils/storage_utils';
 
 const Drawer = createDrawerNavigator();
 
 const Navigator = () => {
     const [startDownload, setStartDownload] = useState<boolean>(false);
     const { data: metaVersion, isLoading: isLoadingMetaVerison } = useGetMetaVersion();
-    const { data: buildings, isLoading: isLoadingBuildings } = useGetBuildings();
-    const { data: floors, isLoading: isLoadingFloors } = useGetFloors();
-    const { data: tags, isLoading: isLoadingTags } = useGetTags();
 
     useEffect(() => {
         const downloadMapData = async () => {
@@ -34,7 +32,7 @@ const Navigator = () => {
             const buildings: BuildingsDict = await downloadBuildings();
             const floors: FloorsDict = await downloadFloors();
             const tags: TagsDict = await downloadTags();
-            const nodesByFloor = await downloadNodesByFloor(floors);
+            const nodesByFloor: NodeByFloorDict = await downloadNodesByFloor(floors);
 
             storage.set(StorageKeys.META_VERSION, metaVersion);
             console.log('Downloaded map data');

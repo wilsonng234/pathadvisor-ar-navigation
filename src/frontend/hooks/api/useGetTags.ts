@@ -4,9 +4,11 @@ import { useNetInfoInstance } from "@react-native-community/netinfo";
 import * as api from "../../../backend/api";
 import Tag from "backend/schema/tag";
 import { StorageKeys, TagsDict, storage } from "../../utils/storage_utils"
+import { useEffect, useState } from "react";
 
 const useGetTags = (): { data: TagsDict | undefined, isLoading: boolean } => {
     const downloaded = storage.contains(StorageKeys.TAGS);
+    const [tags, setTags] = useState<TagsDict | undefined>(undefined);
     const isInternetReachable = true;
     // const { netInfo: { isInternetReachable } } = useNetInfoInstance();
 
@@ -26,10 +28,16 @@ const useGetTags = (): { data: TagsDict | undefined, isLoading: boolean } => {
         enabled: !downloaded && isInternetReachable === true
     })
 
-    if (downloaded) {
-        const tags: TagsDict = JSON.parse(storage.getString(StorageKeys.TAGS)!);
+    useEffect(() => {
+        if (downloaded)
+            setTags(JSON.parse(storage.getString(StorageKeys.TAGS)!));
+    }, [downloaded])
 
-        return { data: tags, isLoading: false };
+    if (downloaded) {
+        if (tags)
+            return { data: tags, isLoading: false };
+        else
+            return { data: undefined, isLoading: true };
     }
     if (isInternetReachable === false)
         return { data: undefined, isLoading: false };
