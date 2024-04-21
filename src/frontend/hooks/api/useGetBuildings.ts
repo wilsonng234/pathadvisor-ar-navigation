@@ -5,7 +5,7 @@ import * as api from "../../../backend/api";
 import Building from "../../../backend/schema/building";
 import { StorageKeys, storage } from "../../utils/storage_utils"
 
-type BuildingsDict = { [buildingId: string]: Building }
+export type BuildingsDict = { [buildingId: string]: Building }
 
 const useGetBuildings = (): { data: BuildingsDict | undefined, isLoading: boolean } => {
     const downloaded = storage.contains(StorageKeys.BUILDINGS);
@@ -29,14 +29,9 @@ const useGetBuildings = (): { data: BuildingsDict | undefined, isLoading: boolea
     })
 
     if (downloaded) {
-        const buildings = JSON.parse(storage.getString(StorageKeys.BUILDINGS)!);
-        const buildingsDict: BuildingsDict = {};
+        const buildings: BuildingsDict = JSON.parse(storage.getString(StorageKeys.BUILDINGS)!);
 
-        buildings.forEach((building: Building) => {
-            buildingsDict[building._id] = building;
-        });
-
-        return { data: buildingsDict, isLoading: false };
+        return { data: buildings, isLoading: false };
     }
     if (isInternetReachable === false)
         return { data: undefined, isLoading: false };

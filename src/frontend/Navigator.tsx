@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Alert, AlertButton } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -10,10 +10,10 @@ import BusQueueStatisticsScreen from './screens/BusQueueStatistics';
 import EventScreen from './screens/Event';
 import ARNavigationScreen from './screens/ARNavigation';
 import useGetMetaVersion from './hooks/api/useGetMetaVersion';
-import useGetBuildings from './hooks/api/useGetBuildings';
-import useGetFloors from './hooks/api/useGetFloors';
-import useGetTags from './hooks/api/useGetTags';
-import { StorageKeys, storage } from './utils/storage_utils';
+import useGetBuildings, { BuildingsDict } from './hooks/api/useGetBuildings';
+import useGetFloors, { FloorsDict } from './hooks/api/useGetFloors';
+import useGetTags, { TagsDict } from './hooks/api/useGetTags';
+import { StorageKeys, downloadBuildings, downloadFloors, downloadNodesByFloor, downloadTags, storage } from './utils/storage_utils';
 
 const Drawer = createDrawerNavigator();
 
@@ -23,6 +23,27 @@ const Navigator = () => {
     const { data: buildings, isLoading: isLoadingBuildings } = useGetBuildings();
     const { data: floors, isLoading: isLoadingFloors } = useGetFloors();
     const { data: tags, isLoading: isLoadingTags } = useGetTags();
+
+    useEffect(() => {
+        const downloadMapData = async () => {
+            if (!metaVersion) {
+                console.error('Meta version not found');
+                return;
+            }
+
+            const buildings: BuildingsDict = await downloadBuildings();
+            const floors: FloorsDict = await downloadFloors();
+            const tags: TagsDict = await downloadTags();
+            const nodesByFloor = await downloadNodesByFloor(floors);
+
+            storage.set(StorageKeys.META_VERSION, metaVersion);
+            console.log('Downloaded map data');
+        }
+
+        if (startDownload) {
+            downloadMapData();
+        }
+    }, [startDownload]);
 
     const downloadMapTileAlert = () => {
         const downloadedMetaVersion = storage.getString(StorageKeys.META_VERSION);
@@ -72,16 +93,18 @@ const Navigator = () => {
                     options={{
                         headerTitle: 'HKUST PathAdvisor',
                         headerTitleAlign: 'center',
-                        headerRight: () => (
-                            <TouchableOpacity onPress={downloadMapTileAlert}>
-                                <MaterialIcons
-                                    name="update"
-                                    style={{ marginRight: 10 }}
-                                    size={25}
-                                    color={'black'}
-                                />
-                            </TouchableOpacity>
-                        ),
+                        headerRight: () => {
+                            return (
+                                !isLoadingMetaVerison && <TouchableOpacity onPress={downloadMapTileAlert} >
+                                    <MaterialIcons
+                                        name="update"
+                                        style={{ marginRight: 10 }}
+                                        size={25}
+                                        color={'black'}
+                                    />
+                                </TouchableOpacity>
+                            )
+                        },
                     }}
                 />
                 <Drawer.Screen name="Events"
@@ -97,7 +120,7 @@ const Navigator = () => {
                     options={{ headerShown: false, drawerItemStyle: { display: 'none' } }}
                 />
             </Drawer.Navigator>
-        </NavigationContainer>
+        </NavigationContainer >
     )
 }
 

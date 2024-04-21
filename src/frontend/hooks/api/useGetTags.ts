@@ -5,7 +5,7 @@ import * as api from "../../../backend/api";
 import Tag from "backend/schema/tag";
 import { StorageKeys, storage } from "../../utils/storage_utils"
 
-type TagsDict = { [tagId: string]: Tag }
+export type TagsDict = { [tagId: string]: Tag }
 
 const useGetTags = (): { data: TagsDict | undefined, isLoading: boolean } => {
     const downloaded = storage.contains(StorageKeys.TAGS);
@@ -29,14 +29,9 @@ const useGetTags = (): { data: TagsDict | undefined, isLoading: boolean } => {
     })
 
     if (downloaded) {
-        const tags = JSON.parse(storage.getString(StorageKeys.TAGS)!);
-        const tagsDict: TagsDict = {};
+        const tags: TagsDict = JSON.parse(storage.getString(StorageKeys.TAGS)!);
 
-        tags.forEach((tag: Tag) => {
-            tagsDict[tag._id] = tag;
-        });
-
-        return { data: tagsDict, isLoading: false };
+        return { data: tags, isLoading: false };
     }
     if (isInternetReachable === false)
         return { data: undefined, isLoading: false };
