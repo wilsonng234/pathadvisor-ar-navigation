@@ -1,6 +1,6 @@
 # Getting Started
 1. Delete `ios/Pods` folder, `ios/Podfile.lock` file and `node_modules` folder (if applicable)
-2. Proceed to `Unity to iOS`
+2. Proceed to [Unity to iOS (Setup 1)](#unity-to-ios-setup-1) section
 3. `npm ci` to install the dependencies
 4. Create `unity/builds/ios` folder 
 5. `npx pod-install` to install pod files
@@ -39,11 +39,18 @@ dependencies {
 6. Build it and Open `Product` folder in Xcode
 7. Right click `UnityFramework` and move it to the plugin folder `unity/builds/ios`
 8. Go to `unity/builds/ios/Headers`, open `UnityFramework.h`
-9. Change line 4 to `#import "./UnityAppController.h"`
+9. Change line 4 to 
+```
+#import "./UnityAppController.h"
+```
 10. Go to `node_modules/@azesmway/react-native-unity/ios` and open `RNUnityView.h`, change line 3 and 4 to
-`#include "../../../../../unity/builds/ios/Headers/UnityFramework.h"`
-`#include "../../../../../unity/builds/ios/Headers/NativeCallProxy.h"`
+```
+#include "../../../../../unity/builds/ios/Headers/UnityFramework.h"
+#include "../../../../../unity/builds/ios/Headers/NativeCallProxy.h"
+```
+11. Proceed to step 3 of [Getting Started](#getting-started)
 
+# Build Option
 ## Option1: Development server for Android
 1. `npm start` to start the development server
 
