@@ -3,9 +3,7 @@ import { useNetInfoInstance } from "@react-native-community/netinfo";
 
 import * as api from "../../../backend/api";
 import Building from "../../../backend/schema/building";
-import { StorageKeys, storage } from "../../utils/storage_utils"
-
-export type BuildingsDict = { [buildingId: string]: Building }
+import { BuildingsDict, StorageKeys, storage } from "../../utils/storage_utils"
 
 const useGetBuildings = (): { data: BuildingsDict | undefined, isLoading: boolean } => {
     const downloaded = storage.contains(StorageKeys.BUILDINGS);

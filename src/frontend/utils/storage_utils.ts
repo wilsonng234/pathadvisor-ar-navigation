@@ -1,4 +1,3 @@
-import { FloorsDict } from 'frontend/hooks/api/useGetFloors';
 import { MMKV } from 'react-native-mmkv'
 
 import * as api from '../../backend/api';
@@ -6,8 +5,6 @@ import Building from '../../backend/schema/building';
 import Floor from '../../backend/schema/floor';
 import Tag from '../../backend/schema/tag';
 import Node from '../../backend/schema/node';
-import { BuildingsDict } from '../hooks/api/useGetBuildings';
-import { TagsDict } from '../hooks/api/useGetTags';
 import { getMapTileStartCoordinates, getMapTilesSize } from '.';
 
 export const storage = new MMKV()
@@ -23,8 +20,10 @@ export enum StorageKeys {
     REACT_QUERY_OFFLINE_CACHE = 'REACT_QUERY_OFFLINE_CACHE'
 }
 
+export type BuildingsDict = { [buildingId: string]: Building }
+export type FloorsDict = { [floorId: string]: Floor }
+export type TagsDict = { [tagId: string]: Tag }
 export type NodeByFloorDict = { [floorId: string]: Node[] }
-
 
 export const downloadBuildings = async () => {
     const res = await api.getAllBuildings();
@@ -41,7 +40,7 @@ export const downloadBuildings = async () => {
 
 export const downloadFloors = async () => {
     const res = await api.getAllFloors();
-    
+
     const floors: FloorsDict = res.data.reduce(
         (prev: FloorsDict, cur: Floor) => {
             return { ...prev, [cur._id]: cur };

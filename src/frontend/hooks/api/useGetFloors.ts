@@ -3,9 +3,8 @@ import { useNetInfoInstance } from "@react-native-community/netinfo";
 
 import * as api from "../../../backend/api";
 import Floor from "backend/schema/floor";
-import { StorageKeys, storage } from "../../utils/storage_utils"
+import { FloorsDict, StorageKeys, storage } from "../../utils/storage_utils"
 
-export type FloorsDict = { [floorId: string]: Floor }
 
 const useGetFloors = (): { data: FloorsDict | undefined, isLoading: boolean } => {
     const downloaded = storage.contains(StorageKeys.FLOORS);

@@ -3,9 +3,7 @@ import { useNetInfoInstance } from "@react-native-community/netinfo";
 
 import * as api from "../../../backend/api";
 import Tag from "backend/schema/tag";
-import { StorageKeys, storage } from "../../utils/storage_utils"
-
-export type TagsDict = { [tagId: string]: Tag }
+import { StorageKeys, TagsDict, storage } from "../../utils/storage_utils"
 
 const useGetTags = (): { data: TagsDict | undefined, isLoading: boolean } => {
     const downloaded = storage.contains(StorageKeys.TAGS);
