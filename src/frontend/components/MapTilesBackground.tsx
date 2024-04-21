@@ -7,7 +7,7 @@ import { StyleSheet, View } from 'react-native';
 import LoadingScreen from './LoadingScreen';
 import useGetFloors from '../../frontend/hooks/api/useGetFloors';
 import { getMapTileStartCoordinates, getMapTilesNumber } from '../utils';
-import { storage } from '../../frontend/utils/mmkvStorage';
+import { storage } from '../utils/storage_utils';
 import { getMapTiles } from '../../backend/api/image/getMapTiles';
 
 export const LOGIC_MAP_TILE_WIDTH = 200;

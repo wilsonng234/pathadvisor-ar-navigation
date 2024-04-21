@@ -3,7 +3,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Query, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import Navigator from './src/frontend/Navigator';
-import { storage } from './src/frontend/utils/mmkvStorage';
+import { storage } from './src/frontend/utils/storage_utils';
 import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 

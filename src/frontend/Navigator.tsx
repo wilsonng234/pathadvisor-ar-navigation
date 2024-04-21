@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { Alert, AlertButton } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -8,29 +9,61 @@ import HomeScreen from './screens/Home';
 import BusQueueStatisticsScreen from './screens/BusQueueStatistics';
 import EventScreen from './screens/Event';
 import ARNavigationScreen from './screens/ARNavigation';
-import { Alert } from 'react-native';
-import * as api from '../backend/api';
+import useGetMetaVersion from './hooks/api/useGetMetaVersion';
+import useGetBuildings from './hooks/api/useGetBuildings';
+import useGetFloors from './hooks/api/useGetFloors';
+import useGetTags from './hooks/api/useGetTags';
+import { StorageKeys, storage } from './utils/storage_utils';
 
 const Drawer = createDrawerNavigator();
 
 const Navigator = () => {
     const [startDownload, setStartDownload] = useState<boolean>(false);
-    api.getMeta().then((res) => {
-        if (res) {
-            console.log(res);
-            // setStartDownload(true);
-        }
-    });
+    const { data: metaVersion, isLoading: isLoadingMetaVerison } = useGetMetaVersion();
+    const { data: buildings, isLoading: isLoadingBuildings } = useGetBuildings();
+    const { data: floors, isLoading: isLoadingFloors } = useGetFloors();
+    const { data: tags, isLoading: isLoadingTags } = useGetTags();
 
-    const downloadMapTileAlert = () =>
-        //warning message
-        Alert.alert('Update HKUST Map data', 'Do you want to update the HKUST Map data to latest version?', [
-            {
-                text: 'Cancel',
-                style: 'cancel',
-            },
-            { text: 'OK', onPress: () => console.log('OK Pressed') },
-        ]);
+    const downloadMapTileAlert = () => {
+        const downloadedMetaVersion = storage.getString(StorageKeys.META_VERSION);
+        let title: string, message: string, buttons: AlertButton[];
+
+        if (!downloadedMetaVersion) {
+            title = 'Download HKUST Map data';
+            message = 'Do you want to download the HKUST Map data?';
+            buttons = [
+                {
+                    text: 'Cancel',
+                    style: 'cancel',
+                },
+                { text: 'OK', onPress: () => setStartDownload(true) },
+            ];
+        }
+        else {
+            if (downloadedMetaVersion === metaVersion) {
+                title = 'Update HKUST Map data';
+                message = 'The HKUST Map data is up to date.';
+                buttons = [
+                    {
+                        text: 'OK',
+                    },
+                ];
+            }
+            else {
+                title = 'Update HKUST Map data';
+                message = 'Do you want to update the HKUST Map data to latest version?';
+                buttons = [
+                    {
+                        text: 'Cancel',
+                        style: 'cancel',
+                    },
+                    { text: 'OK', onPress: () => setStartDownload(true) },
+                ];
+            }
+        }
+
+        Alert.alert(title, message, buttons);
+    }
 
     return (
         <NavigationContainer>

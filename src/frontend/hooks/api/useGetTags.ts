@@ -3,7 +3,7 @@ import { useNetInfoInstance } from "@react-native-community/netinfo";
 
 import * as api from "../../../backend/api";
 import Tag from "backend/schema/tag";
-import { StorageKeys, storage } from "../../utils/mmkvStorage"
+import { StorageKeys, storage } from "../../utils/storage_utils"
 
 type TagsDict = { [tagId: string]: Tag }
 

@@ -1,4 +1,8 @@
+import { FloorsDict } from 'frontend/hooks/api/useGetFloors';
 import { MMKV } from 'react-native-mmkv'
+
+import * as api from '../../backend/api';
+import Floor from '../../backend/schema/floor';
 
 export const storage = new MMKV()
 
@@ -12,4 +16,3 @@ export enum StorageKeys {
     TO_SUGGESTIONS = 'to.suggestions',
     REACT_QUERY_OFFLINE_CACHE = 'REACT_QUERY_OFFLINE_CACHE'
 }
-    

@@ -5,9 +5,9 @@ import Node from "../../../backend/schema/node";
 
 import { FloorsDict } from "./useGetFloors";
 import { getMapTileStartCoordinates, getMapTilesSize } from "../../utils";
-import { StorageKeys, storage } from "../../utils/mmkvStorage";
+import { StorageKeys, storage } from "../../utils/storage_utils";
 
-const useNodesQueryByFloorId = (floors: FloorsDict | undefined, floorId: string) => {
+const useGetNodesByFloorId = (floors: FloorsDict | undefined, floorId: string) => {
     const nodes = storage.getString(StorageKeys.NODES_BY_FLOOR);
     const nodesByFloor = nodes ? JSON.parse(nodes) : {};
     const downloaded = nodesByFloor.hasOwnProperty(floorId);
@@ -40,4 +40,4 @@ const useNodesQueryByFloorId = (floors: FloorsDict | undefined, floorId: string)
         return { data: data, isLoading: false };
 }
 
-export default useNodesQueryByFloorId;
+export default useGetNodesByFloorId;

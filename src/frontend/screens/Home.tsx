@@ -15,7 +15,7 @@ import PathNode from "../../backend/schema/PathNode";
 import PageSelector from "../components/FloorSelector";
 import useGetFloors from "../hooks/api/useGetFloors";
 
-import { StorageKeys, storage } from "../utils/mmkvStorage";
+import { StorageKeys, storage } from "../utils/storage_utils";
 
 export interface Path {
     floorIds: string[];     // floorIds in the order of the path

@@ -3,7 +3,7 @@ import { useNetInfoInstance } from "@react-native-community/netinfo";
 
 import * as api from "../../../backend/api";
 import Floor from "backend/schema/floor";
-import { storage } from "../../utils/mmkvStorage"
+import { storage } from "../../utils/storage_utils"
 
 
 const useGetMetaVersion = (): { data: string | undefined, isLoading: boolean } => {
