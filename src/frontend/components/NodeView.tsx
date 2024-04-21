@@ -5,7 +5,7 @@ import { LayoutChangeEvent, Text, View, ViewStyle } from "react-native";
 import { LOGIC_MAP_TILE_WIDTH, LOGIC_MAP_TILE_HEIGHT, RENDER_MAP_TILE_HEIGHT, RENDER_MAP_TILE_WIDTH } from "./MapTilesBackground";
 
 import LoadingScreen from "./LoadingScreen";
-import Node from "../../backend/schema/Node";
+import Node from "../../backend/schema/node";
 import useGetFloors from "../hooks/api/useGetFloors";
 import useGetTags from "../hooks/api/useGetTags";
 

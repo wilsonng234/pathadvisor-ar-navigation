@@ -1,4 +1,4 @@
-import { DefaultError, UseQueryResult, useQuery } from "@tanstack/react-query";
+import { DefaultError, useQuery } from "@tanstack/react-query";
 
 import * as api from "../../../backend/api";
 import Node from "../../../backend/schema/node";
@@ -9,6 +9,7 @@ import { StorageKeys, storage } from "../../utils/storage_utils";
 
 const useGetNodesByFloorId = (floors: FloorsDict | undefined, floorId: string) => {
     const nodes = storage.getString(StorageKeys.NODES_BY_FLOOR);
+    
     const nodesByFloor = nodes ? JSON.parse(nodes) : {};
     const downloaded = nodesByFloor.hasOwnProperty(floorId);
     const isInternetReachable = true;
@@ -29,7 +30,7 @@ const useGetNodesByFloorId = (floors: FloorsDict | undefined, floorId: string) =
     })
 
     if (downloaded) {
-        const nodes: Node[] = nodesByFloor.floorId;
+        const nodes: Node[] = nodesByFloor[floorId];
         return { data: nodes, isLoading: false };
     }
     if (isInternetReachable === false)

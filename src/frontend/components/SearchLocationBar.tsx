@@ -4,7 +4,7 @@ import { FlatList } from 'react-native-gesture-handler';
 import { SearchBar } from '@rneui/themed';
 
 import * as api from '../../backend/api';
-import Node from '../../backend/schema/Node';
+import Node from '../../backend/schema/node';
 import SearchNode from './SearchNode';
 import useGetNodesByNodeIds from '../hooks/api/useGetNodesByNodeIds';
 
