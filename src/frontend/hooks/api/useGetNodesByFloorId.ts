@@ -4,12 +4,11 @@ import * as api from "../../../backend/api";
 import Node from "../../../backend/schema/node";
 import { getMapTileStartCoordinates, getMapTilesSize } from "../../utils";
 import { FloorsDict, StorageKeys, storage } from "../../utils/storage_utils";
+import { useEffect, useState } from "react";
 
 const useGetNodesByFloorId = (floors: FloorsDict | undefined, floorId: string) => {
-    const nodes = storage.getString(StorageKeys.NODES_BY_FLOOR);
-
-    const nodesByFloor = nodes ? JSON.parse(nodes) : {};
-    const downloaded = nodesByFloor.hasOwnProperty(floorId);
+    const [downloaded, setDownloaded] = useState<boolean>(false);
+    const [floorNodes, setFloorNodes] = useState<Node[]>([]);
 
     const { data, isLoading } = useQuery<{ data: Node[] }, DefaultError, Node[]>({
         queryKey: ["nodes", floorId],
@@ -25,9 +24,22 @@ const useGetNodesByFloorId = (floors: FloorsDict | undefined, floorId: string) =
         enabled: !!floors && !downloaded
     })
 
+    useEffect(() => {
+        const nodes = storage.getString(StorageKeys.NODES_BY_FLOOR);
+        const nodesByFloors = nodes ? JSON.parse(nodes) : {};
+        const downloaded = nodesByFloors.hasOwnProperty(floorId);
+        setDownloaded(downloaded);
+
+        if (downloaded) {
+            setFloorNodes(nodesByFloors[floorId]);
+        }
+    }, []);
+
     if (downloaded) {
-        const nodes: Node[] = nodesByFloor[floorId];
-        return { data: nodes, isLoading: false };
+        if (floorNodes)
+            return { data: floorNodes, isLoading: false };
+        else
+            return { data: [], isLoading: true };
     }
     else {
         return { data, isLoading };
