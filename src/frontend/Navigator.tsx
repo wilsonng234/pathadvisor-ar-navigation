@@ -12,8 +12,8 @@ import ARNavigationScreen from './screens/ARNavigation';
 import useGetMetaVersion from './hooks/api/useGetMetaVersion';
 import {
     storage, StorageKeys,
-    downloadBuildings, downloadFloors, downloadNodesByFloor, downloadTags,
-    BuildingsDict, FloorsDict, TagsDict, NodeByFloorDict
+    downloadBuildings, downloadFloors, downloadNodesByFloor, downloadTags, downloadMapTilesByFloor,
+    BuildingsDict, FloorsDict, TagsDict, NodeByFloorDict, MapTilesByFloorDict
 } from './utils/storage_utils';
 
 const Drawer = createDrawerNavigator();
@@ -33,6 +33,7 @@ const Navigator = () => {
             const floors: FloorsDict = await downloadFloors();
             const tags: TagsDict = await downloadTags();
             const nodesByFloor: NodeByFloorDict = await downloadNodesByFloor(floors);
+            const mapTilesByFloor: MapTilesByFloorDict = await downloadMapTilesByFloor(floors);
 
             storage.set(StorageKeys.META_VERSION, metaVersion);
             console.log('Downloaded map data');

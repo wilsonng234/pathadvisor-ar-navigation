@@ -1,25 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import FastImage from 'react-native-fast-image'
-import { Buffer } from "buffer";
 import { StyleSheet, View } from 'react-native';
 
+import LoadingScreen from './LoadingScreen';
+import useGetMapTilesByFloorId from '../hooks/api/useGetMapTilesByFloorId';
 import useHomeStore from '../hooks/store/useHomeStore';
-
 import { getMapTileStartCoordinates, getMapTilesNumber } from '../utils';
-import { storage } from '../utils/storage_utils';
-import { getMapTiles } from '../../backend/api/image/getMapTiles';
+import { MapTileBlock } from '../utils/storage_utils';
 
 export const LOGIC_MAP_TILE_WIDTH = 200;
 export const LOGIC_MAP_TILE_HEIGHT = 200;
 export const RENDER_MAP_TILE_WIDTH = 80;
 export const RENDER_MAP_TILE_HEIGHT = 80;
-
-export interface MapTileBlock {
-    floorId: string;
-    x: number;
-    y: number;
-    zoomLevel: number;
-}
 
 interface MapTilesBackgroundProps {
     floorId: string;
@@ -28,28 +20,10 @@ interface MapTilesBackgroundProps {
 
 const MapTilesBackground = ({ floorId, children }: MapTilesBackgroundProps) => {
     const { floors } = useHomeStore();
+    const { data: mapTiles, isLoading: isLoadingMapTiles, downloaded } = useGetMapTilesByFloorId(floorId);
     const [mapTileBlocks, setMapTileBlocks] = useState<MapTileBlock[][]>([]);
-    const [downloaded, setDownloaded] = useState<boolean>(false);
 
     useEffect(() => {
-        const downloadMapTile = async (mapTileBlocks: MapTileBlock[][]) => {
-            const promises = mapTileBlocks.map((row) => {
-                return row.map(async (mapTileBlock) => {
-
-                    const key = `mapTile_${mapTileBlock.floorId}_${mapTileBlock.x}_${mapTileBlock.y}_${mapTileBlock.zoomLevel}`;
-                    const maptile = await getMapTiles(floorId, mapTileBlock.x, mapTileBlock.y, 0);
-
-                    if (!storage.contains(key)) {
-                        const base64 = Buffer.from(maptile, 'binary').toString('base64');
-                        storage.set(key, base64);
-                    }
-                })
-            })
-
-            await Promise.all(promises.flat());
-            setDownloaded(true);
-        }
-
         if (floors) {
             const { tileStartX, tileStartY } = getMapTileStartCoordinates(floors[floorId]);
             const { numRow, numCol } = getMapTilesNumber(floors[floorId]);
@@ -68,37 +42,40 @@ const MapTilesBackground = ({ floorId, children }: MapTilesBackgroundProps) => {
                 }
             }
 
-            downloadMapTile(mapTileBlocks);
             setMapTileBlocks(mapTileBlocks);
         }
     }, [floors, floorId])
 
-    return (
-        <View>
-            {mapTileBlocks.map((row, i) => {
-                return (
-                    <View key={i} style={styles.mapTilesRow}>
-                        {
-                            row.map((mapTileBlock, j) => {
-                                const key = `mapTile_${mapTileBlock.floorId}_${mapTileBlock.x}_${mapTileBlock.y}_${mapTileBlock.zoomLevel}`;
-                                const imageUri = "data:image/png;base64," + storage.getString(key);
+    if (isLoadingMapTiles)
+        return <LoadingScreen />
+    else
+        return (
+            <View>
+                {mapTileBlocks.map((row, i) => {
+                    return (
+                        <View key={i} style={styles.mapTilesRow}>
+                            {
+                                row.map((mapTileBlock, j) => {
+                                    const imageUri = downloaded ?
+                                        "data:image/png;base64," + mapTiles![`${mapTileBlock.x}_${mapTileBlock.y}_${mapTileBlock.zoomLevel}`] :
+                                        `https://pathadvisor.ust.hk/api/floors/${mapTileBlock.floorId}/map-tiles?x=${mapTileBlock.x}&y=${mapTileBlock.y}&zoomLevel=${mapTileBlock.zoomLevel}`;
 
-                                return (
-                                    <FastImage
-                                        key={`${i}-${j}`}
-                                        style={{ width: RENDER_MAP_TILE_WIDTH, height: RENDER_MAP_TILE_HEIGHT }}
-                                        source={{ uri: imageUri }}
-                                    />
-                                )
-                            })
-                        }
-                    </View>
-                )
-            })}
+                                    return (
+                                        <FastImage
+                                            key={`${i}-${j}`}
+                                            style={{ width: RENDER_MAP_TILE_WIDTH, height: RENDER_MAP_TILE_HEIGHT }}
+                                            source={{ uri: imageUri }}
+                                        />
+                                    )
+                                })
+                            }
+                        </View>
+                    )
+                })}
 
-            {children}
-        </View>
-    )
+                {children}
+            </View>
+        )
 }
 
 export default MapTilesBackground;

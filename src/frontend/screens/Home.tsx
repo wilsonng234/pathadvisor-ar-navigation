@@ -34,7 +34,7 @@ const HomeScreen = ({ navigation }) => {
     const { data: floors, isLoading: isLoadingFloors } = useGetFloors();
     const { data: tags, isLoading: isLoadingTags } = useGetTags();
     const [ready, setReady] = useState<boolean>(false);
-    const { setBuildings, setFloors, setTags } = useHomeStore();
+    const { setBuildings, setFloors, setTags, setMapTiles } = useHomeStore();
 
     const [enableFromSearchBar, setEnableFromSearchBar] = useState<boolean>(false);
     const [fromNode, setFromNode] = useState<Node | null>(null);
