@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-
 import { Text, View } from "react-native";
 import { Dimensions, ScrollView, StyleSheet } from "react-native";
 import { WebView } from 'react-native-webview';

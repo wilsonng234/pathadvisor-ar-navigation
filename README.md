@@ -73,4 +73,3 @@ dependencies {
 1. Follow all the guideline in Option 2 until Step 5
 2. Edit Scheme and change the build configuration to 'release'
 3. Build the app by pressing the play button
-
