@@ -98,16 +98,29 @@ const Navigator = () => {
                         headerTitle: 'HKUST PathAdvisor',
                         headerTitleAlign: 'center',
                         headerRight: () => {
-                            return (
-                                !isLoadingMetaVerison && <TouchableOpacity onPress={downloadMapTileAlert} >
-                                    <MaterialIcons
-                                        name="update"
-                                        style={{ marginRight: 10 }}
-                                        size={25}
-                                        color={'black'}
-                                    />
-                                </TouchableOpacity>
-                            )
+                            if (!isLoadingMetaVerison && (storage.getString(StorageKeys.META_VERSION) === undefined || storage.getString(StorageKeys.META_VERSION) !== metaVersion))
+                                return (
+                                    <TouchableOpacity onPress={downloadMapTileAlert}>
+                                        <MaterialIcons
+                                            name="update"
+                                            style={{ marginRight: 10 }}
+                                            size={25}
+                                            color={'black'}
+                                        />
+                                    </TouchableOpacity>
+                                )
+                            else {
+                                return (
+                                    <TouchableOpacity onPress={downloadMapTileAlert}>
+                                        <MaterialIcons
+                                            name="check"
+                                            style={{ marginRight: 10 }}
+                                            size={25}
+                                            color={'black'}
+                                        />
+                                    </TouchableOpacity>
+                                )
+                            }
                         },
                     }}
                 />
