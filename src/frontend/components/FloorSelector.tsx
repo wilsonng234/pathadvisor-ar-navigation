@@ -31,6 +31,9 @@ const FloorSelector = ({ currentFloorId, handleSelectorChangeFloor }: FloorSelec
                 tempButtons[buildingId].push(floorId);
             });
 
+            for (const buildingId in tempButtons)
+                tempButtons[buildingId].sort((a, b) => floors[a].rank > floors[b].rank ? 1 : -1);
+
             setButtons(tempButtons);
         }
 
@@ -83,7 +86,7 @@ const FloorSelector = ({ currentFloorId, handleSelectorChangeFloor }: FloorSelec
     };
 
     const renderFloorButtons = (floors: FloorsDict, buttons: ButtonsDict, buildingId: string) => {
-        const floorButtons = buttons[buildingId].sort((a, b) => floors[a].rank > floors[b].rank ? 1 : -1);
+        const floorButtons = buttons[buildingId];
 
         return (
             <View style={styles.buttonGroupContainer}>
