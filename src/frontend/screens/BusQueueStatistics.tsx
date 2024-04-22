@@ -45,7 +45,7 @@ const BusQueueStatisticsScreen = () => {
     }
 
     const getBusQueueStatistics = () => {
-        axios.get('https://eek123.ust.hk/BusQueue/clientAPI/busqueue')
+        axios.get('http://eek123.ust.hk/BusQueue/clientAPI/busqueue')
             .then(
                 response => {
                     setNorthPeople(response.data[response.data.length - 1]["north_count"]);
@@ -54,7 +54,7 @@ const BusQueueStatisticsScreen = () => {
                     setSouthTime(response.data[response.data.length - 1]["south_waiting"]);
                 }
             )
-            .catch(e => console.error(e));
+            .catch(e => console.error(e.request));
     }
 
     return (
