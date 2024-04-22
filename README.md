@@ -52,7 +52,8 @@ dependencies {
 
 # Build Option
 ## Option1: Development server for Android
-1. `npm start` to start the development server
+1. `chmod 755 android/gradlew` (macOS only)
+2. `npm start` to start the development server
 
 ## Option2: Development server for iOS and Unity to iOS (Setup 2)
 1. `npm start` to start the development server
