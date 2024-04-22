@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useState } from 'react';
-import { Keyboard, StyleSheet, View } from 'react-native';
+import { Keyboard, StyleSheet, View, TouchableWithoutFeedback, Pressable } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { SearchBar } from '@rneui/themed';
 
@@ -59,7 +59,7 @@ const SearchLocationBar = ({ placeholder, selectNode, onClickCancel, cacheKey }:
     const handleSearchTextCancel = () => {
         setSearchText('');
         setSearchResults([]);
-
+        Keyboard.dismiss();
         onClickCancel && onClickCancel();
     }
 
@@ -81,6 +81,7 @@ const SearchLocationBar = ({ placeholder, selectNode, onClickCancel, cacheKey }:
     }
 
     return (
+
         <View style={{ position: "relative" }}>
             <SearchBar
                 platform="ios"
@@ -100,6 +101,7 @@ const SearchLocationBar = ({ placeholder, selectNode, onClickCancel, cacheKey }:
                 />
             </View>
         </View>
+
     );
 }
 

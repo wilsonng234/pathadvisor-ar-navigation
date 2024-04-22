@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, Pressable, Keyboard } from "react-native";
 import { TouchableHighlight, TouchableOpacity } from "react-native-gesture-handler";
 
 import SearchLocationBar from "../components/SearchLocationBar";
@@ -203,14 +203,17 @@ const HomeScreen = ({ navigation }) => {
         return (
             <View style={{ flex: 1 }}>
                 <View style={{ zIndex: 2 }}>
-                    {
-                        enableFromSearchBar &&
-                        <SearchLocationBar selectNode={handleSelectFromNode} placeholder="FROM" onClickCancel={handleCancelFromNode} cacheKey={StorageKeys.FROM_SUGGESTIONS} />
-                    }
+                    <View style={{ zIndex: 3 }}>
+                        {
+                            enableFromSearchBar &&
+                            <SearchLocationBar selectNode={handleSelectFromNode} placeholder="FROM" onClickCancel={handleCancelFromNode} cacheKey={StorageKeys.FROM_SUGGESTIONS} />
+                        }
+                    </View>
                     <SearchLocationBar selectNode={handleSelectToNode} placeholder="Where are you going?" onClickCancel={handleCancelToNode} cacheKey={StorageKeys.TO_SUGGESTIONS} />
                 </View>
-
-                <MapView currentFloorId={currentFloorId} fromNode={fromNode} toNode={toNode} path={path} focusNode={focusNode} />
+                <Pressable onPress={Keyboard.dismiss}>
+                    <MapView currentFloorId={currentFloorId} fromNode={fromNode} toNode={toNode} path={path} focusNode={focusNode} />
+                </Pressable>
 
                 {
                     path &&
