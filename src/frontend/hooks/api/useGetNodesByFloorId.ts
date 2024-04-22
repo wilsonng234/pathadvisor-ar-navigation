@@ -33,7 +33,7 @@ const useGetNodesByFloorId = (floors: FloorsDict | undefined, floorId: string) =
         if (downloaded) {
             setFloorNodes(nodesByFloors[floorId]);
         }
-    }, []);
+    }, [floorId]);
 
     if (downloaded) {
         if (floorNodes)

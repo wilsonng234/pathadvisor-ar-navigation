@@ -14,7 +14,7 @@ const useGetMapTilesByFloorId = (floorId: string) => {
         if (downloaded) {
             setFloorMapTiles(mapTilesByFloors[floorId]);
         }
-    }, []);
+    }, [floorId]);
 
     if (downloaded) {
         if (floorMapTiles)
