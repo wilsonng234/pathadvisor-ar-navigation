@@ -49,7 +49,7 @@ const MapView = ({ currentFloorId, fromNode, toNode, path, focusNode }: MapViewP
     }, [floors, nodes, focusNode])
 
     if (isLoadingNodes)
-        return <LoadingScreen />;
+        return <View></View>;
 
     // floors and nodes are guaranteed to be loaded at this point
     const { tileStartX, tileStartY } = getMapTileStartCoordinates(floors![currentFloorId]);

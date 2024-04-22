@@ -34,6 +34,8 @@ const HomeScreen = ({ navigation }) => {
     const { data: floors, isLoading: isLoadingFloors } = useGetFloors();
     const { data: tags, isLoading: isLoadingTags } = useGetTags();
     const [ready, setReady] = useState<boolean>(false);
+    const [mapReady, setMapReady] = useState<boolean>(true);
+    const [pointerEvents, setPointerEvents] = useState<"auto" | "none">("auto");
     const { setBuildings, setFloors, setTags, setMapTiles } = useHomeStore();
 
     const [enableFromSearchBar, setEnableFromSearchBar] = useState<boolean>(false);
@@ -162,6 +164,12 @@ const HomeScreen = ({ navigation }) => {
     const handleSelectorChangeFloor = useCallback((id: string) => {
         setCurrentFloorId(id);
         setFocusNode(null);
+        setMapReady(false);
+        setPointerEvents("none");
+        setTimeout(() => {
+            setMapReady(true)
+            setPointerEvents("auto");
+        }, 500)
     }, []);
 
     const renderRoomDetailsBoxButtons = () => {
@@ -201,7 +209,7 @@ const HomeScreen = ({ navigation }) => {
         return <LoadingScreen />;
     else
         return (
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 1 }} pointerEvents={pointerEvents}>
                 <View style={{ zIndex: 2 }}>
                     <View style={{ zIndex: 3 }}>
                         {
@@ -211,10 +219,14 @@ const HomeScreen = ({ navigation }) => {
                     </View>
                     <SearchLocationBar selectNode={handleSelectToNode} placeholder="Where are you going?" onClickCancel={handleCancelToNode} cacheKey={StorageKeys.TO_SUGGESTIONS} />
                 </View>
-                <Pressable onPress={Keyboard.dismiss}>
-                    <MapView currentFloorId={currentFloorId} fromNode={fromNode} toNode={toNode} path={path} focusNode={focusNode} />
-                </Pressable>
-
+                {
+                    !mapReady && <LoadingScreen />
+                }
+                {
+                    mapReady && <Pressable onPress={Keyboard.dismiss}>
+                        <MapView currentFloorId={currentFloorId} fromNode={fromNode} toNode={toNode} path={path} focusNode={focusNode} />
+                    </Pressable>
+                }
                 {
                     path &&
                     <View style={styles.pathFloorControlContainer}>
@@ -309,7 +321,8 @@ const styles = StyleSheet.create({
     },
     floorSelector: {
         position: "absolute",
-        bottom: 0
+        bottom: 0,
+        zIndex: 1,
 
     }
 });

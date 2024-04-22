@@ -16,6 +16,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
+    zIndex: 1
   },
   loadingText: {
     marginTop: 20, // You can adjust this value
