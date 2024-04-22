@@ -33,3 +33,8 @@ dependencies {
 3. `./gradlew assembleDebug`
 4. `cd app/build/outputs/apk/debug`
 5. `adb install .\app-debug.apk`
+
+## Or 
+1. `npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && cd android && ./gradlew assembleDebug  && cd ..`
+2. `cd android/app/build/outputs/apk/debug && adb install .\app-debug.apk && cd ../../../../../..`
+
