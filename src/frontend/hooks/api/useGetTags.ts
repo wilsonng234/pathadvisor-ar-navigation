@@ -1,5 +1,4 @@
 import { DefaultError, useQuery } from "@tanstack/react-query";
-import { useNetInfoInstance } from "@react-native-community/netinfo";
 
 import * as api from "../../../backend/api";
 import Tag from "backend/schema/tag";
@@ -7,10 +6,9 @@ import { StorageKeys, TagsDict, storage } from "../../utils/storage_utils"
 import { useEffect, useState } from "react";
 
 const useGetTags = (): { data: TagsDict | undefined, isLoading: boolean } => {
-    const downloaded = storage.contains(StorageKeys.TAGS);
+    const [downloaded, setDownloaded] = useState<boolean>(false);
     const [tags, setTags] = useState<TagsDict | undefined>(undefined);
     const isInternetReachable = true;
-    // const { netInfo: { isInternetReachable } } = useNetInfoInstance();
 
     const { data, isLoading } = useQuery<{ data: Tag[] }, DefaultError, TagsDict>({
         queryKey: ["tags"],
@@ -29,6 +27,10 @@ const useGetTags = (): { data: TagsDict | undefined, isLoading: boolean } => {
     })
 
     useEffect(() => {
+        setDownloaded(storage.contains(StorageKeys.TAGS));
+    }, [])
+
+    useEffect(() => {
         if (downloaded)
             setTags(JSON.parse(storage.getString(StorageKeys.TAGS)!));
     }, [downloaded])
@@ -39,12 +41,9 @@ const useGetTags = (): { data: TagsDict | undefined, isLoading: boolean } => {
         else
             return { data: undefined, isLoading: true };
     }
-    if (isInternetReachable === false)
-        return { data: undefined, isLoading: false };
-    if (isLoading)
-        return { data: undefined, isLoading: true };
-    else
-        return { data: data, isLoading: false };
+    else {
+        return { data, isLoading };
+    }
 }
 
 export default useGetTags;

@@ -1,5 +1,4 @@
 import { DefaultError, useQuery } from "@tanstack/react-query";
-import { useNetInfoInstance } from "@react-native-community/netinfo";
 
 import * as api from "../../../backend/api";
 

@@ -10,8 +10,6 @@ const useGetNodesByFloorId = (floors: FloorsDict | undefined, floorId: string) =
 
     const nodesByFloor = nodes ? JSON.parse(nodes) : {};
     const downloaded = nodesByFloor.hasOwnProperty(floorId);
-    const isInternetReachable = true;
-    // const { netInfo: { isInternetReachable } } = useNetInfoInstance();
 
     const { data, isLoading } = useQuery<{ data: Node[] }, DefaultError, Node[]>({
         queryKey: ["nodes", floorId],
@@ -24,19 +22,16 @@ const useGetNodesByFloorId = (floors: FloorsDict | undefined, floorId: string) =
         },
         select: (res) => res.data,
         staleTime: Infinity,
-        enabled: !!floors && !downloaded && isInternetReachable === true
+        enabled: !!floors && !downloaded
     })
 
     if (downloaded) {
         const nodes: Node[] = nodesByFloor[floorId];
         return { data: nodes, isLoading: false };
     }
-    if (isInternetReachable === false)
-        return { data: undefined, isLoading: false };
-    if (isLoading)
-        return { data: undefined, isLoading: true };
-    else
-        return { data: data, isLoading: false };
+    else {
+        return { data, isLoading };
+    }
 }
 
 export default useGetNodesByFloorId;
