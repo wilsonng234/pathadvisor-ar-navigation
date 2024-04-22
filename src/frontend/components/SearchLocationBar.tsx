@@ -4,11 +4,11 @@ import { FlatList } from 'react-native-gesture-handler';
 import { SearchBar } from '@rneui/themed';
 
 import * as api from '../../backend/api';
-import Node from '../../backend/schema/Node';
+import Node from '../../backend/schema/node';
 import SearchNode from './SearchNode';
+import useGetNodesByNodeIds from '../hooks/api/useGetNodesByNodeIds';
 
-import { StorageKeys, storage } from '../utils/mmkvStorage';
-import { useNodeQueriesByNodeIds } from '../utils/reactQueryFactory';
+import { StorageKeys, storage } from '../utils/storage_utils';
 
 interface SearchLocationBarProps {
     placeholder: string;
@@ -30,7 +30,7 @@ const SearchLocationBar = ({ placeholder, selectNode, onClickCancel, cacheKey }:
     const [searchResults, setSearchResults] = useState<Node[]>([]);
     const [suggestionIds, setSuggestionIds] = useState<string[]>([]);
 
-    const suggestionQueries = useNodeQueriesByNodeIds(suggestionIds);
+    const suggestionQueries = useGetNodesByNodeIds(suggestionIds);
 
     useEffect(() => {
         if (searchText === '') {

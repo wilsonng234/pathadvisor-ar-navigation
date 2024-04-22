@@ -1,20 +1,18 @@
 import React, { useCallback } from "react"
-import FastImage from "react-native-fast-image";
-import { StyleSheet, View, Text } from "react-native"
-import { Polyline, Svg } from "react-native-svg";
-import { UseQueryResult } from "@tanstack/react-query";
-
 import MapTilesBackground, { LOGIC_MAP_TILE_WIDTH, LOGIC_MAP_TILE_HEIGHT, RENDER_MAP_TILE_WIDTH, RENDER_MAP_TILE_HEIGHT } from "./MapTilesBackground";
+import FastImage from "react-native-fast-image";
+import { StyleSheet, View } from "react-native"
+import { Polyline, Svg } from "react-native-svg";
+
 import ZoomableView, { ZoomableViewRef } from "./ZoomableView";
 import NodeView from "./NodeView";
-
-import Node from "../../backend/schema/Node"
-import PathNode from "../../backend/schema/PathNode";
-
-import { Path } from "../screens/Home";
-import { getMapTileStartCoordinates, getMapTilesNumber, getMapTilesSize } from "../utils";
-import { FloorsDict, useFloorsQuery, useNodesQueryByFloorId } from "../utils/reactQueryFactory";
 import LoadingScreen from "./LoadingScreen";
+import Node from "../../backend/schema/node"
+import PathNode from "../../backend/schema/pathNode";
+import useHomeStore from "../hooks/store/useHomeStore";
+import useGetNodesByFloorId from "../hooks/api/useGetNodesByFloorId";
+import { Path } from "../screens/Home";
+import { getMapTileStartCoordinates, getMapTilesNumber, getMapTilesSize } from "../utils/mapTiles_utils";
 
 interface MapViewProps {
     currentFloorId: string;
@@ -25,8 +23,9 @@ interface MapViewProps {
 }
 
 const MapView = ({ currentFloorId, fromNode, toNode, path, focusNode }: MapViewProps) => {
-    const { data: floors, isLoading: isLoadingFloors }: UseQueryResult<FloorsDict> = useFloorsQuery()
-    const { data: nodes, isLoading: isLoadingNodes }: UseQueryResult<Node[]> = useNodesQueryByFloorId(floors, currentFloorId)
+    const { floors } = useHomeStore();
+
+    const { data: nodes, isLoading: isLoadingNodes } = useGetNodesByFloorId(floors, currentFloorId)
     const onZoomableViewRefChange = useCallback((ref: ZoomableViewRef) => {
         if (!floors || !nodes || !ref)
             return;
@@ -49,7 +48,7 @@ const MapView = ({ currentFloorId, fromNode, toNode, path, focusNode }: MapViewP
 
     }, [floors, nodes, focusNode])
 
-    if (isLoadingNodes || isLoadingFloors)
+    if (isLoadingNodes)
         return <LoadingScreen />;
 
     // floors and nodes are guaranteed to be loaded at this point

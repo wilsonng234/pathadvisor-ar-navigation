@@ -1,12 +1,9 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { UseQueryResult } from '@tanstack/react-query';
 
-import Node from '../../backend/schema/Node';
-
+import Node from '../../backend/schema/node';
+import useHomeStore from '../hooks/store/useHomeStore';
 import { convertFloorIdToFloorName } from '../utils';
-import { BuildingsDict, FloorsDict, useBuildingsQuery, useFloorsQuery } from '../utils/reactQueryFactory';
-import LoadingScreen from './LoadingScreen';
 
 interface RoomDetailsBoxProps {
     node: Node;
@@ -14,24 +11,20 @@ interface RoomDetailsBoxProps {
 }
 
 const RoomDetailsBox = ({ node, renderButtons }: RoomDetailsBoxProps) => {
-    const { data: buildings, isLoading: isLoadingBuildings }: UseQueryResult<BuildingsDict> = useBuildingsQuery();
-    const { data: floors, isLoading: isLoadingFloors }: UseQueryResult<FloorsDict> = useFloorsQuery();
+    const { buildings, floors } = useHomeStore();
 
-    if (isLoadingBuildings || isLoadingFloors)
-        return <LoadingScreen />;
-    else
-        return (
-            <View style={styles.roomDetailsBox}>
-                <Text style={styles.roomName}>
-                    {node.name}
-                </Text>
-                <Text style={styles.roomFloor}>
-                    {buildings![floors![node.floorId].buildingId].name} {floors![node.floorId].name ? `- ${convertFloorIdToFloorName(floors![node.floorId].name)}` : ""}
-                </Text>
+    return (
+        <View style={styles.roomDetailsBox}>
+            <Text style={styles.roomName}>
+                {node.name}
+            </Text>
+            <Text style={styles.roomFloor}>
+                {buildings![floors![node.floorId].buildingId].name} {floors![node.floorId].name ? `- ${convertFloorIdToFloorName(floors![node.floorId].name)}` : ""}
+            </Text>
 
-                {renderButtons()}
-            </View>
-        );
+            {renderButtons()}
+        </View>
+    );
 }
 
 export default RoomDetailsBox;

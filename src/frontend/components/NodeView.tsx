@@ -1,15 +1,14 @@
 import React, { useState } from "react";
 import FastImage from "react-native-fast-image";
 import { LayoutChangeEvent, Text, View, ViewStyle } from "react-native";
-import { UseQueryResult } from "@tanstack/react-query";
 
 import { LOGIC_MAP_TILE_WIDTH, LOGIC_MAP_TILE_HEIGHT, RENDER_MAP_TILE_HEIGHT, RENDER_MAP_TILE_WIDTH } from "./MapTilesBackground";
 
-import Node from "../../backend/schema/Node";
+import Node from "../../backend/schema/node";
+import useHomeStore from "../hooks/store/useHomeStore";
 
-import { getMapTileStartCoordinates, getNodeImageByConnectorId } from "../utils";
-import { FloorsDict, TagsDict, useFloorsQuery, useTagsQuery } from "../utils/reactQueryFactory";
-import LoadingScreen from "./LoadingScreen";
+import { getNodeImageByConnectorId } from "../utils";
+import { getMapTileStartCoordinates } from "../utils/mapTiles_utils";
 
 interface NodeViewProps {
     currentFloorId: string
@@ -17,22 +16,18 @@ interface NodeViewProps {
 }
 
 interface NodeRenderSize {
-    [nodeId: number]: {
+    [nodeId: string]: {
         width: number
         height: number
     }
 }
 
 const NodeView = ({ currentFloorId, node }: NodeViewProps) => {
-    const { data: floors, isLoading: isLoadingFloors }: UseQueryResult<FloorsDict> = useFloorsQuery()
-    const { data: tags, isLoading: isLoadingTags }: UseQueryResult<TagsDict> = useTagsQuery()
+    const { floors, tags } = useHomeStore();
     const [nodeRenderSizes, setNodeRenderSizes] = useState<NodeRenderSize>({})
 
     if (!node.centerCoordinates)
         return null;
-
-    if (isLoadingFloors || isLoadingTags)
-        return <LoadingScreen />;
 
     // floors and tags are guaranteed to be loaded at this point
     const { tileStartX, tileStartY } = getMapTileStartCoordinates(floors![currentFloorId])
