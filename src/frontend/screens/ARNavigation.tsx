@@ -1,6 +1,6 @@
 import React, { RefObject, useRef, useState, useEffect } from "react";
 import UnityView from '@azesmway/react-native-unity';
-import { NativeSyntheticEvent, View } from "react-native";
+import { NativeSyntheticEvent, View, StyleSheet } from "react-native";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -79,12 +79,6 @@ const ARNavigationScreen = ({ route, navigation }) => {
         };
     });
 
-    useEffect(() => {
-        setTimeout(() => {
-            setIsLoading(false)
-        }, 1000)
-    }, [])
-
     const handleUnityMessage = (result: NativeSyntheticEvent<Readonly<{ message: string; }>>) => {
         let message = result.nativeEvent.message;
         console.log("Unity message: ", message)
@@ -92,28 +86,43 @@ const ARNavigationScreen = ({ route, navigation }) => {
         if (message in Message) {
             switch (message) {
                 case Message.START:
+                    setIsLoading(false)
                     setUnityStarted(true);
                     break;
                 case Message.EXIT:
-                    navigation.goBack();
+                    navigation.reset({
+                        index: 0,
+                        routes: [{ name: 'Home' }],
+                    })
                     break;
             }
         }
     };
 
-    if (isLoading)
-        return <LoadingScreen />;
-
     return (
+        // <LoadingScreen />
         <GestureHandlerRootView style={{ flex: 1 }}>
             <Unity
                 unityRef={unityRef}
                 toNode={toNode}
                 focusedUnityView={focusedUnityView}
-                unityStarted={unityStarted} onUnityMessage={handleUnityMessage}
+                unityStarted={unityStarted}
+                onUnityMessage={handleUnityMessage}
             />
+            {isLoading && (
+                <View style={styles.loadingOverlay}>
+                    <LoadingScreen />
+                </View>
+            )}
         </GestureHandlerRootView>
-    );
+    )
 }
 
 export default ARNavigationScreen;
+
+const styles = StyleSheet.create({
+    loadingOverlay: {
+        ...StyleSheet.absoluteFillObject,
+        zIndex: 1,
+    }
+});
