@@ -29,6 +29,9 @@ const Navigator = () => {
                 return;
             }
 
+            const startTime = Date.now();
+            console.debug('Downloading map data...');
+
             const buildings: BuildingsDict = await getBuildingsDict();
             const floors: FloorsDict = await getFloorsDict();
             const tags: TagsDict = await getTagsDict();
@@ -42,6 +45,9 @@ const Navigator = () => {
             storage.set(StorageKeys.MAPTILES_BY_FLOOR, JSON.stringify(mapTilesByFloor));
             storage.set(StorageKeys.META_VERSION, metaVersion);
             Alert.alert('Downloaded map data', 'The HKUST Map data has been downloaded successfully.');
+
+            const endTime = Date.now();
+            console.debug('Downloaded map data', `Time elapsed: ${(endTime - startTime) / 1000} seconds`);
         }
 
         if (startDownload) {
