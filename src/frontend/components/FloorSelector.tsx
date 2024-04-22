@@ -1,134 +1,126 @@
 import React, { useEffect, useState, useRef, memo } from 'react'
 import { StyleSheet, ScrollView, TouchableOpacity, View, Text } from 'react-native';
 
+import LoadingScreen from './LoadingScreen';
 import useHomeStore from '../hooks/store/useHomeStore';
+import { BuildingsDict, FloorsDict } from 'frontend/utils/storage_utils';
 
 interface FloorSelectorProps {
+    currentFloorId: string;
     handleSelectorChangeFloor: (id: string) => void;
 }
 
-type FloorsButtonsDict = { [buildingId: string]: string[] }
+type ButtonsDict = { [buildingId: string]: string[] }
 
-const FloorSelector = ({ handleSelectorChangeFloor }: FloorSelectorProps) => {
+const FloorSelector = ({ currentFloorId, handleSelectorChangeFloor }: FloorSelectorProps) => {
     const { buildings, floors } = useHomeStore();
+    const floorScrollViewRef = useRef<ScrollView>(null);
 
-    const [floorButtonDict, setFloorButtonDict] = useState<FloorsButtonsDict>({});
-    const [buildingList, setBuildingList] = useState<string[]>([]);
-    const [buildingButtons, setBuildingButtons] = useState<string[]>([]);
-    const [selectFloorIndex, setSelectFloorIndex] = useState(6);
-    const [selectBuildingIndex, setSelectBuildingIndex] = useState(0);
-
-    const scrollViewRef = useRef<ScrollView>(null);
+    const [buttons, setButtons] = useState<ButtonsDict | undefined>(undefined);
 
     useEffect(() => {
-        if (floors === undefined)
-            return;
+        if (buildings && floors) {
+            const tempButtons: { [buildingId: string]: string[] } = {};
 
-        const tempFloorButtonList: FloorsButtonsDict = {};
-        const tempBuildingList: string[] = [];
+            Object.keys(floors).forEach(floorId => {
+                const buildingId = floors[floorId].buildingId;
 
-        Object.keys(floors).forEach(floorId => {
-            if (tempFloorButtonList[floors[floorId].buildingId] === undefined)
-                tempFloorButtonList[floors[floorId].buildingId] = [];
+                if (tempButtons[buildingId] === undefined)
+                    tempButtons[buildingId] = [];
 
-            tempFloorButtonList[floors[floorId].buildingId].push(floorId);
-        });
+                tempButtons[buildingId].push(floorId);
+            });
 
-        Object.keys(tempFloorButtonList).forEach(building => {
-            tempFloorButtonList[building].sort((a, b) => {
-                if (floors[a].rank > floors[b].rank) return 1;
-                else return -1;
-            })
+            setButtons(tempButtons);
+        }
 
-            tempBuildingList.push(building);
-        });
+    }, [buildings, floors])
 
-        buildingList.sort();
-        setFloorButtonDict(tempFloorButtonList);
-        setBuildingList(tempBuildingList);
-
-    }, [floors])
-
-    useEffect(() => {
-        if (buildings === undefined)
-            return;
-
-        setBuildingButtons(buildingList.map(building => buildings[building].name));
-    }, [buildings, buildingList])
-
-    const changeFloor = (floorIndex: number) => {
-        if (Object.keys(floorButtonDict).length === 0)
-            return;
-        if (buildingList.length === 0)
-            return;
-
-        handleSelectorChangeFloor(floorButtonDict[buildingList[selectBuildingIndex]][floorIndex])
-        setSelectFloorIndex(floorIndex)
+    const handleFloorButtonsChanged = (floors: FloorsDict) => {
+        if (floors[currentFloorId].buildingId === 'academicBuilding') {
+            floorScrollViewRef.current?.scrollTo({ x: 230, y: 0, animated: true });
+        }
+        else {
+            floorScrollViewRef.current?.scrollTo({ x: 0, y: 0, animated: true });
+        }
     }
 
-    const changeBuilding = (buildingIndex: number) => {
-        setSelectBuildingIndex(buildingIndex);
-        changeFloor(buildingIndex === 0 ? 6 : 0);
-
-        scrollOffset();
-    }
-
-    const scrollOffset = () => {
-        if (selectBuildingIndex === 0)
-            scrollViewRef.current?.scrollTo({ x: 230, y: 0, animated: true });
+    const handleSelectBuilding = (buttons: ButtonsDict, buildingId: string) => {
+        if (buildingId === 'academicBuilding')
+            handleSelectorChangeFloor(buttons[buildingId][6]);
         else
-            scrollViewRef.current?.scrollTo({ x: 0, y: 0, animated: true });
+            handleSelectorChangeFloor(buttons[buildingId][0]);
     }
 
-    return (
-        <View style={{ marginBottom: 20 }}>
-            <View style={styles.buttonGroupContainer}>
-                <ScrollView
-                    horizontal={true}
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.contentContainer}
-                >
-                    {buildingButtons.map((buttonLabel, buildingIndex) => (
-                        <TouchableOpacity
-                            key={buildingIndex}
-                            style={[
-                                styles.button,
-                                buildingIndex === selectBuildingIndex ? styles.activeButton : styles.inactiveButton,
-                            ]}
-                            onPress={() => changeBuilding(buildingIndex)}
-                        >
-                            <Text style={styles.buttonText}>{buttonLabel}</Text>
-                        </TouchableOpacity>
-                    ))}
+    const handleSelectFloor = (floorId: string) => {
+        handleSelectorChangeFloor(floorId);
+    }
 
-                </ScrollView>
-            </View>
+    const renderBuildingButtons = (floors: FloorsDict, buildings: BuildingsDict, buttons: ButtonsDict) => {
+        const buildingButtons = Object.keys(buttons).sort();
+
+        return (
             <View style={styles.buttonGroupContainer}>
                 <ScrollView
                     horizontal={true}
                     showsHorizontalScrollIndicator={false}
                     contentContainerStyle={styles.contentContainer}
-                    ref={scrollViewRef}
-                    onContentSizeChange={() => {
-                        scrollOffset();
-                    }}
                 >
-                    {floorButtonDict[buildingList[selectBuildingIndex]] && floorButtonDict[buildingList[selectBuildingIndex]].map((buttonLabel, floorIndex) => (
-                        <TouchableOpacity
-                            key={floorIndex}
-                            style={[
-                                styles.button,
-                                floorIndex === selectFloorIndex ? styles.activeButton : styles.inactiveButton,
-                            ]}
-                            onPress={() => changeFloor(floorIndex)}
-                        >
-                            <Text style={styles.buttonText}>{buttonLabel}</Text>
-                        </TouchableOpacity>
-                    ))}
+                    {
+                        buildingButtons.map((buildingId, buildingIndex) => (
+                            <TouchableOpacity
+                                key={buildingIndex}
+                                style={[styles.button, buildingId === floors[currentFloorId].buildingId ? styles.activeButton : styles.inactiveButton]}
+                                onPress={() => handleSelectBuilding(buttons, buildingId)}
+                            >
+                                <Text style={styles.buttonText}>{buildings[buildingId].name}</Text>
+                            </TouchableOpacity>
+                        ))
+                    }
                 </ScrollView>
             </View>
-        </View>
-    );
+        )
+    };
+
+    const renderFloorButtons = (floors: FloorsDict, buttons: ButtonsDict, buildingId: string) => {
+        const floorButtons = buttons[buildingId].sort((a, b) => floors[a].rank > floors[b].rank ? 1 : -1);
+
+        return (
+            <View style={styles.buttonGroupContainer}>
+                <ScrollView
+                    ref={floorScrollViewRef}
+                    horizontal={true}
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.contentContainer}
+                    onContentSizeChange={() => handleFloorButtonsChanged(floors)}
+                >
+                    {
+                        floorButtons.map((floorId, floorIndex) => {
+                            return (
+                                <TouchableOpacity
+                                    key={floorIndex}
+                                    style={[styles.button, floorId === currentFloorId ? styles.activeButton : styles.inactiveButton]}
+                                    onPress={() => handleSelectFloor(floorId)}
+                                >
+                                    <Text style={styles.buttonText}>{floors[floorId].name ? floors[floorId].name : floorId}</Text>
+                                </TouchableOpacity>
+                            )
+                        })
+                    }
+                </ScrollView>
+            </View>
+        )
+    }
+
+    if (!floors || !buildings || !buttons)
+        return <LoadingScreen />
+    else
+        return (
+            <View style={{ marginBottom: 20 }}>
+                {renderBuildingButtons(floors, buildings, buttons)}
+                {renderFloorButtons(floors, buttons, floors[currentFloorId].buildingId)}
+            </View>
+        );
 }
 
 export default memo(FloorSelector);

@@ -241,7 +241,7 @@ const HomeScreen = ({ navigation }) => {
                 {
                     (!path && (navigationType || !toNode)) &&
                     <View style={styles.floorSelector}>
-                        <FloorSelector handleSelectorChangeFloor={handleSelectorChangeFloor} />
+                        <FloorSelector currentFloorId={currentFloorId} handleSelectorChangeFloor={handleSelectorChangeFloor} />
                     </View>
                 }
 
