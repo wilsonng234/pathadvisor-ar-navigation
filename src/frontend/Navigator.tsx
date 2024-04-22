@@ -12,7 +12,7 @@ import ARNavigationScreen from './screens/ARNavigation';
 import useGetMetaVersion from './hooks/api/useGetMetaVersion';
 import {
     storage, StorageKeys,
-    downloadBuildings, downloadFloors, downloadNodesByFloor, downloadTags, downloadMapTilesByFloor,
+    getBuildingsDict, getFloorsDict, getNodesByFloorDict, getTagsDict, getMapTilesByFloorDict,
     BuildingsDict, FloorsDict, TagsDict, NodeByFloorDict, MapTilesByFloorDict
 } from './utils/storage_utils';
 
@@ -29,14 +29,19 @@ const Navigator = () => {
                 return;
             }
 
-            const buildings: BuildingsDict = await downloadBuildings();
-            const floors: FloorsDict = await downloadFloors();
-            const tags: TagsDict = await downloadTags();
-            const nodesByFloor: NodeByFloorDict = await downloadNodesByFloor(floors);
-            const mapTilesByFloor: MapTilesByFloorDict = await downloadMapTilesByFloor(floors);
+            const buildings: BuildingsDict = await getBuildingsDict();
+            const floors: FloorsDict = await getFloorsDict();
+            const tags: TagsDict = await getTagsDict();
+            const nodesByFloor: NodeByFloorDict = await getNodesByFloorDict(floors);
+            const mapTilesByFloor: MapTilesByFloorDict = await getMapTilesByFloorDict(floors);
 
+            storage.set(StorageKeys.BUILDINGS, JSON.stringify(buildings));
+            storage.set(StorageKeys.FLOORS, JSON.stringify(floors));
+            storage.set(StorageKeys.TAGS, JSON.stringify(tags));
+            storage.set(StorageKeys.NODES_BY_FLOOR, JSON.stringify(nodesByFloor));
+            storage.set(StorageKeys.MAPTILES_BY_FLOOR, JSON.stringify(mapTilesByFloor));
             storage.set(StorageKeys.META_VERSION, metaVersion);
-            console.log('Downloaded map data');
+            Alert.alert('Downloaded map data', 'The HKUST Map data has been downloaded successfully.');
         }
 
         if (startDownload) {

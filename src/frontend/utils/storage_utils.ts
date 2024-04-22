@@ -35,7 +35,7 @@ export interface MapTileBlock {
     zoomLevel: number;
 }
 
-export const downloadBuildings = async () => {
+export const getBuildingsDict = async () => {
     const res = await api.getAllBuildings();
     const buildings: BuildingsDict = res.data.reduce(
         (prev: BuildingsDict, cur: Building) => {
@@ -43,24 +43,21 @@ export const downloadBuildings = async () => {
         }, {}
     );
 
-    storage.set(StorageKeys.BUILDINGS, JSON.stringify(buildings));
     return buildings;
 }
 
-export const downloadFloors = async () => {
+export const getFloorsDict = async () => {
     const res = await api.getAllFloors();
-
     const floors: FloorsDict = res.data.reduce(
         (prev: FloorsDict, cur: Floor) => {
             return { ...prev, [cur._id]: cur };
         }, {}
     );
 
-    storage.set(StorageKeys.FLOORS, JSON.stringify(floors));
     return floors;
 }
 
-export const downloadTags = async () => {
+export const getTagsDict = async () => {
     const res = await api.getAllTags();
     const tags = res.data.reduce(
         (prev: TagsDict, cur: Tag) => {
@@ -68,11 +65,10 @@ export const downloadTags = async () => {
         }, {}
     );
 
-    storage.set(StorageKeys.TAGS, JSON.stringify(tags));
     return tags;
 }
 
-export const downloadNodesByFloor = async (floors: FloorsDict) => {
+export const getNodesByFloorDict = async (floors: FloorsDict) => {
     const nodesByFloor: NodeByFloorDict = {};
 
     for (const floorId in floors) {
@@ -85,11 +81,10 @@ export const downloadNodesByFloor = async (floors: FloorsDict) => {
         nodesByFloor[floorId] = res.data;
     }
 
-    storage.set(StorageKeys.NODES_BY_FLOOR, JSON.stringify(nodesByFloor));
     return nodesByFloor;
 }
 
-export const downloadMapTilesByFloor = async (floors: FloorsDict) => {
+export const getMapTilesByFloorDict = async (floors: FloorsDict) => {
     const mapTilesByFloor: MapTilesByFloorDict = {};
 
     const getFloorMapTiles = async (mapTileBlocks: MapTileBlock[][], floorId: string) => {
@@ -129,6 +124,5 @@ export const downloadMapTilesByFloor = async (floors: FloorsDict) => {
         mapTilesByFloor[floorId] = await getFloorMapTiles(mapTileBlocks, floorId);
     }
 
-    storage.set(StorageKeys.MAPTILES_BY_FLOOR, JSON.stringify(mapTilesByFloor));
     return mapTilesByFloor;
 }
