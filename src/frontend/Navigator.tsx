@@ -48,6 +48,8 @@ const Navigator = () => {
 
             const endTime = Date.now();
             console.debug('Downloaded map data', `Time elapsed: ${(endTime - startTime) / 1000} seconds`);
+
+            setStartDownload(false);
         }
 
         if (startDownload) {
@@ -104,29 +106,17 @@ const Navigator = () => {
                         headerTitle: 'HKUST PathAdvisor',
                         headerTitleAlign: 'center',
                         headerRight: () => {
-                            if (!isLoadingMetaVerison && (storage.getString(StorageKeys.META_VERSION) === undefined || storage.getString(StorageKeys.META_VERSION) !== metaVersion))
-                                return (
-                                    <TouchableOpacity onPress={downloadMapTileAlert}>
-                                        <MaterialIcons
-                                            name="update"
-                                            style={{ marginRight: 10 }}
-                                            size={25}
-                                            color={'black'}
-                                        />
-                                    </TouchableOpacity>
-                                )
-                            else {
-                                return (
-                                    <TouchableOpacity onPress={downloadMapTileAlert}>
-                                        <MaterialIcons
-                                            name="check"
-                                            style={{ marginRight: 10 }}
-                                            size={25}
-                                            color={'black'}
-                                        />
-                                    </TouchableOpacity>
-                                )
-                            }
+                            return (
+                                <TouchableOpacity onPress={downloadMapTileAlert}>
+                                    <MaterialIcons
+                                        name={!isLoadingMetaVerison && (storage.getString(StorageKeys.META_VERSION) === undefined || storage.getString(StorageKeys.META_VERSION) !== metaVersion) ?
+                                            "update" : "check"}
+                                        style={{ marginRight: 10 }}
+                                        size={25}
+                                        color={'black'}
+                                    />
+                                </TouchableOpacity>
+                            )
                         },
                     }}
                 />
