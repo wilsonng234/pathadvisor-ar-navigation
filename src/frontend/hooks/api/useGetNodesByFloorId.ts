@@ -1,10 +1,10 @@
+import { useEffect, useState } from "react";
 import { DefaultError, useQuery } from "@tanstack/react-query";
 
 import * as api from "../../../backend/api";
 import Node from "../../../backend/schema/node";
-import { getMapTileStartCoordinates, getMapTilesSize } from "../../utils";
+import { getMapTileStartCoordinates, getMapTilesSize } from "../../utils/mapTiles_utils";
 import { FloorsDict, StorageKeys, storage } from "../../utils/storage_utils";
-import { useEffect, useState } from "react";
 
 const useGetNodesByFloorId = (floors: FloorsDict | undefined, floorId: string) => {
     const [downloaded, setDownloaded] = useState<boolean>(false);

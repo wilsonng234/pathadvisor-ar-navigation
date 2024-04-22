@@ -1,10 +1,9 @@
+import { useEffect, useState } from "react";
 import { DefaultError, useQuery } from "@tanstack/react-query";
 
 import * as api from "../../../backend/api";
 import Floor from "backend/schema/floor";
 import { FloorsDict, StorageKeys, storage } from "../../utils/storage_utils"
-import { useEffect, useState } from "react";
-
 
 const useGetFloors = (): { data: FloorsDict | undefined, isLoading: boolean } => {
     const [downloaded, setDownloaded] = useState<boolean>(false);

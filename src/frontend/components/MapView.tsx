@@ -1,20 +1,18 @@
 import React, { useCallback } from "react"
+import MapTilesBackground, { LOGIC_MAP_TILE_WIDTH, LOGIC_MAP_TILE_HEIGHT, RENDER_MAP_TILE_WIDTH, RENDER_MAP_TILE_HEIGHT } from "./MapTilesBackground";
 import FastImage from "react-native-fast-image";
 import { StyleSheet, View } from "react-native"
 import { Polyline, Svg } from "react-native-svg";
 
-import MapTilesBackground, { LOGIC_MAP_TILE_WIDTH, LOGIC_MAP_TILE_HEIGHT, RENDER_MAP_TILE_WIDTH, RENDER_MAP_TILE_HEIGHT } from "./MapTilesBackground";
 import ZoomableView, { ZoomableViewRef } from "./ZoomableView";
 import NodeView from "./NodeView";
-
 import LoadingScreen from "./LoadingScreen";
 import Node from "../../backend/schema/node"
 import PathNode from "../../backend/schema/pathNode";
 import useHomeStore from "../hooks/store/useHomeStore";
 import useGetNodesByFloorId from "../hooks/api/useGetNodesByFloorId";
-
 import { Path } from "../screens/Home";
-import { getMapTileStartCoordinates, getMapTilesNumber, getMapTilesSize } from "../utils";
+import { getMapTileStartCoordinates, getMapTilesNumber, getMapTilesSize } from "../utils/mapTiles_utils";
 
 interface MapViewProps {
     currentFloorId: string;

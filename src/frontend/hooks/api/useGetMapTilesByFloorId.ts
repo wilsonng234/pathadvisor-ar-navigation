@@ -1,5 +1,5 @@
-import { StorageKeys, storage } from "../../utils/storage_utils";
 import { useEffect, useState } from "react";
+import { StorageKeys, storage } from "../../utils/storage_utils";
 
 const useGetMapTilesByFloorId = (floorId: string) => {
     const [downloaded, setDownloaded] = useState<boolean>(false);

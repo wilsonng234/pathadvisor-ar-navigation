@@ -1,9 +1,9 @@
 import React, { RefObject, useRef, useState, useEffect } from "react";
 import UnityView from '@azesmway/react-native-unity';
-
-import { Button, NativeSyntheticEvent, Text, View } from "react-native";
+import { NativeSyntheticEvent, View } from "react-native";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useFocusEffect } from '@react-navigation/native';
+
 import LoadingScreen from "../components/LoadingScreen";
 
 interface UnityMessage {

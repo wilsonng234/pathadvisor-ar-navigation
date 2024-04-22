@@ -7,7 +7,8 @@ import { LOGIC_MAP_TILE_WIDTH, LOGIC_MAP_TILE_HEIGHT, RENDER_MAP_TILE_HEIGHT, RE
 import Node from "../../backend/schema/node";
 import useHomeStore from "../hooks/store/useHomeStore";
 
-import { getMapTileStartCoordinates, getNodeImageByConnectorId } from "../utils";
+import { getNodeImageByConnectorId } from "../utils";
+import { getMapTileStartCoordinates } from "../utils/mapTiles_utils";
 
 interface NodeViewProps {
     currentFloorId: string
@@ -15,7 +16,7 @@ interface NodeViewProps {
 }
 
 interface NodeRenderSize {
-    [nodeId: number]: {
+    [nodeId: string]: {
         width: number
         height: number
     }

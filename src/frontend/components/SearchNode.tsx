@@ -3,7 +3,6 @@ import { StyleSheet, Text } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import Node from '../../backend/schema/node';
-
 import useHomeStore from '../hooks/store/useHomeStore';
 
 interface SearchNodeProps {

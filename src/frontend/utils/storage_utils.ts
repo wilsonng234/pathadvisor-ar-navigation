@@ -6,8 +6,7 @@ import Building from '../../backend/schema/building';
 import Floor from '../../backend/schema/floor';
 import Tag from '../../backend/schema/tag';
 import Node from '../../backend/schema/node';
-import { getMapTileStartCoordinates, getMapTilesNumber, getMapTilesSize } from '.';
-import { LOGIC_MAP_TILE_HEIGHT, LOGIC_MAP_TILE_WIDTH } from '../components/MapTilesBackground';
+import { getFloorMapTileBlocks, getMapTileStartCoordinates, getMapTilesSize } from './mapTiles_utils';
 
 export const storage = new MMKV()
 
@@ -104,23 +103,7 @@ export const getMapTilesByFloorDict = async (floors: FloorsDict) => {
     }
 
     for (const floorId in floors) {
-        const { tileStartX, tileStartY } = getMapTileStartCoordinates(floors[floorId]);
-        const { numRow, numCol } = getMapTilesNumber(floors[floorId]);
-        const mapTileBlocks: MapTileBlock[][] = new Array<Array<MapTileBlock>>(numRow);
-
-        for (let i = 0; i < numRow; i++) {
-            mapTileBlocks[i] = new Array<MapTileBlock>(numCol);
-
-            for (let j = 0; j < numCol; j++) {
-                mapTileBlocks[i][j] = {
-                    floorId: floorId,
-                    x: j * LOGIC_MAP_TILE_WIDTH + tileStartX,
-                    y: i * LOGIC_MAP_TILE_HEIGHT + tileStartY,
-                    zoomLevel: 0
-                };
-            }
-        }
-
+        const mapTileBlocks: MapTileBlock[][] = getFloorMapTileBlocks(floors, floorId);
         mapTilesByFloor[floorId] = await getFloorMapTiles(mapTileBlocks, floorId);
     }
 

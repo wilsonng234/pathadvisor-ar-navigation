@@ -5,7 +5,7 @@ import { StyleSheet, View } from 'react-native';
 import LoadingScreen from './LoadingScreen';
 import useGetMapTilesByFloorId from '../hooks/api/useGetMapTilesByFloorId';
 import useHomeStore from '../hooks/store/useHomeStore';
-import { getMapTileStartCoordinates, getMapTilesNumber } from '../utils';
+import { getFloorMapTileBlocks } from '../utils/mapTiles_utils';
 import { MapTileBlock } from '../utils/storage_utils';
 
 export const LOGIC_MAP_TILE_WIDTH = 200;
@@ -25,24 +25,7 @@ const MapTilesBackground = ({ floorId, children }: MapTilesBackgroundProps) => {
 
     useEffect(() => {
         if (floors) {
-            const { tileStartX, tileStartY } = getMapTileStartCoordinates(floors[floorId]);
-            const { numRow, numCol } = getMapTilesNumber(floors[floorId]);
-
-            const mapTileBlocks = new Array<Array<MapTileBlock>>(numRow);
-            for (let i = 0; i < numRow; i++) {
-                mapTileBlocks[i] = new Array<MapTileBlock>(numCol);
-
-                for (let j = 0; j < numCol; j++) {
-                    mapTileBlocks[i][j] = {
-                        floorId: floorId,
-                        x: j * LOGIC_MAP_TILE_WIDTH + tileStartX,
-                        y: i * LOGIC_MAP_TILE_HEIGHT + tileStartY,
-                        zoomLevel: 0
-                    }
-                }
-            }
-
-            setMapTileBlocks(mapTileBlocks);
+            setMapTileBlocks(getFloorMapTileBlocks(floors, floorId));
         }
     }, [floors, floorId])
 

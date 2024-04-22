@@ -1,9 +1,9 @@
+import { useEffect, useState } from "react";
 import { DefaultError, useQuery } from "@tanstack/react-query";
 
 import * as api from "../../../backend/api";
 import Tag from "backend/schema/tag";
 import { StorageKeys, TagsDict, storage } from "../../utils/storage_utils"
-import { useEffect, useState } from "react";
 
 const useGetTags = (): { data: TagsDict | undefined, isLoading: boolean } => {
     const [downloaded, setDownloaded] = useState<boolean>(false);
