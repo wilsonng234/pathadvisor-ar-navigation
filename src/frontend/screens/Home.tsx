@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { View, StyleSheet, Text, Pressable, Keyboard } from "react-native";
 import { TouchableHighlight, TouchableOpacity } from "react-native-gesture-handler";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-import SearchLocationBar from "../components/SearchLocationBar";
+import SearchLocationBar, { SearchLocationBarRef } from "../components/SearchLocationBar";
 import MapView from "../components/MapView";
 import RoomDetailsBox from "../components/RoomDetailsBox";
 import LoadingScreen from "../components/LoadingScreen";
@@ -40,6 +40,9 @@ const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParamList, '
     const [pointerEvents, setPointerEvents] = useState<"auto" | "none">("auto");
     const { setBuildings, setFloors, setTags, setMapTiles } = useHomeStore();
 
+    const fromSearchLocationBarRef = useRef<SearchLocationBarRef>(null);
+    const toSearchLocationBarRef = useRef<SearchLocationBarRef>(null);
+
     const [enableFromSearchBar, setEnableFromSearchBar] = useState<boolean>(false);
     const [fromNode, setFromNode] = useState<Node | null>(null);
     const [toNode, setToNode] = useState<Node | null>(null);
@@ -47,6 +50,7 @@ const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParamList, '
     const [currentFloorId, setCurrentFloorId] = useState<string>("1");  // default floor is 1
     const [navigationType, setNavigationType] = useState<NavigationType | null>(null);
     const [focusNode, setFocusNode] = useState<Node | null>(null);
+    const [showRoomDetailsBox, setShowRoomDetailsBox] = useState<boolean>(false);
 
     useEffect(() => {
         if (floors && buildings && tags) {
@@ -72,6 +76,10 @@ const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParamList, '
         if (fromNode)
             setCurrentFloorId(fromNode.floorId);
     }, [fromNode])
+
+    useEffect(() => {
+        setShowRoomDetailsBox(!navigationType && !!toNode);
+    }, [navigationType, toNode])
 
     // update path when fromNode or toNode changes
     useEffect(() => {
@@ -137,13 +145,13 @@ const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParamList, '
     }, [])
 
     const handleCancelFromNode = useCallback(() => {
-        setFromNode(null);
+        // setFromNode(null);
     }, [])
 
     const handleCancelToNode = useCallback(() => {
+        // setFromNode(null);
         setToNode(null);
         setNavigationType(null);
-        setFromNode(null);
         setEnableFromSearchBar(false);
     }, [])
 
@@ -173,6 +181,12 @@ const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParamList, '
             setPointerEvents("auto");
         }, 500)
     }, []);
+
+    const handlePressNonSearchBar = () => {
+        fromSearchLocationBarRef.current?.setDisplayResults(false);
+        toSearchLocationBarRef.current?.setDisplayResults(false);
+        Keyboard.dismiss();
+    }
 
     const renderRoomDetailsBoxButtons = () => {
         if (!floors || !toNode)
@@ -218,16 +232,28 @@ const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParamList, '
                     <View style={{ zIndex: 3 }}>
                         {
                             enableFromSearchBar &&
-                            <SearchLocationBar selectNode={handleSelectFromNode} placeholder="FROM" onClickCancel={handleCancelFromNode} cacheKey={StorageKeys.FROM_SUGGESTIONS} />
+                            <SearchLocationBar
+                                ref={fromSearchLocationBarRef}
+                                selectNode={handleSelectFromNode}
+                                placeholder="FROM"
+                                onClickCancel={handleCancelFromNode}
+                                cacheKey={StorageKeys.FROM_SUGGESTIONS}
+                            />
                         }
                     </View>
-                    <SearchLocationBar selectNode={handleSelectToNode} placeholder="Where are you going?" onClickCancel={handleCancelToNode} cacheKey={StorageKeys.TO_SUGGESTIONS} />
+                    <SearchLocationBar
+                        ref={toSearchLocationBarRef}
+                        selectNode={handleSelectToNode}
+                        placeholder="Where are you going?"
+                        onClickCancel={handleCancelToNode}
+                        cacheKey={StorageKeys.TO_SUGGESTIONS}
+                    />
                 </View>
                 {
                     !mapReady && <LoadingScreen />
                 }
                 {
-                    mapReady && <Pressable onPress={Keyboard.dismiss}>
+                    mapReady && <Pressable onPress={handlePressNonSearchBar}>
                         <MapView currentFloorId={currentFloorId} fromNode={fromNode} toNode={toNode} path={path} focusNode={focusNode} />
                     </Pressable>
                 }
@@ -258,19 +284,19 @@ const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParamList, '
                 }
 
                 {
-                    (!path && (navigationType || !toNode)) &&
-                    <View style={styles.floorSelector}>
+                    !path && !showRoomDetailsBox &&
+                    <Pressable style={styles.floorSelector} onPress={handlePressNonSearchBar}>
                         <FloorSelector currentFloorId={currentFloorId} handleSelectorChangeFloor={handleSelectorChangeFloor} />
-                    </View>
+                    </Pressable>
                 }
 
                 {
-                    !navigationType && toNode &&
-                    <View style={styles.roomDetailsBoxContainer}>
-                        <RoomDetailsBox node={toNode} renderButtons={renderRoomDetailsBoxButtons} />
-                    </View>
+                    toNode && showRoomDetailsBox &&
+                    <Pressable style={styles.roomDetailsBoxContainer} onPress={handlePressNonSearchBar}>
+                        <RoomDetailsBox node={toNode} renderButtons={renderRoomDetailsBoxButtons} onClose={() => { setShowRoomDetailsBox(false); }} />
+                    </Pressable>
                 }
-            </View>
+            </View >
         );
 }
 

@@ -1,23 +1,31 @@
 import React from 'react';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { StyleSheet, Text, View } from 'react-native';
 
 import Node from '../../backend/schema/node';
 import useHomeStore from '../hooks/store/useHomeStore';
 import { convertFloorIdToFloorName } from '../utils';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 interface RoomDetailsBoxProps {
     node: Node;
     renderButtons: () => JSX.Element;
+    onClose: () => void;
 }
 
-const RoomDetailsBox = ({ node, renderButtons }: RoomDetailsBoxProps) => {
+const RoomDetailsBox = ({ node, renderButtons, onClose }: RoomDetailsBoxProps) => {
     const { buildings, floors } = useHomeStore();
 
     return (
         <View style={styles.roomDetailsBox}>
-            <Text style={styles.roomName}>
-                {node.name}
-            </Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text style={styles.roomName}>
+                    {node.name}
+                </Text>
+                <TouchableOpacity onPress={onClose}>
+                    <Icon name="close" size={25} color="white" />
+                </TouchableOpacity>
+            </View>
             <Text style={styles.roomFloor}>
                 {buildings![floors![node.floorId].buildingId].name} {floors![node.floorId].name ? `- ${convertFloorIdToFloorName(floors![node.floorId].name)}` : ""}
             </Text>
