@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from 'react';
+import React, { Ref, forwardRef, memo, useEffect, useImperativeHandle, useState } from 'react';
 import { Keyboard, StyleSheet, View, TouchableWithoutFeedback, Pressable } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { SearchBar } from '@rneui/themed';
@@ -10,13 +10,6 @@ import useGetNodesByNodeIds from '../hooks/api/useGetNodesByNodeIds';
 
 import { StorageKeys, storage } from '../utils/storage_utils';
 
-interface SearchLocationBarProps {
-    placeholder: string;
-    selectNode: (node: Node) => void;
-    onClickCancel?: () => void;
-    cacheKey: StorageKeys;
-}
-
 /**
  * Component contains search bar and list of search results
  * @param {string} placeholder - placeholder for search bar
@@ -25,13 +18,25 @@ interface SearchLocationBarProps {
  * @param {string} cacheKey - cache key for search results
  * @returns 
  */
-const SearchLocationBar = ({ placeholder, selectNode, onClickCancel, cacheKey }: SearchLocationBarProps) => {
+interface SearchLocationBarProps {
+    placeholder: string;
+    selectNode: (node: Node) => void;
+    onClickCancel?: () => void;
+    cacheKey: StorageKeys;
+}
+
+export type SearchLocationBarRef = {
+    setDisplayResults: (displayResults: boolean) => void;
+}
+
+const SearchLocationBar = ({ placeholder, selectNode, onClickCancel, cacheKey }: SearchLocationBarProps, ref: Ref<SearchLocationBarRef>) => {
     const [searchText, setSearchText] = useState<string>('');
+    const [displayResults, setDisplayResults] = useState<boolean>(false);
     const [searchResults, setSearchResults] = useState<Node[]>([]);
     const [suggestionIds, setSuggestionIds] = useState<string[]>([]);
+    useImperativeHandle(ref, () => ({ setDisplayResults }))
 
     const suggestionQueries = useGetNodesByNodeIds(suggestionIds);
-
     useEffect(() => {
         if (searchText === '') {
             const allLoaded = suggestionQueries.every((query) => {
@@ -42,7 +47,7 @@ const SearchLocationBar = ({ placeholder, selectNode, onClickCancel, cacheKey }:
                 setSearchResults(suggestionQueries.map((query) => query.data!.data));
             }
         }
-    }, [JSON.stringify(suggestionQueries)])
+    }, [displayResults, JSON.stringify(suggestionQueries)])
 
     const handleSearchTextChange = (s: string) => {
         setSearchText(s);
@@ -58,20 +63,21 @@ const SearchLocationBar = ({ placeholder, selectNode, onClickCancel, cacheKey }:
 
     const handleSearchTextCancel = () => {
         setSearchText('');
-        setSearchResults([]);
+        setDisplayResults(false);
         Keyboard.dismiss();
         onClickCancel && onClickCancel();
     }
 
     const selectResult = (node: Node) => {
         selectNode(node);
-        setSearchResults([]);
+        setDisplayResults(false);
         setSearchText(node.name!);
-
         Keyboard.dismiss();
     }
 
     const handleFocusSearchBar = () => {
+        setDisplayResults(true);
+
         if (searchText === '') {
             const suggestions = storage.getString(cacheKey);
             const suggestionArray = suggestions ? JSON.parse(suggestions) : [];
@@ -81,7 +87,6 @@ const SearchLocationBar = ({ placeholder, selectNode, onClickCancel, cacheKey }:
     }
 
     return (
-
         <View style={{ position: "relative" }}>
             <SearchBar
                 platform="ios"
@@ -93,19 +98,21 @@ const SearchLocationBar = ({ placeholder, selectNode, onClickCancel, cacheKey }:
                 placeholder={placeholder}
                 value={searchText} onChange={(e) => handleSearchTextChange(e.nativeEvent.text)}
             />
-            <View style={styles.dropDownContainer}>
-                <FlatList
-                    data={searchResults}
-                    keyExtractor={item => item._id}
-                    renderItem={({ item }) => <SearchNode node={item} selectResult={selectResult} />}
-                />
-            </View>
-        </View>
 
+            {
+                displayResults && <View style={styles.dropDownContainer}>
+                    <FlatList
+                        data={searchResults}
+                        keyExtractor={item => item._id}
+                        renderItem={({ item }) => <SearchNode node={item} selectResult={selectResult} />}
+                    />
+                </View>
+            }
+        </View>
     );
 }
 
-export default memo(SearchLocationBar);
+export default memo(forwardRef<SearchLocationBarRef, SearchLocationBarProps>(SearchLocationBar));
 
 const styles = StyleSheet.create({
     searchResult: {
