@@ -3,8 +3,11 @@ import UnityView from '@azesmway/react-native-unity';
 import { NativeSyntheticEvent, View, StyleSheet } from "react-native";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useFocusEffect } from '@react-navigation/native';
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 import LoadingScreen from "../components/LoadingScreen";
+import Node from "../../backend/schema/node";
+import { RootStackParamList } from "../Navigator";
 
 interface UnityMessage {
     gameObject: string;
@@ -14,7 +17,7 @@ interface UnityMessage {
 
 interface UnityProps {
     unityRef: RefObject<UnityView>;
-    toNode: any;
+    toNode: Node;
     focusedUnityView: boolean;
     unityStarted: boolean;
     onUnityMessage: (result: NativeSyntheticEvent<Readonly<{ message: string; }>>) => void;
@@ -62,7 +65,7 @@ const Unity = ({ unityRef, toNode, focusedUnityView, unityStarted, onUnityMessag
     );
 };
 
-const ARNavigationScreen = ({ route, navigation }) => {
+const ARNavigationScreen = ({ route, navigation }: NativeStackScreenProps<RootStackParamList, 'AR Navigation'>) => {
     const unityRef = useRef<UnityView>(null);
     const [focusedUnityView, setfocusedUnityView] = useState<boolean>(true);
     const [isLoading, setIsLoading] = useState<boolean>(true)

@@ -10,11 +10,19 @@ import BusQueueStatisticsScreen from './screens/BusQueueStatistics';
 import EventScreen from './screens/Event';
 import ARNavigationScreen from './screens/ARNavigation';
 import useGetMetaVersion from './hooks/api/useGetMetaVersion';
+import Node from '../backend/schema/node';
 import {
     storage, StorageKeys,
     getBuildingsDict, getFloorsDict, getNodesByFloorDict, getTagsDict, getMapTilesByFloorDict,
     BuildingsDict, FloorsDict, TagsDict, NodeByFloorDict, MapTilesByFloorDict
 } from './utils/storage_utils';
+
+export type RootStackParamList = {
+    Home: undefined;
+    Event: undefined;
+    'Bus Queue Statistics': undefined;
+    'AR Navigation': { toNode: Node };
+};
 
 const Drawer = createDrawerNavigator();
 
@@ -120,7 +128,7 @@ const Navigator = () => {
                         },
                     }}
                 />
-                <Drawer.Screen name="Events"
+                <Drawer.Screen name="Event"
                     component={EventScreen}
                     options={{ headerTitleAlign: 'center', }}
                 />

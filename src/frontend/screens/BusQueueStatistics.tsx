@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import axios from "axios";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { Text, View } from "react-native";
-import { Dimensions, ScrollView, StyleSheet } from "react-native";
+import { Text, View, Dimensions, ScrollView, StyleSheet } from "react-native";
 import { WebView } from 'react-native-webview';
 import { useFocusEffect } from "@react-navigation/native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-const BusQueueStatisticsScreen = () => {
+import { RootStackParamList } from "../Navigator";
+
+const BusQueueStatisticsScreen = ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Bus Queue Statistics'>) => {
     const [time, setTime] = useState<string>("");
     const [northPeople, setNorthPeople] = useState(0);
     const [northTime, setNorthTime] = useState(0);

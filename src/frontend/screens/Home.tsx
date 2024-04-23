@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { View, StyleSheet, Text, Pressable, Keyboard } from "react-native";
 import { TouchableHighlight, TouchableOpacity } from "react-native-gesture-handler";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 import SearchLocationBar from "../components/SearchLocationBar";
 import MapView from "../components/MapView";
@@ -17,6 +18,7 @@ import useGetBuildings from "../hooks/api/useGetBuildings";
 import useGetTags from "../hooks/api/useGetTags";
 import useHomeStore from "../hooks/store/useHomeStore";
 
+import { RootStackParamList } from "../Navigator";
 import { StorageKeys, storage } from "../utils/storage_utils";
 
 export interface Path {
@@ -29,7 +31,7 @@ enum NavigationType {
     ARView = "ARView",
 }
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Home'>) => {
     const { data: buildings, isLoading: isLoadingBuildings } = useGetBuildings();
     const { data: floors, isLoading: isLoadingFloors } = useGetFloors();
     const { data: tags, isLoading: isLoadingTags } = useGetTags();
@@ -184,8 +186,10 @@ const HomeScreen = ({ navigation }) => {
             // setNavigationType(NavigationType.ARView);
         }
 
-        const disableARViewButton = !!floors && !!toNode && floors[toNode.floorId].buildingId !== 'academicBuilding';
+        if (!floors || !toNode)
+            return <></>
 
+        const disableARViewButton = floors[toNode.floorId].buildingId !== 'academicBuilding';
         return (
             <View style={styles.roomDetailsBoxButtonsContainer}>
                 <TouchableHighlight
