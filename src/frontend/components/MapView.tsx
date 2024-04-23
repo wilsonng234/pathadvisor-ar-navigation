@@ -38,14 +38,10 @@ const MapView = ({ currentFloorId, fromNode, toNode, path, focusNode }: MapViewP
             ({ numCol, numRow } = getMapTilesNumber(floors![currentFloorId], floors![currentFloorId].mobileDefaultX, floors![currentFloorId].mobileDefaultY))
         }
 
-        // set time out to avoid map stuck at the initial position
-        setTimeout(() => {
-            ref.translate(
-                -(numCol - 1) * RENDER_MAP_TILE_WIDTH,
-                -(numRow - 1) * RENDER_MAP_TILE_HEIGHT
-            )
-        }, 500)
-
+        ref.translate(
+            -(numCol - 1) * RENDER_MAP_TILE_WIDTH,
+            -(numRow - 1) * RENDER_MAP_TILE_HEIGHT
+        )
     }, [floors, nodes, focusNode])
 
     if (isLoadingNodes)
