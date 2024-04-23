@@ -175,6 +175,9 @@ const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParamList, '
     }, []);
 
     const renderRoomDetailsBoxButtons = () => {
+        if (!floors || !toNode)
+            return <></>
+
         const handleDirectionButton = () => {
             setEnableFromSearchBar(true);
             setNavigationType(NavigationType.Direction);
@@ -185,9 +188,6 @@ const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParamList, '
             navigation.navigate("AR Navigation", { toNode: toNode });
             // setNavigationType(NavigationType.ARView);
         }
-
-        if (!floors || !toNode)
-            return <></>
 
         const disableARViewButton = floors[toNode.floorId].buildingId !== 'academicBuilding';
         return (
