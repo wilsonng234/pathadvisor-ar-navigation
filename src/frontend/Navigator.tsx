@@ -117,8 +117,8 @@ const Navigator = () => {
                             return (
                                 <TouchableOpacity onPress={downloadMapTileAlert}>
                                     <MaterialIcons
-                                        name={!isLoadingMetaVerison && (storage.getString(StorageKeys.META_VERSION) === undefined || storage.getString(StorageKeys.META_VERSION) !== metaVersion) ?
-                                            "update" : "check"}
+                                        name={metaVersion && storage.getString(StorageKeys.META_VERSION) === metaVersion ?
+                                            "check" : "update"}
                                         style={{ marginRight: 10 }}
                                         size={25}
                                         color={'black'}
