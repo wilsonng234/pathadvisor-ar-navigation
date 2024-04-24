@@ -38,7 +38,6 @@ const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParamList, '
     const { data: tags, isLoading: isLoadingTags } = useGetTags();
     const [ready, setReady] = useState<boolean>(false);
     const [mapReady, setMapReady] = useState<boolean>(true);
-    const [pointerEvents, setPointerEvents] = useState<"auto" | "none">("auto");
     const { setBuildings, setFloors, setTags } = useHomeStore();
     const isKeyBoardVisible = useKeyboardVisible();
 
@@ -157,6 +156,11 @@ const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParamList, '
         setEnableFromSearchBar(false);
     }, [])
 
+    const handleCloseRoomDetailsBox = () => {
+        handleCancelToNode();
+        setShowRoomDetailsBox(false);
+    }
+
     const handleChangeFloor = (offset: number) => {
         if (!path) {
             console.error("No path found");
@@ -177,10 +181,8 @@ const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParamList, '
         setCurrentFloorId(id);
         setFocusNode(null);
         setMapReady(false);
-        setPointerEvents("none");
         setTimeout(() => {
             setMapReady(true)
-            setPointerEvents("auto");
         }, 500)
     }, []);
 
@@ -229,7 +231,7 @@ const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParamList, '
         return <LoadingScreen />;
     else
         return (
-            <View style={{ flex: 1 }} pointerEvents={pointerEvents}>
+            <View style={{ flex: 1 }} >
                 <View style={{ zIndex: 2 }}>
                     <View style={{ zIndex: 3 }}>
                         {
@@ -295,7 +297,7 @@ const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParamList, '
                 {
                     toNode && showRoomDetailsBox &&
                     <Pressable style={styles.roomDetailsBoxContainer} onPress={handlePressNonSearchBar}>
-                        <RoomDetailsBox node={toNode} renderButtons={renderRoomDetailsBoxButtons} onClose={() => { setShowRoomDetailsBox(false); }} />
+                        <RoomDetailsBox node={toNode} renderButtons={renderRoomDetailsBoxButtons} onClose={handleCloseRoomDetailsBox} />
                     </Pressable>
                 }
             </View >
