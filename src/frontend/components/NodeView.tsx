@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import FastImage from "react-native-fast-image";
 import { LayoutChangeEvent, Text, View, ViewStyle } from "react-native";
 
@@ -74,7 +74,7 @@ const NodeView = ({ currentFloorId, node }: NodeViewProps) => {
     </View >
 }
 
-export default NodeView;
+export default memo(NodeView);
 
 const styles = {
     container: (left: number, top: number): ViewStyle => ({

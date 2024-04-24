@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -35,7 +35,7 @@ const RoomDetailsBox = ({ node, renderButtons, onClose }: RoomDetailsBoxProps) =
     );
 }
 
-export default RoomDetailsBox;
+export default memo(RoomDetailsBox);
 
 const styles = StyleSheet.create({
     roomDetailsBox: {

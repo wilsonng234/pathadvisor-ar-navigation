@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import FastImage from 'react-native-fast-image'
 import { StyleSheet, View } from 'react-native';
 
@@ -60,7 +60,7 @@ const MapTilesBackground = ({ floorId, children }: MapTilesBackgroundProps) => {
         )
 }
 
-export default MapTilesBackground;
+export default memo(MapTilesBackground);
 
 const styles = StyleSheet.create({
     mapTilesRow: {

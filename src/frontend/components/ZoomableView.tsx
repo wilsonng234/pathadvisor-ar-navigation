@@ -1,4 +1,4 @@
-import React, { Ref, forwardRef, useImperativeHandle } from 'react';
+import React, { Ref, forwardRef, memo, useImperativeHandle } from 'react';
 import Animated from 'react-native-reanimated';
 import { Dimensions } from 'react-native';
 import { transformOrigin } from 'react-native-redash';
@@ -81,4 +81,4 @@ const ZoomableView = ({ children }: ZoomableViewBackgroundProps, ref: Ref<Zoomab
     )
 }
 
-export default forwardRef<ZoomableViewRef, ZoomableViewBackgroundProps>(ZoomableView);
+export default memo(forwardRef<ZoomableViewRef, ZoomableViewBackgroundProps>(ZoomableView));

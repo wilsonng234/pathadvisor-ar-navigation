@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { StyleSheet, Text } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
@@ -24,7 +24,7 @@ const SearchNode = ({ node, selectResult }: SearchNodeProps) => {
     );
 }
 
-export default SearchNode;
+export default memo(SearchNode);
 
 const styles = StyleSheet.create({
     searchResultText: {
