@@ -28,7 +28,8 @@ dependencies {
     implementation project('xrmanifest.androidlib') 
 }
 ```
-6. Proceed to step 3 of [Getting Started](#getting-started)
+6. Remove `<intent-filter>...</intent-filter>` from `unity/builds/android/unityLibrary/src/main/AndroidManifest.xml` to leave only one app icon
+7. Proceed to step 3 of [Getting Started](#getting-started)
 
 ## Unity to iOS
 1. Build Unity project for ios in any folder but not inside React Native
