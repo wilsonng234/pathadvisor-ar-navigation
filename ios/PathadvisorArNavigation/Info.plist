@@ -39,6 +39,18 @@
 	<string></string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
+	<key>NSExceptionDomains</key>
+	<dict>
+		<key>http://eek123.ust.hk/BusQueue/clientAPI/busqueue</key>
+		<dict>
+			<key>NSIncludesSubdomains</key>
+			<true/>
+			<key>NSExceptionAllowsInsecureHTTPLoads</key>
+			<true/>
+			<key>NSExceptionRequiresForwardSecrecy</key>
+			<true/>
+		</dict>
+	</dict>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>

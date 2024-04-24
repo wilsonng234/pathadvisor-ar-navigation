@@ -38,7 +38,6 @@ const Unity = ({ unityRef, toNode, focusedUnityView, unityStarted, onUnityMessag
 
     useEffect(() => {
         // avoid sending message to Unity before UnityView is started
-
         if (unityStarted && toNode) {
             sendMessageToUnity({
                 gameObject: 'ReactAPI',
@@ -47,6 +46,14 @@ const Unity = ({ unityRef, toNode, focusedUnityView, unityStarted, onUnityMessag
             });
         }
     }, [unityStarted]);
+
+    useEffect(() => {
+        sendMessageToUnity({
+            gameObject: 'ReactAPI',
+            methodName: 'SendStart',
+            message: { message: Message.START },
+        });
+    }, []);
 
 
     return (
@@ -72,6 +79,8 @@ const ARNavigationScreen = ({ route, navigation }: NativeStackScreenProps<RootSt
     const [unityStarted, setUnityStarted] = useState<boolean>(false);
     const toNode = route.params.toNode;
 
+
+
     // Remount UnityView when the screen is focused
     useFocusEffect(() => {
         setfocusedUnityView(true);
@@ -93,6 +102,7 @@ const ARNavigationScreen = ({ route, navigation }: NativeStackScreenProps<RootSt
                     setUnityStarted(true);
                     break;
                 case Message.EXIT:
+                    setUnityStarted(false);
                     navigation.reset({
                         index: 0,
                         routes: [{ name: 'Home' }],

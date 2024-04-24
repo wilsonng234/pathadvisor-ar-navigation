@@ -1,4 +1,5 @@
 # Getting Started
+1. Follow the react native environment setup [here](https://reactnative.dev/docs/environment-setup)
 1. Delete `ios/Pods` folder, `ios/Podfile.lock` file and `node_modules` folder (if applicable)
 2. Follow [Unity to Android](#unity-to-android) and [Unity to iOS](#unity-to-ios) sections
 3. `npm ci` to install the dependencies
