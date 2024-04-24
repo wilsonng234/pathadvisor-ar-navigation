@@ -8,6 +8,7 @@ import SearchLocationBar, { SearchLocationBarRef } from "../components/SearchLoc
 import MapView from "../components/MapView";
 import RoomDetailsBox from "../components/RoomDetailsBox";
 import LoadingScreen from "../components/LoadingScreen";
+import { useKeyboardVisible } from "..//hooks/listener/useKeyboardVisible";
 
 import * as api from '../../backend/api';
 import Node from "../../backend/schema/node";
@@ -38,7 +39,8 @@ const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParamList, '
     const [ready, setReady] = useState<boolean>(false);
     const [mapReady, setMapReady] = useState<boolean>(true);
     const [pointerEvents, setPointerEvents] = useState<"auto" | "none">("auto");
-    const { setBuildings, setFloors, setTags, setMapTiles } = useHomeStore();
+    const { setBuildings, setFloors, setTags } = useHomeStore();
+    const isKeyBoardVisible = useKeyboardVisible();
 
     const fromSearchLocationBarRef = useRef<SearchLocationBarRef>(null);
     const toSearchLocationBarRef = useRef<SearchLocationBarRef>(null);
@@ -284,7 +286,7 @@ const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParamList, '
                 }
 
                 {
-                    !path && !showRoomDetailsBox &&
+                    !path && !showRoomDetailsBox && !isKeyBoardVisible &&
                     <Pressable style={styles.floorSelector} onPress={handlePressNonSearchBar}>
                         <FloorSelector currentFloorId={currentFloorId} handleSelectorChangeFloor={handleSelectorChangeFloor} />
                     </Pressable>

@@ -1,4 +1,4 @@
-import React, { useCallback } from "react"
+import React, { memo, useCallback } from "react"
 import MapTilesBackground, { LOGIC_MAP_TILE_WIDTH, LOGIC_MAP_TILE_HEIGHT, RENDER_MAP_TILE_WIDTH, RENDER_MAP_TILE_HEIGHT } from "./MapTilesBackground";
 import FastImage from "react-native-fast-image";
 import { StyleSheet, View } from "react-native"
@@ -108,7 +108,7 @@ const MapView = ({ currentFloorId, fromNode, toNode, path, focusNode }: MapViewP
     )
 }
 
-export default MapView;
+export default memo(MapView);
 
 const styles = StyleSheet.create({
     pin: {
