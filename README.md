@@ -73,7 +73,8 @@ dependencies {
 
 ### Or 
 1. `npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && cd android && ./gradlew assembleDebug  && cd ..`
-2. `cd android/app/build/outputs/apk/debug && adb install .\app-debug.apk && cd ../../../../../..`
+2. `cd android/app/build/outputs/apk/debug && adb install .\app-debug.apk && cd ../../../../../..` (Windows)
+3. `cd android/app/build/outputs/apk/debug && adb install ./app-debug.apk && cd ../../../../../..` (macOS)
 
 ## Option 4: iOS direct build
 1. Follow all the guideline in Option 2 until Step 5
