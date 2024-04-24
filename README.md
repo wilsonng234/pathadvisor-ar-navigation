@@ -1,17 +1,17 @@
 # Getting Started
 1. Delete `ios/Pods` folder, `ios/Podfile.lock` file and `node_modules` folder (if applicable)
-2. Proceed to [Unity to iOS (Setup 1)](#unity-to-ios-setup-1) section
+2. Follow [Unity to Android](#unity-to-android) and [Unity to iOS](#unity-to-ios) sections
 3. `npm ci` to install the dependencies
-4. Create `unity/builds/ios` folder 
-5. `npx pod-install` to install pod files
+4. `npx pod-install` to install pod files for iOS
 
 ## Unity to Android
 1. Create a `local.properties` file at `android` folder with the following content:
 ```
 sdk.dir = C:\\Users\\username\\AppData\\Local\\Android\\Sdk
 ```
-2. export unity project to `unity/builds/android` folder
-3. Create a `build.gradle` file at `unity/builds/android/unityLibrary/libs` with the following content:
+2. Create an empty `unity/builds/android` folder
+3. Export unity project to `unity/builds/android` folder
+4. Create a `build.gradle` file at `unity/builds/android/unityLibrary/libs` with the following content:
 ```
 configurations.maybeCreate("default")
 artifacts.add("default", file('arcore_client.aar'))
@@ -19,8 +19,7 @@ artifacts.add("default", file('UnityARCore.aar'))
 artifacts.add("default", file('ARPresto.aar'))
 artifacts.add("default", file('unityandroidpermissions.aar'))
 ```
-
-4. Replace the dependencies block of `unity/builds/android/unityLibrary/build.gradle` as the following:
+5. Replace the dependencies block of `unity/builds/android/unityLibrary/build.gradle` as the following:
 ```
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -29,8 +28,9 @@ dependencies {
     implementation project('xrmanifest.androidlib') 
 }
 ```
+6. Proceed to step 3 of [Getting Started](#getting-started)
 
-## Unity to iOS (Setup 1)
+## Unity to iOS
 1. Build Unity project for ios in any folder but not inside React Native
 2. Open `Unity-iPhone.xcodeproj`
 3. Select Data folder, check "UnityFramework" and uncheck "Unity-iPhone"
@@ -51,11 +51,12 @@ dependencies {
 11. Proceed to step 3 of [Getting Started](#getting-started)
 
 # Build Option
-## Option1: Development server for Android
+## Development server
+### Android
 1. `chmod 755 android/gradlew` (macOS only)
 2. `npm start` to start the development server
 
-## Option2: Development server for iOS and Unity to iOS (Setup 2)
+### iOS
 1. `npm start` to start the development server
 2. Open `PathadvisorArNavigation.xcworkspace` in `ios` folder
 3. Select `UnityFramework` in `Framework` folder in XCode
@@ -63,20 +64,14 @@ dependencies {
 5. Sign the project if necessary
 6. Build the app by pressing the play button
 
-## Option3: Android debug apk build
-1. Create `assets` folder in `android/app/src/main/`
-1. `npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res`
-2. `cd android`
-3. `./gradlew assembleDebug`
-4. `cd app/build/outputs/apk/debug`
-5. `adb install .\app-debug.apk` for Windows, `adb install ./app-debug.apk` for macOS/Linux
+## Release build
+## Android
+1. Follow [Generating an upload key](https://reactnative.dev/docs/signed-apk-android?package-manager=npm#setting-up-gradle-variables)
+2. Follow [Setting up Gradle variables](https://reactnative.dev/docs/signed-apk-android?package-manager=npm#setting-up-gradle-variables)
+3. Run `npx react-native build-android --mode=release`
+4. Run `npx react-native run-android --mode="release"`
 
-### Or 
-1. `npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && cd android && ./gradlew assembleDebug  && cd ..`
-2. `cd android/app/build/outputs/apk/debug && adb install .\app-debug.apk && cd ../../../../../..` (Windows)
-3. `cd android/app/build/outputs/apk/debug && adb install ./app-debug.apk && cd ../../../../../..` (macOS)
-
-## Option 4: iOS direct build
-1. Follow all the guideline in Option 2 until Step 5
+## iOS
+1. Follow all the guidelines in [iOS development server](#ios) until Step 5
 2. Edit Scheme and change the build configuration to 'release'
 3. Build the app by pressing the play button
