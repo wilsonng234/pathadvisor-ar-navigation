@@ -21,6 +21,7 @@ import useHomeStore from "../hooks/store/useHomeStore";
 
 import { RootStackParamList } from "../Navigator";
 import { StorageKeys, storage } from "../utils/storage_utils";
+import { useDrawerStatus } from "@react-navigation/drawer";
 
 export interface Path {
     floorIds: string[];     // floorIds in the order of the path
@@ -52,6 +53,13 @@ const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParamList, '
     const [navigationType, setNavigationType] = useState<NavigationType | null>(null);
     const [focusNode, setFocusNode] = useState<Node | null>(null);
     const [showRoomDetailsBox, setShowRoomDetailsBox] = useState<boolean>(false);
+
+    const isDrawerOpen = useDrawerStatus() === 'open';
+
+    useEffect(() => {
+        if (isDrawerOpen)
+            Keyboard.dismiss();
+    }, [isDrawerOpen]);
 
     useEffect(() => {
         if (floors && buildings && tags) {
