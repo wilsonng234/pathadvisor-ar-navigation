@@ -64,11 +64,12 @@ dependencies {
 6. Build the app by pressing the play button
 
 ## Option3: Android debug apk build
+1. Create `assets` folder in `android/app/src/main/`
 1. `npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res`
 2. `cd android`
 3. `./gradlew assembleDebug`
 4. `cd app/build/outputs/apk/debug`
-5. `adb install .\app-debug.apk`
+5. `adb install .\app-debug.apk` for Windows, `adb install ./app-debug.apk` for macOS/Linux
 
 ### Or 
 1. `npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && cd android && ./gradlew assembleDebug  && cd ..`
