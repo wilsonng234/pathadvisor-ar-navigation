@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import FastImage from 'react-native-fast-image'
 import { StyleSheet, View } from 'react-native';
 
-import LoadingScreen from './LoadingScreen';
 import useGetMapTilesByFloorId from '../hooks/api/useGetMapTilesByFloorId';
 import useHomeStore from '../hooks/store/useHomeStore';
 import { getFloorMapTileBlocks } from '../utils/mapTiles_utils';
@@ -29,18 +28,18 @@ const MapTilesBackground = ({ floorId, children }: MapTilesBackgroundProps) => {
         }
     }, [floors, floorId])
 
-    if (isLoadingMapTiles)
-        return <LoadingScreen />
+    if (!mapTiles)
+        return <></>;
     else
         return (
             <View>
-                {mapTileBlocks.map((row, i) => {
+                {mapTileBlocks.map((row: MapTileBlock[], i: number) => {
                     return (
                         <View key={i} style={styles.mapTilesRow}>
                             {
-                                row.map((mapTileBlock, j) => {
+                                row.map((mapTileBlock: MapTileBlock, j: number) => {
                                     const imageUri = downloaded ?
-                                        "data:image/png;base64," + mapTiles![`${mapTileBlock.x}_${mapTileBlock.y}_${mapTileBlock.zoomLevel}`] :
+                                        "data:image/png;base64," + mapTiles[`${mapTileBlock.x}_${mapTileBlock.y}_${mapTileBlock.zoomLevel}`] :
                                         `https://pathadvisor.ust.hk/api/floors/${mapTileBlock.floorId}/map-tiles?x=${mapTileBlock.x}&y=${mapTileBlock.y}&zoomLevel=${mapTileBlock.zoomLevel}`;
 
                                     return (

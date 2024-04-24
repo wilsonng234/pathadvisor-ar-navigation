@@ -6,7 +6,6 @@ import { Polyline, Svg } from "react-native-svg";
 
 import ZoomableView, { ZoomableViewRef } from "./ZoomableView";
 import NodeView from "./NodeView";
-import LoadingScreen from "./LoadingScreen";
 import Node from "../../backend/schema/node"
 import PathNode from "../../backend/schema/pathNode";
 import useHomeStore from "../hooks/store/useHomeStore";
@@ -44,12 +43,12 @@ const MapView = ({ currentFloorId, fromNode, toNode, path, focusNode }: MapViewP
         )
     }, [floors, nodes, focusNode])
 
-    if (isLoadingNodes)
-        return <View></View>;
+    if (!floors)
+        return <></>;
 
     // floors and nodes are guaranteed to be loaded at this point
-    const { tileStartX, tileStartY } = getMapTileStartCoordinates(floors![currentFloorId]);
-    const { renderWidth, renderHeight } = getMapTilesSize(floors![currentFloorId]);
+    const { tileStartX, tileStartY } = getMapTileStartCoordinates(floors[currentFloorId]);
+    const { renderWidth, renderHeight } = getMapTilesSize(floors[currentFloorId]);
 
     return (
         <View>
@@ -99,7 +98,7 @@ const MapView = ({ currentFloorId, fromNode, toNode, path, focusNode }: MapViewP
                     }
 
                     {
-                        nodes!.map((node: Node) =>
+                        nodes?.map((node: Node) =>
                             <NodeView key={node._id} currentFloorId={currentFloorId} node={node} />
                         )
                     }

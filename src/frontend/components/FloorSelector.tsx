@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef, memo } from 'react'
 import { StyleSheet, ScrollView, TouchableOpacity, View, Text } from 'react-native';
 
-import LoadingScreen from './LoadingScreen';
 import useHomeStore from '../hooks/store/useHomeStore';
 import { BuildingsDict, FloorsDict } from 'frontend/utils/storage_utils';
 
@@ -116,7 +115,7 @@ const FloorSelector = ({ currentFloorId, handleSelectorChangeFloor }: FloorSelec
     }
 
     if (!floors || !buildings || !buttons)
-        return <LoadingScreen />
+        return <></>;
     else
         return (
             <View style={{ marginBottom: 20 }}>
