@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { Alert, AlertButton } from 'react-native';
+import { ActivityIndicator, Alert, AlertButton } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -26,9 +26,31 @@ export type RootStackParamList = {
 
 const Drawer = createDrawerNavigator();
 
+enum DownloadState {
+    NOT_DOWNLOADED,
+    DOWNLOADING,
+    OUT_DATED,
+    UPDATED
+}
+
 const Navigator = () => {
-    const [startDownload, setStartDownload] = useState<boolean>(false);
+    const [downloading, setDownloading] = useState<boolean>(false);
     const { data: metaVersion, isLoading: isLoadingMetaVerison } = useGetMetaVersion();
+    const downloadState = useMemo(() => {
+        const currentVersion = storage.getString(StorageKeys.META_VERSION);
+        if (!metaVersion)
+            return DownloadState.NOT_DOWNLOADED;
+
+        if (downloading)
+            return DownloadState.DOWNLOADING;
+        if (!currentVersion)
+            return DownloadState.NOT_DOWNLOADED;
+
+        if (metaVersion !== currentVersion)
+            return DownloadState.OUT_DATED;
+        else
+            return DownloadState.UPDATED;
+    }, [metaVersion, downloading]);
 
     useEffect(() => {
         const downloadMapData = async () => {
@@ -57,40 +79,39 @@ const Navigator = () => {
             const endTime = Date.now();
             console.debug('Downloaded map data', `Time elapsed: ${(endTime - startTime) / 1000} seconds`);
 
-            setStartDownload(false);
+            setDownloading(false);
         }
 
-        if (startDownload) {
+        if (downloading) {
             downloadMapData();
         }
-    }, [startDownload]);
+    }, [downloading]);
 
     const downloadMapTileAlert = () => {
-        const downloadedMetaVersion = storage.getString(StorageKeys.META_VERSION);
         let title: string, message: string, buttons: AlertButton[];
 
-        if (!downloadedMetaVersion) {
-            title = 'Download HKUST Map data';
-            message = 'Do you want to download the HKUST Map data?';
-            buttons = [
-                {
-                    text: 'Cancel',
-                    style: 'cancel',
-                },
-                { text: 'OK', onPress: () => setStartDownload(true) },
-            ];
-        }
-        else {
-            if (downloadedMetaVersion === metaVersion) {
-                title = 'Update HKUST Map data';
-                message = 'The HKUST Map data is up to date.';
+        switch (downloadState) {
+            case DownloadState.NOT_DOWNLOADED:
+                title = 'Download HKUST Map data';
+                message = 'Do you want to download the HKUST Map data?';
+                buttons = [
+                    {
+                        text: 'Cancel',
+                        style: 'cancel',
+                    },
+                    { text: 'OK', onPress: () => setDownloading(true) },
+                ];
+                break;
+            case DownloadState.DOWNLOADING:
+                title = 'Downloading HKUST Map data';
+                message = 'Downloading HKUST Map data...';
                 buttons = [
                     {
                         text: 'OK',
                     },
                 ];
-            }
-            else {
+                break;
+            case DownloadState.OUT_DATED:
                 title = 'Update HKUST Map data';
                 message = 'Do you want to update the HKUST Map data to latest version?';
                 buttons = [
@@ -98,9 +119,18 @@ const Navigator = () => {
                         text: 'Cancel',
                         style: 'cancel',
                     },
-                    { text: 'OK', onPress: () => setStartDownload(true) },
+                    { text: 'OK', onPress: () => setDownloading(true) },
                 ];
-            }
+                break;
+            case DownloadState.UPDATED:
+                title = 'Update HKUST Map data';
+                message = 'The HKUST Map data is up to date.';
+                buttons = [
+                    {
+                        text: 'OK',
+                    },
+                ];
+                break;
         }
 
         Alert.alert(title, message, buttons);
@@ -109,20 +139,24 @@ const Navigator = () => {
     return (
         <NavigationContainer>
             <Drawer.Navigator initialRouteName="Home" screenOptions={{ drawerType: 'front', swipeEdgeWidth: 0 }}>
-                <Drawer.Screen name="Home" component={HomeScreen}
+                <Drawer.Screen name="Home"
+                    component={HomeScreen}
                     options={{
                         headerTitle: 'HKUST PathAdvisor',
                         headerTitleAlign: 'center',
                         headerRight: () => {
                             return (
                                 <TouchableOpacity onPress={downloadMapTileAlert}>
-                                    <MaterialIcons
-                                        name={metaVersion && storage.getString(StorageKeys.META_VERSION) === metaVersion ?
-                                            "check" : "update"}
-                                        style={{ marginRight: 10 }}
-                                        size={25}
-                                        color={'black'}
-                                    />
+                                    {
+                                        downloadState === DownloadState.DOWNLOADING ?
+                                            <ActivityIndicator style={{ marginRight: 10 }} size={25} color="black" /> :
+                                            <MaterialIcons
+                                                name={downloadState === DownloadState.UPDATED ? "check" : "update"}
+                                                style={{ marginRight: 10 }}
+                                                size={25}
+                                                color={'black'}
+                                            />
+                                    }
                                 </TouchableOpacity>
                             )
                         },
