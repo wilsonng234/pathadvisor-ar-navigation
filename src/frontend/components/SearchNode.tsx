@@ -13,12 +13,14 @@ interface SearchNodeProps {
 const SearchNode = ({ node, selectResult }: SearchNodeProps) => {
     const { buildings, floors } = useHomeStore();
 
+    if (!buildings || !floors)
+        return null;
     return (
         <TouchableOpacity
             onPress={() => { selectResult(node) }}
         >
             <Text style={styles.searchResultText}>
-                {node.name}, {node.floorId}, {buildings![floors![node.floorId].buildingId].name}
+                {node.name}, {node.floorId}, {buildings[floors[node.floorId].buildingId].name}
             </Text>
         </TouchableOpacity>
     );

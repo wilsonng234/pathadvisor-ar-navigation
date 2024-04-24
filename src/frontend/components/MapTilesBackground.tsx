@@ -28,7 +28,7 @@ const MapTilesBackground = ({ floorId, children }: MapTilesBackgroundProps) => {
         }
     }, [floors, floorId])
 
-    if (!mapTiles)
+    if (!floors || !mapTiles)
         return <></>;
     else
         return (

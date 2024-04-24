@@ -43,7 +43,7 @@ const MapView = ({ currentFloorId, fromNode, toNode, path, focusNode }: MapViewP
         )
     }, [floors, nodes, focusNode])
 
-    if (!floors)
+    if (!floors || !nodes)
         return <></>;
 
     // floors and nodes are guaranteed to be loaded at this point

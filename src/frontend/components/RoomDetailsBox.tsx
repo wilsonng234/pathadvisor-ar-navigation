@@ -16,6 +16,9 @@ interface RoomDetailsBoxProps {
 const RoomDetailsBox = ({ node, renderButtons, onClose }: RoomDetailsBoxProps) => {
     const { buildings, floors } = useHomeStore();
 
+    if (!buildings || !floors)
+        return <></>;
+
     return (
         <View style={styles.roomDetailsBox}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -27,7 +30,7 @@ const RoomDetailsBox = ({ node, renderButtons, onClose }: RoomDetailsBoxProps) =
                 </TouchableOpacity>
             </View>
             <Text style={styles.roomFloor}>
-                {buildings![floors![node.floorId].buildingId].name} {floors![node.floorId].name ? `- ${convertFloorIdToFloorName(floors![node.floorId].name)}` : ""}
+                {buildings[floors[node.floorId].buildingId].name} {floors[node.floorId].name ? `- ${convertFloorIdToFloorName(floors[node.floorId].name!)}` : ""}
             </Text>
 
             {renderButtons()}
