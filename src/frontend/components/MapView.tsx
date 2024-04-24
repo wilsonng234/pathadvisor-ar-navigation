@@ -114,7 +114,8 @@ const styles = StyleSheet.create({
     pin: {
         position: 'absolute',
         width: 4,
-        height: 9
+        height: 9,
+        zIndex: 1
     },
 
     /* Scale down the width and height of the container to reduce the size of the rendered Svg component */
