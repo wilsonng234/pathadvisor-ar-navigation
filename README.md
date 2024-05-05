@@ -1,79 +1,79 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
-
 # Getting Started
+1. Follow the react native environment setup [here](https://reactnative.dev/docs/environment-setup)
+1. Delete `ios/Pods` folder, `ios/Podfile.lock` file and `node_modules` folder (if applicable)
+2. Follow [Unity to Android](#unity-to-android) and [Unity to iOS](#unity-to-ios) sections
+3. `npm ci` to install the dependencies
+4. `npx pod-install` to install pod files for iOS
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
-
-## Step 1: Start the Metro Server
-
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
-
-To start Metro, run the following command from the _root_ of your React Native project:
-
-```bash
-# using npm
-npm start
-
-# OR using Yarn
-yarn start
+## Unity to Android
+1. Create a `local.properties` file at `android` folder with the following content:
 ```
-
-## Step 2: Start your Application
-
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
-
-### For Android
-
-```bash
-# using npm
-npm run android
-
-# OR using Yarn
-yarn android
+sdk.dir = C:\\Users\\username\\AppData\\Local\\Android\\Sdk
 ```
-
-### For iOS
-
-```bash
-# using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
+2. Create an empty `unity/builds/android` folder
+3. Export unity project to `unity/builds/android` folder
+4. Create a `build.gradle` file at `unity/builds/android/unityLibrary/libs` with the following content:
 ```
+configurations.maybeCreate("default")
+artifacts.add("default", file('arcore_client.aar'))
+artifacts.add("default", file('UnityARCore.aar'))
+artifacts.add("default", file('ARPresto.aar'))
+artifacts.add("default", file('unityandroidpermissions.aar'))
+```
+5. Replace the dependencies block of `unity/builds/android/unityLibrary/build.gradle` as the following:
+```
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
+    implementation project('libs')
+    implementation project('xrmanifest.androidlib') 
+}
+```
+6. Remove `<intent-filter>...</intent-filter>` from `unity/builds/android/unityLibrary/src/main/AndroidManifest.xml` to leave only one app icon
+7. Proceed to step 3 of [Getting Started](#getting-started)
 
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
+## Unity to iOS
+1. Build Unity project for ios in any folder but not inside React Native
+2. Open `Unity-iPhone.xcodeproj`
+3. Select Data folder, check "UnityFramework" and uncheck "Unity-iPhone"
+4. Inside `Unity-iPhone/Libraries/Plugins/iOS` folder, select `NativeCallProxy.h` and change UnityFramework’s target membership from Project to Public.
+5. Change the scheme to UnityFramework and sign it if applicable
+6. Build it and Open `Product` folder in Xcode
+7. Right click `UnityFramework` and move it to the plugin folder `unity/builds/ios`
+8. Go to `unity/builds/ios/Headers`, open `UnityFramework.h`
+9. Change line 4 to 
+```
+#import "./UnityAppController.h"
+```
+10. Go to `node_modules/@azesmway/react-native-unity/ios` and open `RNUnityView.h`, change line 3 and 4 to
+```
+#include "../../../../../unity/builds/ios/Headers/UnityFramework.h"
+#include "../../../../../unity/builds/ios/Headers/NativeCallProxy.h"
+```
+11. Proceed to step 3 of [Getting Started](#getting-started)
 
-## Step 3: Modifying your App
+# Build Option
+## Development server
+### Android
+1. `chmod 755 android/gradlew` (macOS only)
+2. `npm start` to start the development server
 
-Now that you have successfully run the app, let's modify it.
+### iOS
+1. `npm start` to start the development server
+2. Open `PathadvisorArNavigation.xcworkspace` in `ios` folder
+3. Select `UnityFramework` in `Framework` folder in XCode
+4. Change the location of framework to `/Users/{username}/Library/Developer/Xcode/DerivedData/Unity-iPhone-{buildId}/Build/Products/Debug-iphoneos/UnityFramework.framework` (Important!!)
+5. Sign the project if necessary
+6. Build the app by pressing the play button
 
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
+## Release build
+## Android
+1. Follow [Generating an upload key](https://reactnative.dev/docs/signed-apk-android?package-manager=npm#setting-up-gradle-variables)
+2. Follow [Setting up Gradle variables](https://reactnative.dev/docs/signed-apk-android?package-manager=npm#setting-up-gradle-variables)
+3. Run `npx react-native build-android --mode=release`
+4. Run `npx react-native run-android --mode="release"`
 
-   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+## iOS
+1. Follow all the guidelines in [iOS development server](#ios) until Step 5
+2. Edit Scheme and change the build configuration to 'release'
+3. Build the app by pressing the play button

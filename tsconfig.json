@@ -1,3 +1,14 @@
 {
-  "extends": "@react-native/typescript-config/tsconfig.json"
+  "compilerOptions": {
+    "jsx": "react-native",
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "baseUrl": "src"
+  },
+  "include": [
+    "./src/**/*.ts", 
+    "src/frontend/Navigator.tsx"  
+  ]
 }
